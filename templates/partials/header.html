@@ -4,6 +4,7 @@
   <div class="container">
     <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
 
+      <!-- Logo -->
       <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
         <img src="{% static 'img/logo.png' %}"
              alt="Chicha Barber"
@@ -11,14 +12,27 @@
              class="me-2">
       </a>
 
+
+      <!-- Menú de Navegación Dinámico -->
       <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 ms-4">
-        <li><a href="/" class="nav-link px-2 text-white-50">Inicio</a></li>
-        <li><a href="{% url 'servicios' %}" class="nav-link px-2 text-white">Servicios</a></li>
-        <li><a href="{% url 'productos_galeria' %}" class="nav-link px-2 text-white">Productos</a></li>
-        <li><a href="{% url 'promocion' %}" class="nav-link px-2 text-white">Promociones</a></li>
-        <li><a href="{% url 'ayuda_home' %}" class="nav-link px-2 text-white">Ayuda</a></li>
+        <li>
+          <a href="/" class="nav-link px-2 {% if request.path == '/' %}text-white fw-bold{% else %}text-white-50{% endif %}">Inicio</a>
+        </li>
+        <li>
+          <a href="{% url 'servicios' %}" class="nav-link px-2 {% if request.resolver_match.url_name == 'servicios' %}text-white fw-bold{% else %}text-white-50{% endif %}">Servicios</a>
+        </li>
+        <li>
+          <a href="{% url 'productos_galeria' %}" class="nav-link px-2 {% if request.resolver_match.url_name == 'productos_galeria' %}text-white fw-bold{% else %}text-white-50{% endif %}">Productos</a>
+        </li>
+        <li>
+          <a href="{% url 'promocion' %}" class="nav-link px-2 {% if request.resolver_match.url_name == 'promocion' %}text-white fw-bold{% else %}text-white-50{% endif %}">Promociones</a>
+        </li>
+        <li>
+          <a href="{% url 'ayuda_home' %}" class="nav-link px-2 {% if request.resolver_match.url_name == 'ayuda_home' %}text-white fw-bold{% else %}text-white-50{% endif %}">Ayuda</a>
+        </li>
       </ul>
 
+      <!-- Sección Derecha (Campana, Carrito, Perfil) -->
       <div class="d-flex align-items-center gap-3 ms-auto mb-2 mb-lg-0 text-white">
 
         {% if user.is_authenticated %}
@@ -37,7 +51,6 @@
         </a>
 
         {% if user.is_authenticated %}
-
         <div class="dropdown">
           <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 btn btn-outline-info rounded-pill px-3 py-1 text-white"
              href="#"
@@ -65,15 +78,8 @@
               aria-labelledby="navbarDropdown">
 
             <li class="px-3 py-2 border-bottom border-secondary border-opacity-25 mb-2 rounded-top-4 d-flex flex-column partials-header__li-2">
-
-              <span class="text-white-50 fw-bold text-uppercase partials-header__span-3">
-                Tu Cuenta
-              </span>
-
-              <span class="small fw-semibold text-white">
-                {{ user.get_rol_display|default:"Cliente" }}
-              </span>
-
+              <span class="text-white-50 fw-bold text-uppercase partials-header__span-3">Tu Cuenta</span>
+              <span class="small fw-semibold text-white">{{ user.get_rol_display|default:"Cliente" }}</span>
             </li>
 
             {% if user.rol == 'admin' or user.rol == 'barbero' %}
@@ -83,7 +89,6 @@
                 Panel de Administración
               </a>
             </li>
-
             <li><hr class="dropdown-divider"></li>
             {% endif %}
 
@@ -120,58 +125,12 @@
 
           </ul>
         </div>
-
         {% else %}
-
-          <a class="btn btn-outline-light rounded-pill px-3 py-2"
-             href="{% url 'login' %}">
-            Iniciar Sesión
-          </a>
-
-          <a class="btn btn-info rounded-pill px-3 py-2 text-dark fw-bold"
-             href="{% url 'registro' %}">
-            Registrarse
-          </a>
-
+          <a class="btn btn-outline-light rounded-pill px-3 py-2" href="{% url 'login' %}">Iniciar Sesión</a>
+          <a class="btn btn-info rounded-pill px-3 py-2 text-dark fw-bold" href="{% url 'registro' %}">Registrarse</a>
         {% endif %}
 
       </div>
-
     </div>
   </div>
 </header>
-
-<script>
-  // Script Global de Modo Claro/Oscuro
-  document.addEventListener('DOMContentLoaded', function() {
-    const themeToggle = document.getElementById('global-theme-toggle');
-    const themeIcon = document.getElementById('global-theme-icon');
-    const themeText = document.getElementById('global-theme-text');
-    const body = document.body;
-
-    const isLight = body.classList.contains('theme-light');
-    updateThemeUI(isLight);
-
-    function updateThemeUI(isLight) {
-      if (themeIcon && themeText) {
-        if (isLight) {
-          themeIcon.className = 'bi bi-moon-fill me-2 text-info';
-          themeText.textContent = 'Modo Oscuro';
-        } else {
-          themeIcon.className = 'bi bi-brightness-high-fill me-2 text-warning';
-          themeText.textContent = 'Modo Claro';
-        }
-      }
-    }
-
-    if (themeToggle) {
-      themeToggle.addEventListener('click', function() {
-        const nextTheme = isLight ? 'dark' : 'light';
-        localStorage.setItem('theme', nextTheme);
-        localStorage.setItem('admin-theme', nextTheme);
-        
-        window.location.href = "{% url 'cambiar_tema' %}";
-      });
-    }
-  });
-</script>
