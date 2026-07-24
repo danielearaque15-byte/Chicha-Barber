@@ -33,6 +33,7 @@ erDiagram
         string estado
         datetime fecha_creacion
     }
+
     RESERVA {
         int id PK
         int turno_id FK
@@ -56,6 +57,7 @@ erDiagram
         image imagen
         boolean estado
     }
+
     PROMOCION {
         int id PK
         int servicio_id FK
@@ -68,6 +70,7 @@ erDiagram
         image imagen
         boolean estado
     }
+
     CALIFICACION {
         int id PK
         int reserva_id FK
@@ -77,26 +80,47 @@ erDiagram
         boolean mostrar_en_inicio
     }
 
-    %% ================= MÓDULO: INVENTARIO =================
-    PRODUCTO ||--|| STOCK : "Tiene (OneToOne)"
+    %% ================= MÓDULO: PRODUCTOS E INVENTARIO =================
+    CATEGORIA ||--o{ PRODUCTO : "Clasifica"
+    PROVEEDOR ||--o{ STOCK : "Suministra"
+
+    PRODUCTO ||--|| STOCK : "Tiene"
     PRODUCTO ||--o{ MOVIMIENTO_INVENTARIO : "Genera"
     PRODUCTO ||--o{ DETALLE_COMPRA : "Se incluye en"
+
+    CATEGORIA {
+        int id PK
+        string nombre
+        text descripcion
+    }
+
+    PROVEEDOR {
+        int id PK
+        string nombre
+        string telefono
+        string correo
+        string direccion
+    }
 
     PRODUCTO {
         int codigo_producto PK
         string codigo
         string nombre
         text descripcion
-        decimal precio_compra
-        decimal precio_venta
         image imagen
         boolean estado
+        int categoria_id FK
     }
+
     STOCK {
         int id PK
         int producto_id FK
+        int proveedor_id FK
         int cantidad
+        decimal precio_compra
+        decimal precio_venta
     }
+
     MOVIMIENTO_INVENTARIO {
         int id PK
         int producto_id FK
@@ -122,11 +146,13 @@ erDiagram
         file comprobante
         datetime fecha_compra
     }
+
     DETALLE_COMPRA {
         int codigo_detalle PK
         int compra_id FK
         int producto_id FK
         int cantidad
+        decimal precio_unitario
         decimal subtotal
     }
 
@@ -145,6 +171,7 @@ erDiagram
         image comprobante_pago
         image imagen_transaccion
     }
+
     DETALLE_FACTURA {
         int id PK
         int factura_id FK
@@ -156,6 +183,7 @@ erDiagram
     }
 
     %% ================= MÓDULO: CONFIGURACIÓN =================
+
     DATOS_TRANSFERENCIA {
         int id PK
         string banco
@@ -164,6 +192,7 @@ erDiagram
         string titular
         text instructions
     }
+
     CARRUSEL {
         int id PK
         datetime fecha_creacion
