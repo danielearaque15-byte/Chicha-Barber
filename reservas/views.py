@@ -96,7 +96,7 @@ def crear_reserva(request, servicio_id=None, promocion_id=None):
                 precio = round(precio * (Decimal('1') - descuento), 2)
 
             # Creamos la reserva vinculada a su cuenta recién creada
-            Reserva.objects.create(
+            reserva = Reserva.objects.create(
                 turno=turno,
                 cliente=request.user,
                 nombre_cliente=nombre,
@@ -108,6 +108,21 @@ def crear_reserva(request, servicio_id=None, promocion_id=None):
             turno.estado = 'reservado'
             turno.save()
 
+            # Crear factura para esta reserva automática
+            factura = Factura.objects.create(
+                cliente=request.user,
+                total_pagado=0,
+                metodo_pago='efectivo',
+                estado='pendiente'
+            )
+            DetalleFactura.objects.create(
+                factura=factura,
+                reserva=reserva,
+                cantidad=1,
+                precio_unitario=precio,
+                subtotal=precio
+            )
+
             enviar_correo_reserva(
                 correo_cliente=correo,
                 nombre=nombre,
@@ -115,7 +130,7 @@ def crear_reserva(request, servicio_id=None, promocion_id=None):
                 fecha=datetime.combine(turno.fecha, turno.hora_inicio),
             )
             messages.success(request, '¡Te has registrado con éxito y tu reserva ha sido confirmada!')
-            return redirect('inicio')
+            return redirect(f"{reverse('carrito')}?reserva_id={reserva.id}&reserva_servicio={reserva.servicio.nombre}&reserva_fecha={turno.fecha.isoformat()}&reserva_hora={turno.hora_inicio.strftime('%H:%M')}&reserva_precio={float(reserva.precio_historico or precio)}&factura_id={factura.id}")
         except Turno.DoesNotExist:
             messages.error(request, 'El turno que habías seleccionado ya no está disponible.')
         except Exception as e:
@@ -205,8 +220,6 @@ def crear_reserva(request, servicio_id=None, promocion_id=None):
                 turno.estado = 'reservado'
                 turno.save()
 
-
-
                 # Usar factura existente o crear nueva
                 if factura_id:
                     factura = get_object_or_404(Factura, id=factura_id)
@@ -238,25 +251,24 @@ def crear_reserva(request, servicio_id=None, promocion_id=None):
                 # Logueamos el error en consola pero no bloqueamos al usuario
                 print(f"Error al enviar correo de reserva: {mail_error}")
 
-            return redirect('facturas')
+            return redirect(f"{reverse('carrito')}?reserva_id={reserva.id}&reserva_servicio={reserva.servicio.nombre}&reserva_fecha={turno.fecha.isoformat()}&reserva_hora={turno.hora_inicio.strftime('%H:%M')}&reserva_precio={float(reserva.precio_historico or precio)}&factura_id={factura.id}")
         except Turno.DoesNotExist:
             # Caso de doble clic: Si el turno ya no está disponible, verificamos si ya existe la reserva
             # para este turno. Si existe, asumimos que la petición anterior tuvo éxito.
             reserva_existente = Reserva.objects.filter(turno_id=turno_id).first()
             if reserva_existente:
-                return redirect('facturas')
-            
+                return redirect(f"{reverse('carrito')}?reserva_id={reserva_existente.id}&reserva_servicio={reserva_existente.servicio.nombre}&reserva_fecha={reserva_existente.turno.fecha.isoformat()}&reserva_hora={reserva_existente.turno.hora_inicio.strftime('%H:%M')}&reserva_precio={float(reserva_existente.precio_historico or 0)}")
             messages.error(request, '¡Ups! El turno seleccionado ya no está disponible. Por favor elige otro.')
         except Exception as e:
             messages.error(request, f'Error al crear la reserva: {e}')
 
     context = {
-    'servicio': servicio,
-    'promo': promo,
-    'barberos': barberos,
-    'turnos_disponibles': turnos_disponibles,
-    'action_url': action_url,
-}
+        'servicio': servicio,
+        'promo': promo,
+        'barberos': barberos,
+        'turnos_disponibles': turnos_disponibles,
+        'action_url': action_url,
+    }
 
     return render(request, 'reservas/reservas.html', context)
 
@@ -610,3 +622,4 @@ def desactivar_dia_agenda(request, fecha_str):
     messages.warning(request, f"Día {fecha_str} desactivado. No se aceptarán más reservas para esta fecha.")
     
     return redirect('gestionar_dias')
+

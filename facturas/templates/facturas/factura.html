@@ -2,6 +2,19 @@
 {% load static %}
 
 {% block content %}
+
+<script>
+// Limpiar carrito de localStorage SOLO si venimos de una compra exitosa,
+// no en cada visita a la página de facturas.
+(function() {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('compra_exitosa') === '1') {
+        localStorage.removeItem("carrito");
+        // Limpiar el parámetro de la URL sin recargar
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+})();
+</script>
 <div class="container py-5">
   
   <div class="row justify-content-center">
@@ -69,16 +82,6 @@
             <a href="{% url 'imprimir_factura' factura.id %}" target="_blank" class="btn btn-outline-dark rounded-pill px-3">
               <i class="bi bi-printer me-2"></i>Imprimir
             </a>
-            
-            <div class="dropdown">
-              <button class="btn bg-champaña color-azul text-white rounded-pill px-3 dropdown-toggle" type="button" id="dropdownAgregar{{ factura.id }}" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-plus-circle me-1"></i> Agregar
-              </button>
-              <ul class="dropdown-menu shadow border-0 rounded-3" aria-labelledby="dropdownAgregar{{ factura.id }}">
-                <li><a class="dropdown-item py-2" href="{% url 'productos_galeria' %}?factura_id={{ factura.id }}"><i class="bi bi-box-seam me-2 color-champaña"></i> Añadir Producto</a></li>
-                <li><a class="dropdown-item py-2" href="{% url 'inicio' %}?factura_id={{ factura.id }}"><i class="bi bi-scissors me-2 color-champaña"></i> Reservar Servicio</a></li>
-              </ul>
-            </div>
           </div>
         </div>
       </div>
