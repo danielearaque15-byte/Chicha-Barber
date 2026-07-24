@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages
@@ -10,6 +11,7 @@ from django.db import transaction
 from django.db.models import Sum, Q
 from core.utils import enviar_correo_compra
 from facturas.models import Factura, DetalleFactura
+from reservas.models import Reserva
 
 
 # ==========================================
@@ -57,6 +59,11 @@ def carrito(request):
 # 🔒 PAGO PROTEGIDO
 @login_required
 def pago(request):
+    # Leer factura_id de query params (viene desde Carrito.html con reservas)
+    factura_id = request.GET.get('factura_id')
+    if factura_id:
+        request.session['active_factura_id'] = factura_id
+
     context = {
         'titulo': 'Método de Pago',
         'datos_banco': DatosTransferencia.get_solo(),
@@ -66,54 +73,47 @@ def pago(request):
     return render(request, 'productos/pago.html', context)
 
 
-# 🔒 PROCESAR PAGO PROTEGIDO (CORREGIDO Y OPTIMIZADO)
+# 🔒 PROCESAR PAGO PROTEGIDO
 @login_required
 def procesar_pago_cliente(request):
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
         correo = request.POST.get('correo')
         telefono = request.POST.get('telefono')
-        metodo_pago = request.POST.get('pago')  # Recibe 'persona', 'contraentrega' o 'transferencia'
-        tipo_transferencia = request.POST.get('tipo_transferencia') # 'nequi', 'daviplata'
+        metodo_pago = request.POST.get('pago')
+        tipo_transferencia = request.POST.get('tipo_transferencia')
         factura_id = request.POST.get('factura_id')
         carrito_json = request.POST.get('carrito')
-        
-        # 📸 Capturar el archivo del comprobante adjunto
+
         comprobante_archivo = request.FILES.get('comprobante')
 
-        # 🔴 Validar carrito
         if not carrito_json:
-            messages.error(request, "❌ El carrito está vacío")
+            messages.error(request, "El carrito está vacío")
             return redirect('carrito')
 
         try:
             carrito_data = json.loads(carrito_json)
         except (json.JSONDecodeError, TypeError):
-            messages.error(request, "❌ Error en el formato del carrito")
+            messages.error(request, "Error en el formato del carrito")
             return redirect('carrito')
 
         if not carrito_data:
-            messages.error(request, "❌ El carrito no contiene elementos")
+            messages.error(request, "El carrito no contiene elementos")
             return redirect('carrito')
 
-        # 🔴 Validación crítica: Si elige transferencia, el comprobante es obligatorio
         if metodo_pago in ['transferencia', 'contraentrega'] and not comprobante_archivo:
-            messages.error(request, "❌ Adjuntar el comprobante es obligatorio para este método de pago.")
+            messages.error(request, "Adjuntar el comprobante es obligatorio para este método de pago.")
             return redirect('pago')
 
         try:
-            # 🛡️ Garantiza la consistencia: si el stock falla en algún ítem, se revierte todo
             with transaction.atomic():
-                
-                # 🏦 Todo pago (persona, contraentrega o transferencia) requiere verificación manual del admin
+
                 estado_inicial = 'pendiente_verificacion'
 
-                # ✅ Mapeo para que la Factura tenga el método exacto (Nequi, Daviplata, etc.)
                 metodo_factura = 'efectivo'
                 if metodo_pago in ['transferencia', 'contraentrega'] and tipo_transferencia:
                     metodo_factura = tipo_transferencia
 
-                # ✅ 1. Obtener o crear cabecera de Factura
                 if factura_id:
                     factura = get_object_or_404(Factura, id=factura_id)
                 else:
@@ -126,7 +126,6 @@ def procesar_pago_cliente(request):
                         imagen_transaccion=comprobante_archivo
                     )
 
-                # ✅ 2. Crear cabecera única de Compra para gestión logística/inventario
                 compra = Compra.objects.create(
                     usuario=request.user,
                     nombre_cliente=nombre,
@@ -135,25 +134,35 @@ def procesar_pago_cliente(request):
                     metodo_pago=metodo_pago,
                     estado_pago=estado_inicial,
                     comprobante=comprobante_archivo,
-                    total=0  # Se actualizará al final
+                    total=0
                 )
 
-                total_general = 0
+                # Usar Decimal para evitar error: unsupported operand type(s) for +=: 'Decimal' and 'float'
+                total_general = Decimal('0')
 
-                # ✅ 3. Iterar los productos y generar sus registros detallados hijos
                 for item in carrito_data:
+                    if item.get('tipo') == 'reserva':
+                        reserva = get_object_or_404(Reserva, id=item['id'])
+                        precio = Decimal(str(item['precio']))
+                        DetalleFactura.objects.create(
+                            factura=factura,
+                            reserva=reserva,
+                            cantidad=1,
+                            precio_unitario=precio,
+                            subtotal=precio
+                        )
+                        total_general += precio
+                        continue
+
                     producto = get_object_or_404(Producto, codigo_producto=item['id'])
                     cantidad = int(item['cantidad'])
 
-                    # Al invocar el .create(), se ejecuta la lógica del nuevo save() del modelo:
-                    # Calcula subtotal, valida stock, reduce stock y guarda el movimiento logístico.
                     detalle_compra_obj = DetalleCompra.objects.create(
                         compra=compra,
                         producto=producto,
                         cantidad=cantidad
                     )
 
-                    # Registramos el detalle correspondiente en la Factura del cliente
                     DetalleFactura.objects.create(
                         factura=factura,
                         producto=producto,
@@ -164,50 +173,45 @@ def procesar_pago_cliente(request):
 
                     total_general += detalle_compra_obj.subtotal
 
-                # ✅ 4. Actualización limpia de totales una única vez
                 compra.total = total_general
                 compra.save(update_fields=['total'])
 
-                factura.total_pagado = float(total_general)
+                factura.total_pagado = total_general
                 factura.save(update_fields=['total_pagado'])
 
-                # Limpiar factura activa
                 if 'active_factura_id' in request.session:
                     del request.session['active_factura_id']
 
-                # Vaciamos de forma limpia el backend de la sesión
                 request.session['carrito'] = {}
                 request.session.modified = True
 
         except ValueError as e:
-            # Captura el error controlado de "Stock insuficiente" enviado por el save() del modelo
-            messages.error(request, f"❌ Operación cancelada: {str(e)}")
+            messages.error(request, f"Operacion cancelada: {str(e)}")
             return redirect('carrito')
         except Exception as e:
-            messages.error(request, f"❌ Error crítico en la transacción: {str(e)}")
+            messages.error(request, f"Error critico en la transaccion: {str(e)}")
             return redirect('carrito')
 
-        # ✅ Enviar correo de confirmación
         try:
             enviar_correo_compra(
                 correo_cliente=correo,
                 nombre=nombre,
                 carrito=carrito_data,
-                total=total_general
+                total=float(total_general)
             )
         except Exception as e:
             print(f"Error enviando correo: {e}")
 
-        # Mensaje de éxito según método
         if metodo_pago in ['transferencia', 'contraentrega']:
             messages.success(
-                request, 
-                "✅ Orden registrada. El administrador verificará tu comprobante de transferencia a la brevedad."
+                request,
+                "Orden registrada. El administrador verificara tu comprobante de transferencia a la brevedad."
             )
         else:
-            messages.success(request, "✅ Compra realizada con éxito")
+            messages.success(request, "Compra realizada con exito")
 
-        return redirect('facturas')
+        # Redirigir a facturas con parametro compra_exitosa para limpiar carrito
+        return redirect(reverse('facturas') + '?compra_exitosa=1')
 
     return redirect('carrito')
 
@@ -235,7 +239,7 @@ def crear_producto(request):
 
         if form.is_valid():
           producto = form.save(commit=False)
-          print(producto.estado)  # Debe imprimir True
+          print(producto.estado)
         producto.save()
 
     else:
@@ -257,7 +261,7 @@ def editar_producto(request, pk):
 
         if form.is_valid():
             form.save()
-            messages.success(request, "✅ Producto actualizado correctamente")
+            messages.success(request, "Producto actualizado correctamente")
             return redirect('lista_productos_admin')
 
     else:
@@ -275,7 +279,7 @@ def editar_producto(request, pk):
 def eliminar_producto(request, pk):
     producto = get_object_or_404(Producto, codigo_producto=pk)
     producto.delete()
-    messages.success(request, "✅ Producto eliminado correctamente")
+    messages.success(request, "Producto eliminado correctamente")
     return redirect('lista_productos_admin')
 
 
@@ -290,7 +294,7 @@ def lista_stock(request):
     valor_stock = sum((stock.cantidad or 0) * (stock.precio_venta or 0) for stock in stocks)
 
     context = {
-        'titulo': 'Stock de Productos',
+        'titulo': 'Inventario',
         'stocks': stocks,
         'total_productos': stocks.count(),
         'stock_total': stock_total,
@@ -311,7 +315,7 @@ def editar_stock(request, pk):
 
         if form.is_valid():
             form.save()
-            messages.success(request, "✅ Stock actualizado correctamente")
+            messages.success(request, "Stock actualizado correctamente")
             return redirect('lista_stock')
 
     else:
@@ -327,7 +331,7 @@ def editar_stock(request, pk):
 
 
 # ==========================================
-# 🟡 COMPRAS ADMIN (Gestión de historial)
+# 🟡 COMPRAS ADMIN (Gestion de historial)
 # ==========================================
 
 def registrar_compra(request):
@@ -345,7 +349,7 @@ def registrar_compra(request):
             nueva_compra.total = detalle.subtotal
             nueva_compra.save(update_fields=['total'])
 
-            messages.success(request, "✅ Compra registrada exitosamente")
+            messages.success(request, "Compra registrada exitosamente")
             return redirect('historial_compras')
 
     else:
@@ -388,7 +392,7 @@ def eliminar_compra(request, pk):
     compra = get_object_or_404(Compra, codigo_compra=pk)
     if request.method == 'POST':
         compra.delete()
-        messages.success(request, "✅ Compra eliminada")
+        messages.success(request, "Compra eliminada")
     return redirect('historial_compras')
 
 
@@ -423,7 +427,7 @@ def agregar_carrito(request):
 @login_required
 def editar_datos_banco(request):
     if not request.user.is_staff:
-        messages.error(request, "❌ No tienes permisos.")
+        messages.error(request, "No tienes permisos.")
         return redirect('inicio')
 
     datos = DatosTransferencia.get_solo()
@@ -436,7 +440,7 @@ def editar_datos_banco(request):
         datos.instrucciones = request.POST.get('instrucciones', '').strip()
         datos.save()
 
-        messages.success(request, "✅ Datos actualizados")
+        messages.success(request, "Datos actualizados")
 
     context = {
         'titulo': 'Editar Datos Bancarios',
@@ -456,11 +460,11 @@ def ver_datos_banco(request):
     return render(request, 'productos/ver_datos_banco.html', context)
 
 # ==========================================
-# 🟣 CATEGORÍAS Y PROVEEDORES
+# 🟣 CATEGORIAS Y PROVEEDORES
 # ==========================================
 
 def crear_categoria(request):
-    
+
     if request.method == "POST":
 
         form = CategoriaForm(request.POST)
@@ -485,10 +489,11 @@ def crear_categoria(request):
     )
 
 def lista_categorias(request):
-    
+
     categorias = Categoria.objects.all().order_by('nombre')
 
     contexto = {
+        'titulo': 'Categorias',
         'categorias': categorias
     }
 
@@ -500,7 +505,7 @@ def lista_categorias(request):
 
 
 def editar_categoria(request, id):
-    
+
     categoria = Categoria.objects.get(id=id)
 
 
@@ -534,17 +539,17 @@ def editar_categoria(request, id):
             'categoria': categoria
         }
     )
-    
+
 def eliminar_categoria(request, id):
-    
+
     categoria = Categoria.objects.get(id=id)
 
     categoria.delete()
 
     return redirect('lista_categorias')
-    
+
 def crear_proveedor(request):
-    
+
     if request.method == 'POST':
 
         form = ProveedorForm(request.POST)
@@ -570,7 +575,7 @@ def crear_proveedor(request):
     )
 
 def lista_proveedores(request):
-    
+
     proveedores = Proveedor.objects.all()
 
 
@@ -578,11 +583,12 @@ def lista_proveedores(request):
         request,
         'productos/lista_proveedores.html',
         {
+            'titulo': 'Proveedores',
             'proveedores': proveedores
         }
     )
 def editar_proveedor(request, id):
-    
+
     proveedor = Proveedor.objects.get(id=id)
 
 
@@ -613,12 +619,11 @@ def editar_proveedor(request, id):
             'form': form
         }
     )
-    
+
 def eliminar_proveedor(request, id):
-    
+
     proveedor = Proveedor.objects.get(id=id)
 
     proveedor.delete()
 
     return redirect('lista_proveedores')
-

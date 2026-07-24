@@ -5,567 +5,186 @@
 
 <section class="container py-5">
 
-
   <!-- TÍTULO -->
   <div class="text-center mb-5">
-
     <h1 class="fw-bold text-white display-4">
-
-      <i class="bi bi-cart3 me-2 color-champaña px-3 py-2 rounded-2 text-dark"></i>
-
+      <i></i>
       Carrito de Compras
-
     </h1>
-
-
     <p class="text-light opacity-75">
-
       Revisa tus productos y servicios antes de finalizar.
-
     </p>
-
-
   </div>
-
-
 
   <!-- TABLA CARRITO -->
-
-  <div class="card border-0 shadow-lg color-negro rounded-4 overflow-hidden">
-
-
-    <div class="card-header color-champaña text-dark fw-bold py-3">
-
+  <div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+    <div class="card-header bg-white text-dark fw-bold py-3 border-bottom">
       <i class="bi bi-bag-check-fill me-2"></i>
-
       Elementos seleccionados
-
     </div>
-
-
-
     <div class="table-responsive">
-
-
-      <table class="table table-dark table-hover text-center align-middle mb-0">
-
-
-        <thead class="color-azul text-dark">
-
+      <table class="table text-center align-middle mb-0">
+        <thead class="bg-light text-dark">
           <tr>
-
             <th>Detalle</th>
-
             <th>Precio</th>
-
             <th>Cantidad</th>
-
             <th>Total</th>
-
             <th>Acciones</th>
-
           </tr>
-
         </thead>
-
-
-
-        <tbody id="tabla-carrito">
-
-        </tbody>
-
-
-
+        <tbody id="tabla-carrito"></tbody>
       </table>
-
-
     </div>
-
-
-  </div>
-
-
-
-
 
   <!-- TOTAL -->
-
-  <div class="card mt-4 border-0 shadow-lg rounded-4 color-champaña">
-
-
+  <div class="card mt-4 border-0 shadow-lg rounded-4 bg-white">
     <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-center">
-
-
       <h3 class="fw-bold mb-0 text-dark">
-
         Total:
-
-        <span id="total" class="text-success">
-
-          $0
-
-        </span>
-
-
+        <span id="total" class="text-success">$0</span>
       </h3>
-
-
-
-
-
       <div class="mt-3 mt-md-0">
-
-
-        <!-- AGREGAR PRODUCTOS -->
-
-        <a href="{% url 'productos_galeria' %}"
-
-           class="btn bg-white text-dark border border-dark me-2">
-
-
-          <i class="bi bi-bag-plus me-1"></i>
-
-          Agregar productos
-
-
+        <a href="{% url 'productos_galeria' %}" class="btn btn-outline-dark me-2">
+          <i class="bi bi-bag-plus me-1"></i> Agregar productos
         </a>
-
-
-
-
-
-        <!-- AGENDAR SERVICIO -->
-
-        <a href="{% url 'servicios' %}"
-
-           class="btn bg-white text-dark border border-dark me-2">
-
-
-          <i class="bi bi-calendar-plus me-1"></i>
-
-          Agendar servicio
-
-
+        <a href="{% url 'servicios' %}" class="btn btn-outline-dark me-2">
+          <i class="bi bi-calendar-plus me-1"></i> Agendar servicio
         </a>
-
-
-
-
-
-        <!-- PAGAR -->
-
-        <a href="{% url 'pago' %}"
-
-           class="btn bg-white text-dark border border-dark px-4">
-
-
-          <i class="bi bi-credit-card-fill me-1"></i>
-
-          Continuar pago
-
-
+        <a href="{% url 'pago' %}" class="btn btn-dark px-4">
+          <i class="bi bi-credit-card-fill me-1"></i> Continuar pago
         </a>
-
-
-
       </div>
-
-
-
-    </div>
-
-
   </div>
-
-
 
 </section>
 
-
-
-
-
 <script>
-
-
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
-
-
 function formatoCOP(valor){
-
     return new Intl.NumberFormat('es-CO').format(valor);
-
 }
-
-
-
 
 function guardarCarrito(){
-
-
     if(carrito.length === 0){
-
         localStorage.removeItem("carrito");
-
     }else{
-
-        localStorage.setItem(
-            "carrito",
-            JSON.stringify(carrito)
-        );
-
+        localStorage.setItem("carrito", JSON.stringify(carrito));
     }
-
-
 }
-
-
-
-
-
 
 function mostrarCarrito(){
+    const tabla = document.getElementById("tabla-carrito");
+    const totalLabel = document.getElementById("total");
+    tabla.innerHTML = "";
+    let total = 0;
 
+    if(carrito.length === 0){
+        tabla.innerHTML = `
+        <tr>
+          <td colspan="5" class="py-5 text-center">
+            <i class="bi bi-cart-x display-1 text-secondary"></i>
+            <h4 class="mt-3 text-secondary">Tu carrito está vacío</h4>
+            <p class="text-muted">Agrega productos o agenda servicios.</p>
+          </td>
+        </tr>`;
+        totalLabel.textContent = "$0";
+        guardarCarrito();
+        actualizarContadorGlobal();
+        return;
+    }
 
-const tabla = document.getElementById("tabla-carrito");
+    carrito.forEach((item, index) => {
+        let subtotal = item.precio * item.cantidad;
+        total += subtotal;
+        let detalle = "";
 
-const totalLabel = document.getElementById("total");
+        if(item.tipo === "producto"){
+            detalle = `<strong>${item.nombre}</strong><br><span class="text-muted">Producto</span>`;
+        } else if(item.tipo === "reserva"){
+            detalle = `<strong>${item.servicio}</strong><br><span>📅 ${item.fecha}<br>⏰ ${item.hora}</span>`;
+        }
 
+        tabla.innerHTML += `
+        <tr>
+          <td>${detalle}</td>
+          <td>$${formatoCOP(item.precio)}</td>
+          <td>${item.tipo === "producto" ? item.cantidad : "1"}</td>
+          <td class="text-success fw-bold">$${formatoCOP(subtotal)}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-danger" onclick="eliminarItem(${index})">
+              <i class="bi bi-trash-fill"></i>
+            </button>
+          </td>
+        </tr>`;
+    });
 
-tabla.innerHTML="";
-
-
-let total=0;
-
-
-
-
-
-if(carrito.length===0){
-
-
-
-tabla.innerHTML=`
-
-<tr>
-
-<td colspan="5" class="py-5 text-center">
-
-
-<i class="bi bi-cart-x display-1 text-secondary"></i>
-
-
-<h4 class="mt-3 text-secondary">
-
-Tu carrito está vacío
-
-</h4>
-
-
-<p class="text-muted">
-
-Agrega productos o agenda servicios.
-
-</p>
-
-
-</td>
-
-</tr>
-
-`;
-
-
-
-totalLabel.textContent="$0";
-
-
-guardarCarrito();
-
-actualizarContadorGlobal();
-
-
-return;
-
-
+    totalLabel.textContent = "$" + formatoCOP(total);
+    guardarCarrito();
+    actualizarContadorGlobal();
 }
-
-
-
-
-
-
-
-carrito.forEach((item,index)=>{
-
-
-
-let subtotal = item.precio * item.cantidad;
-
-
-total += subtotal;
-
-
-
-
-
-let detalle="";
-
-
-
-
-if(item.tipo==="producto"){
-
-
-
-detalle=`
-
-<strong>
-
-${item.nombre}
-
-</strong>
-
-<br>
-
-<span class="text-muted">
-
-Producto
-
-</span>
-
-`;
-
-
-
-}
-
-else if(item.tipo==="reserva"){
-
-
-
-detalle=`
-
-<strong>
-
-${item.servicio}
-
-</strong>
-
-<br>
-
-<span>
-
-📅 ${item.fecha}
-
-<br>
-
-⏰ ${item.hora}
-
-</span>
-
-`;
-
-
-
-}
-
-
-
-
-
-
-tabla.innerHTML += `
-
-
-<tr>
-
-
-<td>
-
-${detalle}
-
-</td>
-
-
-
-
-
-<td>
-
-$${formatoCOP(item.precio)}
-
-</td>
-
-
-
-
-
-<td>
-
-${item.tipo==="producto"
-
-? item.cantidad
-
-: "1"
-
-}
-
-</td>
-
-
-
-
-
-<td class="text-success fw-bold">
-
-$${formatoCOP(subtotal)}
-
-</td>
-
-
-
-
-
-<td>
-
-
-<button
-
-class="btn btn-sm bg-white text-dark border border-dark"
-
-onclick="eliminarItem(${index})">
-
-
-<i class="bi bi-trash-fill"></i>
-
-
-</button>
-
-
-
-</td>
-
-
-
-</tr>
-
-
-
-`;
-
-
-
-});
-
-
-
-
-
-
-totalLabel.textContent="$"+formatoCOP(total);
-
-
-
-guardarCarrito();
-
-
-actualizarContadorGlobal();
-
-
-
-}
-
-
-
-
-
-
 
 function eliminarItem(index){
-
-
-if(confirm("¿Eliminar este elemento del carrito?")){
-
-
-carrito.splice(index,1);
-
-
-mostrarCarrito();
-
-
+    if(confirm("¿Eliminar este elemento del carrito?")){
+        carrito.splice(index, 1);
+        mostrarCarrito();
+    }
 }
-
-
-
-}
-
-
-
-
-
-
-
 
 function actualizarContadorGlobal(){
-
-
-let contador=document.getElementById("contador");
-
-
-if(!contador)return;
-
-
-
-let cantidad=0;
-
-
-
-carrito.forEach(item=>{
-
-
-cantidad += item.cantidad;
-
-
-});
-
-
-
-if(cantidad>0){
-
-
-contador.textContent=cantidad;
-
-
-contador.style.display="inline-block";
-
-
+    let contador = document.getElementById("contador");
+    if(!contador) return;
+    let cantidad = 0;
+    carrito.forEach(item => { cantidad += item.cantidad; });
+    if(cantidad > 0){
+        contador.textContent = cantidad;
+        contador.style.display = "inline-block";
+    } else {
+        contador.style.display = "none";
+    }
 }
 
-else{
+// Detectar si venimos de una reserva (query params en la URL)
+const urlParams = new URLSearchParams(window.location.search);
+const reservaId = urlParams.get('reserva_id');
+const reservaServicio = urlParams.get('reserva_servicio');
+const reservaFecha = urlParams.get('reserva_fecha');
+const reservaHora = urlParams.get('reserva_hora');
+const reservaPrecio = urlParams.get('reserva_precio');
+const facturaId = urlParams.get('factura_id');
 
-
-contador.style.display="none";
-
-
+if (reservaId && reservaServicio && reservaPrecio) {
+    let existe = carrito.find(item => item.tipo === 'reserva' && item.id === parseInt(reservaId));
+    if (!existe) {
+        carrito.push({
+            id: parseInt(reservaId),
+            tipo: "reserva",
+            servicio: reservaServicio,
+            fecha: reservaFecha,
+            hora: reservaHora,
+            precio: parseFloat(reservaPrecio),
+            cantidad: 1,
+            factura_id: facturaId ? parseInt(facturaId) : null
+        });
+        guardarCarrito();
+    }
+    window.history.replaceState({}, document.title, window.location.pathname);
 }
 
-
-
+if (facturaId) {
+    localStorage.setItem("current_factura_id", facturaId);
 }
 
-
-
-
-
-
+const linkPago = document.querySelector("a[href=\"{% url 'pago' %}\"]");
+if (linkPago) {
+    let savedFacturaId = localStorage.getItem("current_factura_id");
+    if (savedFacturaId) {
+        linkPago.href = "{% url 'pago' %}?factura_id=" + savedFacturaId;
+    }
+}
 
 mostrarCarrito();
-
-
-
 </script>
-
 
 {% endblock content %}

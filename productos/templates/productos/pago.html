@@ -15,7 +15,7 @@
 
         <div class="card-body p-4 p-md-5">
 
-          <form method="POST" action="{% url 'procesar_compra' %}" enctype="multipart/form-data" id="formCompra">
+          <form method="POST" action="{% url 'procesar_compra' %}" enctype="multipart/form-data" id="formCompra" onsubmit="syncCarrito()">
             {% csrf_token %}
 
             <div class="mb-3">
@@ -57,7 +57,7 @@
               </table>
 
               <div class="d-flex justify-content-between pt-3 border-top border-champaña border-2">
-                <span class="fw-bold text-secondary text-uppercase">Total</span>
+                <span class="fw-bold text-secondary text-uppercase">Total</span> 
                 <h3 class="fw-bold mb-0" id="montoTotalDisplay">$0</h3>
               </div>
             </div>
@@ -129,10 +129,11 @@ function calcularYMostrarTotal() {
   carrito.forEach(item => {
     let subtotal = item.precio * item.cantidad;
     total += subtotal;
+    let nombreItem = item.nombre || item.servicio || "Producto";
 
     tbody.innerHTML += `
       <tr class="border-bottom">
-        <td class="py-3 fw-bold">${item.nombre}</td>
+        <td class="py-3 fw-bold">${nombreItem}</td>
         <td class="text-center">${item.cantidad}</td>
         <td class="text-end fw-bold">$${subtotal.toLocaleString("es-CO")}</td>
       </tr>
@@ -147,10 +148,9 @@ function calcularYMostrarTotal() {
 
 calcularYMostrarTotal();
 
-// 🔥 LIMPIEZA REAL DESPUÉS DE COMPRA (CLAVE)
-document.getElementById("formCompra").addEventListener("submit", function () {
-  localStorage.removeItem("carrito");
-});
+// NO limpiar carrito aquí. El servidor redirige a 'facturas' en éxito,
+// y la página de facturas se encarga de limpiar localStorage.
+// Si hay error, el servidor redirige a 'carrito' y los items se conservan.
 
 // UI pago
 function mostrarInfoPago(tipo) {
