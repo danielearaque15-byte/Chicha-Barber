@@ -5,128 +5,264 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chicha Barber Studio</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="icon" href="{% static 'img/logo.png' %}" type="image/x-icon">
 </head>
 
 <body class="back {% if user.is_authenticated and user.tema == 'light' %}theme-light{% else %}theme-dark{% endif %}">
-    
-
 
     {% include 'partials/header.html' %}
 
     <main class="d-flex flex-column">
-        {% block content %}{% endblock %}
+        {% block content %}
+        {% endblock %}
     </main>
 
     {% include 'partials/footer.html' %}
 
-    <div id="chatWidget" class="card shadow-lg border-0 color-negro position-fixed templates-base-clientes__div-1">
-        
+    <!-- ========================= -->
+    <!-- CHAT IA -->
+    <!-- ========================= -->
+
+    <div id="chatWidget"
+         class="card shadow-lg border-0 color-negro position-fixed"
+         style="width:350px;height:400px;bottom:20px;right:20px;z-index:9999;border-radius:15px;overflow:hidden;display:none;">
+
+        <!-- Header -->
         <div class="card-header color-azul text-white d-flex justify-content-between align-items-center py-2">
-            <span class="fw-bold"><i class="bi bi-robot"></i> Chicha AI</span>
+
+            <span class="fw-bold">
+                <i class="bi bi-robot"></i>
+                Chicha AI
+            </span>
+
             <div class="d-flex gap-2">
-                <button type="button" onclick="toggleMinimizar()" class="btn btn-sm text-white p-0"><i class="bi bi-dash-lg"></i></button>
-                <button type="button" onclick="cerrarChat()" class="btn btn-sm text-white p-0"><i class="bi bi-x-lg"></i></button>
+
+                <button type="button"
+                        onclick="toggleMinimizar()"
+                        class="btn btn-sm text-white p-0"
+                        title="Minimizar">
+                    <i class="bi bi-dash-lg"></i>
+                </button>
+
+                <button type="button"
+                        onclick="cerrarChat()"
+                        class="btn btn-sm text-white p-0"
+                        title="Cerrar chat">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+
             </div>
-        
-        <div id="chatMessages" class="card-body p-3 color-negro d-flex flex-column templates-base-clientes__div-2">
+
         </div>
 
-        <form id="chatForm" class="p-2 color-champaña border-top border-secondary">
+        <!-- Mensajes -->
+        <div id="chatMessages"
+             class="card-body p-3 color-negro d-flex flex-column"
+             style="height:300px;overflow-y:auto;color:white;">
+        </div>
+
+        <!-- Formulario -->
+        <form id="chatForm"
+              class="p-2 color-champaña border-top border-secondary">
+
             {% csrf_token %}
+
             <div class="input-group">
-                <input type="text" name="pregunta" id="pregunta" class="form-control bg-transparent border-secondary text-black" placeholder="Escribe..." required>
-                <button type="submit" class="btn color-azuloscuro text-white"><i class="bi bi-send-fill"></i></button>
+
+                <input
+                    type="text"
+                    id="pregunta"
+                    name="pregunta"
+                    class="form-control bg-transparent border-secondary text-black"
+                    placeholder="Escribe..."
+                    required>
+
+                <button type="submit"
+                        class="btn color-azuloscuro text-white">
+                    <i class="bi bi-send-fill"></i>
+                </button>
+
             </div>
+
         </form>
+
     </div>
 
-    <button id="openChatBtn" onclick="abrirChat()" class="btn shadow color-azul text-white position-fixed d-flex align-items-center justify-content-center templates-base-clientes__button-3">
+    <!-- Botón abrir chat -->
+    <button id="openChatBtn"
+            onclick="abrirChat()"
+            class="btn shadow color-azul text-white position-fixed d-flex align-items-center justify-content-center"
+            style="border-radius:50%;width:60px;height:60px;bottom:20px;right:20px;z-index:9998;display:flex;">
+
         <i class="bi bi-robot fs-3"></i>
+
     </button>
 
     <script>
-        function cerrarChat() { document.getElementById('chatWidget').style.display = 'none'; document.getElementById('openChatBtn').style.display = 'flex'; }
-        function abrirChat() { document.getElementById('chatWidget').style.display = 'block'; document.getElementById('openChatBtn').style.display = 'none'; }
+
+        function cerrarChat() {
+            document.getElementById("chatWidget").style.display = "none";
+            document.getElementById("openChatBtn").style.display = "flex";
+        }
+
+        function abrirChat() {
+            document.getElementById("chatWidget").style.display = "block";
+            document.getElementById("openChatBtn").style.display = "none";
+        }
+
         function toggleMinimizar() {
-            const chatMessages = document.getElementById('chatMessages');
-            const chatForm = document.getElementById('chatForm');
-            const widget = document.getElementById('chatWidget');
-            if (chatMessages.style.display !== 'none') {
-                chatMessages.style.display = 'none';
-                chatForm.style.display = 'none';
-                widget.style.height = 'auto';
+
+            const chatMessages = document.getElementById("chatMessages");
+            const chatForm = document.getElementById("chatForm");
+            const widget = document.getElementById("chatWidget");
+            const icon = document.querySelector("#chatWidget .card-header button[onclick='toggleMinimizar()'] i");
+            const btn = document.querySelector("#chatWidget .card-header button[onclick='toggleMinimizar()']");
+
+            if (!widget.classList.contains("minimized")) {
+
+                // Minimizar: solo se ve el header
+                widget.classList.add("minimized");
+                chatMessages.style.display = "none";
+                chatForm.style.display = "none";
+                widget.style.height = "52px";
+                icon.className = "bi bi-plus-lg";
+                btn.title = "Expandir";
+
             } else {
-                chatMessages.style.display = 'flex';
-                chatForm.style.display = 'block';
-                widget.style.height = '400px';
+
+                // Expandir: se ve todo el chat
+                widget.classList.remove("minimized");
+                chatMessages.style.display = "flex";
+                chatForm.style.display = "block";
+                widget.style.height = "400px";
+                icon.className = "bi bi-dash-lg";
+                btn.title = "Minimizar";
+
             }
         }
 
-        const chatForm = document.getElementById('chatForm');
-        const chatMessages = document.getElementById('chatMessages');
+        document.addEventListener("DOMContentLoaded", function(){
 
-        if(chatForm){
-            chatForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const formData = new FormData(this);
-                const input = document.getElementById('pregunta');
-                
-                // Añadir mensaje usuario (Del segundo código)
-                chatMessages.innerHTML += `<div class="msg-user align-self-end p-2 mb-2 rounded-3 templates-base-clientes__div-4">${input.value}</div>`;
-                input.value = '';
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+            const chatFormEl = document.getElementById("chatForm");
+            const chatMessagesEl = document.getElementById("chatMessages");
 
-                fetch("{% url 'chat_ia' %}", { method: 'POST', body: formData, headers: {'X-CSRFToken': '{{ csrf_token }}'} })
-                .then(res => res.json())
-                .then(data => {
-                    if(data.nuevo_mensaje) {
-                        // Mensaje IA (Del segundo código)
-                        chatMessages.innerHTML += `<div class="msg-ia align-self-start p-2 mb-2 rounded-3 templates-base-clientes__div-5">
-                            <i class="bi bi-robot"></i> ${data.nuevo_mensaje}</div>`;
-                        chatMessages.scrollTop = chatMessages.scrollHeight;
-                    }
+            if(chatFormEl){
+
+                chatFormEl.addEventListener("submit", function(e){
+
+                    e.preventDefault();
+
+                    const formData = new FormData(this);
+                    const input = document.getElementById("pregunta");
+
+                    if(!input.value.trim()) return;
+
+                    chatMessagesEl.innerHTML += `
+                        <div class="msg-user align-self-end p-2 mb-2 rounded-3">
+                            ${input.value}
+                        </div>
+                    `;
+
+                    input.value = "";
+
+                    chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+
+                    fetch("{% url 'chat_ia' %}", {
+                        method: "POST",
+                        body: formData
+                    })
+
+                    .then(response => response.json())
+
+                    .then(data => {
+
+                        if(data.nuevo_mensaje){
+
+                            chatMessagesEl.innerHTML += `
+                                <div class="msg-ia align-self-start p-2 mb-2 rounded-3">
+                                    <i class="bi bi-robot"></i>
+                                    ${data.nuevo_mensaje}
+                                </div>
+                            `;
+
+                            chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+
+                        }
+
+                    })
+
+                    .catch(error => {
+
+                        console.error(error);
+
+                    });
+
                 });
-            });
-        }
+
+            }
+
+        });
+
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Script GLOBAL del contador del carrito (visible en TODAS las páginas) -->
-    <script>
-    (function() {
-        function actualizarContadorCarrito() {
-            var carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-            var contador = document.getElementById("contador");
-            if (!contador) return;
+    <!-- ========================= -->
+    <!-- CONTADOR CARRITO -->
+    <!-- ========================= -->
 
-            var cantidad = 0;
-            carrito.forEach(function(item) {
-                cantidad += item.cantidad || 1;
+    <script>
+
+        (function(){
+
+            function actualizarContadorCarrito(){
+
+                var carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+                var contador = document.getElementById("contador");
+
+                if(!contador) return;
+
+                var cantidad = 0;
+
+                carrito.forEach(function(item){
+
+                    cantidad += item.cantidad || 1;
+
+                });
+
+                if(cantidad > 0){
+
+                    contador.textContent = cantidad;
+                    contador.style.display = "inline-block";
+
+                }else{
+
+                    contador.style.display = "none";
+
+                }
+
+            }
+
+            actualizarContadorCarrito();
+
+            window.addEventListener("storage", function(e){
+
+                if(e.key === "carrito"){
+
+                    actualizarContadorCarrito();
+
+                }
+
             });
 
-            if (cantidad > 0) {
-                contador.textContent = cantidad;
-                contador.style.display = "inline-block";
-            } else {
-                contador.style.display = "none";
-            }
-        }
+        })();
 
-        // Ejecutar al cargar la página
-        actualizarContadorCarrito();
-
-        // Escuchar cambios en localStorage (si se agrega/quita un item)
-        window.addEventListener("storage", function(e) {
-            if (e.key === "carrito") {
-                actualizarContadorCarrito();
-            }
-        });
-    })();
     </script>
 
 </body>
