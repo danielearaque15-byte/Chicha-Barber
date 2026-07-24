@@ -1,16 +1,17 @@
 {% extends 'base-clientes.html' %}
 
 {% block content %}
-<div class="bg-light py-5 border-bottom mb-5">
-    <div class="container text-center py-4">
-        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold mb-3">Soporte al Cliente</span>
-        <h1 class="display-5 fw-bold text-dark mb-3">¿Cómo podemos ayudarte hoy?</h1>
-        <p class="lead text-muted mx-auto soporte-ayuda-home__p-1">
+<!-- ENCABEZADO Y BUSCADOR -->
+<div class="">
+    <div class="container text-center py-2">
+        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold mb-3 text-white">Soporte al Cliente</span>
+        <h1 class="display-5 fw-bold text-dark mb-3 text-white">¿Cómo podemos ayudarte hoy?</h1>
+        <p class="lead  mx-auto soporte-ayuda-home__p-1 text-white">
             Explora nuestras guías paso a paso o encuentra respuestas rápidas a las preguntas más frecuentes.
         </p>
         
         <!-- Buscador Estilizado -->
-        <div class="row justify-content-center">
+        <div class="row justify-content-center mt-4 mb-3">
             <div class="col-md-8 col-lg-6">
                 <div class="input-group bg-white rounded-pill p-1 shadow-lg border-0">
                     <span class="input-group-text bg-transparent border-0 text-primary ps-3 pe-2">
@@ -27,54 +28,8 @@
 <div class="container mb-5">
     <div class="row g-4">
         
-        <!-- Navegación Lateral por Categorías -->
-        <div class="col-lg-3 d-none d-lg-block">
-            <div class="sticky-top" style="top: 2rem; z-index: 10;">
-                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                    <div class="card-header bg-dark text-white fw-bold py-3 px-3 border-0">
-                        <i class="bi bi-grid-fill me-2 text-warning color-champañaa"></i> Categorías
-                    </div>
-                    <div class="list-group list-group-flush">
-                        {% for categoria in categorias %}
-                            <a href="#cat-{{ categoria.id }}" class="list-group-item list-group-item-action py-3 px-3 d-flex align-items-center justify-content-between border-bottom">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-primary-subtle text-primary rounded-3 p-2 me-3 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                        <i class="{{ categoria.icono }} fs-6"></i>
-                                    </div>
-                                    <span class="fw-semibold text-dark fs-7">{{ categoria.nombre }}</span>
-                                </div>
-                                <i class="bi bi-chevron-right text-muted small"></i>
-                            </a>
-                        {% endfor %}
-                    </div>
-    <div class="row">
-        <div class="col-lg-3 mb-4 d-none d-lg-block">
-            <div class="sticky-top soporte-ayuda-home__div-2">
-                <h6 class="text-uppercase text-muted fw-bold small mb-3">Categorías</h6>
-                <div class="list-group list-group-flush rounded-3 shadow-sm border">
-                    {% for categoria in categorias %}
-                        <a href="#cat-{{ categoria.id }}" class="list-group-item list-group-item-action py-3 d-flex align-items-center">
-                            <i class="{{ categoria.icono }} me-3 text-primary fs-5"></i>
-                            <span class="fw-medium text-secondary">{{ categoria.nombre }}</span>
-                        </a>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Lista de Categorías y Artículos -->
-        <div class="col-lg-9">
-            {% for categoria in categorias %}
-                <div id="cat-{{ categoria.id }}" class="mb-5 category-block">
-                    
-                    <!-- Encabezado de la Categoría -->
-                    <div class="d-flex align-items-center mb-4 pb-2 border-bottom">
-                        <div class="bg-primary text-white rounded-3 p-2 me-3 d-flex align-items-center justify-content-center shadow-sm" style="width: 42px; height: 42px;">
-                            <i class="{{ categoria.icono }} fs-4"></i>
-                        </div>
-                        <h3 class="fw-bold text-dark mb-0 fs-4">{{ categoria.nombre }}</h3>
-                    </div>
-                    
+        {% for categoria in categorias %}
+            <div class="col-12 category-block">
                     <!-- Contenedor de Tarjetas / Acordeón -->
                     <div class="d-flex flex-column gap-3" id="accordionCat{{ categoria.id }}">
                         {% for articulo in categoria.articulos.all %}
@@ -104,7 +59,7 @@
                                                     {{ articulo.contenido|safe }}
                                                 </div>
                                                 
-                                                <!-- Bloque de Feedback -->
+                                                <!-- Bloque de Feedback --> sirve para dar respuestas 
                                                 <div class="mt-4 pt-3 border-top d-flex flex-column flex-sm-row align-items-sm-center justify-content-between bg-light p-3 rounded-3 feedback-container">
                                                     <span class="small fw-semibold text-dark mb-2 mb-sm-0">
                                                         ¿Te fue útil esta respuesta?
@@ -126,40 +81,43 @@
                                 </div>
                             </div>
                         {% endfor %}
-                    </div>
-            </div>
+                </div>
             </div>
             {% empty %}
-                <div class="text-center py-5 bg-white rounded-4 border shadow-sm my-4 color-azul w-50">
-                    <i class="bi bi-inbox fs-1 text-white mb-3 d-block"></i>
-                    <p class="fw-semibold fs-5 mb-0 text-white">No hay artículos disponibles en este momento.</p>
+                <div class="text-center py-4 bg-white rounded-4 border shadow-sm w-50 color-azul mb-5 cold-md-6 mx-auto algain-items-center justify-content-center row-g-4">
+                    <i class="bi bi-inbox fs-1 text-muted mb-3 d-block"></i>
+                    <p class="fw-semibold fs-5 mb-0 text-secondary text-white">No hay artículos disponibles en este momento.</p>
                 </div>
             {% endfor %}
 
-            <!-- CONTENEDOR CONTRA EL QUE FORZAMOS LADO A LADO -->
-            <div class="d-flex flex-row gap-3 mt-4 w-100 align-items-stretch">
+            <!-- CONTENEDOR DE TARJETAS INFORMATIVAS (LADO A LADO) -->
+            <div class="row justify-content-center g-3 mt-4 w-100 mx-auto">
                 
-                <!-- Tarjeta 1: Sin resultados -->
-                <div id="noSearchResults" class="card bg-white rounded-4 border shadow-sm text-center p-4 d-none w-50 m-0">
-                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                        <i class="bi bi-search fs-1 text-muted mb-3 d-block"></i>
-                        <h5 class="fw-bold text-dark">No encontramos coincidencias</h5>
-                        <p class="text-muted mb-0 small">Intenta buscar con otras palabras clave o ponte en contacto con nuestro equipo.</p>
+                <!-- Tarjeta 1: Sin resultados (se activa por JS) -->
+                <div id="noSearchResults" class="col-12 col-md-6 d-none">
+                    <div class="card bg-white rounded-4 border shadow-sm text-center p-4 h-100">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                            <i class="bi bi-search fs-1 text-muted mb-3 d-block"></i>
+                            <h5 class="fw-bold text-dark">No encontramos coincidencias</h5>
+                            <p class="text-muted mb-0 small">Intenta buscar con otras palabras clave o ponte en contacto con nuestro equipo.</p>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Tarjeta 2: Banner de Soporte -->
-                <div class="card bg-dark text-white rounded-4 border-0 shadow-lg p-4 color-azul w-50 m-0">
-                    <div class="card-body d-flex flex-column justify-content-between align-items-center text-center p-0">
-                        <div>
-                            <span class="badge bg-warning text-dark fw-bold mb-2 color-blanco">Atención Personalizada</span>
-                            <h5 class="fw-bold mb-2">¿No encontraste lo que buscabas?</h5>
-                            <p class="text-white-50 mb-3 small">Nuestro equipo de soporte técnico resolverá tu duda de inmediato.</p>
-                        </div>
-                        <div>
-                            <a href="{% url 'crear_ticket' %}" class="btn btn-warning rounded-pill fw-bold shadow text-nowrap color-champaña px-3 py-2">
-                                <i class="bi bi-headset me-1"></i> Contactar Soporte
-                            </a>
+                <div class="col-12 col-md-6">
+                    <div class="card bg-dark text-white rounded-4 border-0 shadow-lg py-4 color-azul h-100 row g-4 text-center justify-content-center align-items-center">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center text-center p-0">
+                            <div>
+                                <span class="badge bg-warning text-dark fw-bold mb-2 color-champaña">Atención Personalizada</span>
+                                <h5 class="fw-bold mb-2">¿No encontraste lo que buscabas?</h5>
+                                <p class="text-white mb-3">Nuestro equipo de soporte técnico resolverá tu duda de inmediato.</p>
+                            </div>
+                            <div>
+                                <a href="{% url 'crear_ticket' %}" class="btn btn-warning rounded-pill fw-bold shadow text-nowrap px-3 py-2 color-champaña">
+                                    <i class="bi bi-headset me-1"></i> Contactar Soporte
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
