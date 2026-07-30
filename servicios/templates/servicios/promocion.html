@@ -38,7 +38,7 @@
                             <p class="mb-1"><strong> Duración:</strong> {{ promocion.duracion }}</p>
                             <p class="card-text text-primary fw-bold"><strong>Descuento:</strong> {{ promocion.porcentaje_descuento|floatformat:"0" }}%</p>
                             
-                            <a class="btn btn-cyan fw-bold text-black w-100 mt-2 #22aed1" 
+                            <a class="btn btn-cyan fw-bold text-black w-100 mt-2 color-azul rounded-4" 
                                href="{% url 'crear_reserva_promocion' promocion.id %}"
                                onclick="return gestionarSeleccion(event)">
                                 Reservar ahora
