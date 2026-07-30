@@ -6,17 +6,9 @@ from servicios.models import Servicios, Promocion
 from usuarios.models import Usuario, Notificacion
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.contrib.auth.models import User # O tu modelo personalizado
 
-class Barbero(models.Model):
-    # ... tus campos actuales (usuario, especialidad, etc.) ...
-    # Agregamos el campo de la foto:
-    foto = models.ImageField(upload_to='barberos/', null=True, blank=True)
 
-    def get_full_name(self):
-        # Tu método actual para el nombre completo
-        return f"{self.nombre} {self.apellido}"
-
+# =========================
 # TURNOS
 # =========================
 class Turno(models.Model):
@@ -67,8 +59,15 @@ class Turno(models.Model):
 # =========================
 class Reserva(models.Model):
 
+    ESTADO_CHOICES = [
+        ('reservada', 'Reservada'),
+        ('confirmada', 'Confirmada'),
+        ('cancelada', 'Cancelada'),
+    ]
+
+    # Relaciones directas según el MER
     turno = models.ForeignKey(
-        'Turno',
+        Turno,
         on_delete=models.SET_NULL,
         related_name='reservas',
         null=True,
@@ -85,11 +84,38 @@ class Reserva(models.Model):
         verbose_name='Cliente'
     )
 
+    servicio = models.ForeignKey(
+        Servicios,
+        on_delete=models.CASCADE,
+        related_name='reservas',
+        verbose_name="Servicio"
+    )
+
+    # Campo proveniente directamente del MER
+    observacion = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Observación"
+    )
+
+    estado = models.CharField(
+        max_length=20,
+        choices=ESTADO_CHOICES,
+        default='reservada',
+        verbose_name="Estado"
+    )
+
+    fecha_creacion = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Fecha de Creación"
+    )
+
+    # Campos opcionales / soporte para clientes no registrados o histórico
     nombre_cliente = models.CharField(
         max_length=100,
         blank=True,
         null=True,
-        verbose_name="Nombre del Cliente"
+        verbose_name="Nombre del Cliente (Invitado)"
     )
 
     correo_cliente = models.EmailField(
@@ -105,7 +131,6 @@ class Reserva(models.Model):
         verbose_name="Teléfono"
     )
 
-    # Fecha y hora REAL de la reserva
     fecha_reserva = models.DateTimeField(
         blank=True,
         null=True,
@@ -120,13 +145,6 @@ class Reserva(models.Model):
         verbose_name='Precio Histórico'
     )
 
-    servicio = models.ForeignKey(
-        Servicios,
-        on_delete=models.CASCADE,
-        related_name='reservas',
-        verbose_name="Servicio"
-    )
-
     promocion = models.ForeignKey(
         Promocion,
         on_delete=models.SET_NULL,
@@ -135,42 +153,28 @@ class Reserva(models.Model):
         verbose_name="Promoción Aplicada"
     )
 
-    ESTADO_CHOICES = [
-        ('reservada', 'Reservada'),
-        ('confirmada', 'Confirmada'),
-        ('cancelada', 'Cancelada'),
-    ]
-
-    estado = models.CharField(
-        max_length=20,
-        choices=ESTADO_CHOICES,
-        default='reservada',
-        verbose_name="Estado"
-    )
-
-    fecha_creacion = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name="Fecha de Creación"
-    )
-
     class Meta:
         verbose_name = "Reserva"
         verbose_name_plural = "Reservas"
-        ordering = ['-fecha_reserva']
+        ordering = ['-fecha_reserva', '-fecha_creacion']
 
     def save(self, *args, **kwargs):
+        # Asigna automáticamente la fecha y hora si hay un turno vinculado
         if self.turno and not self.fecha_reserva:
-            self.fecha_reserva = timezone.make_aware(datetime.combine(self.turno.fecha, self.turno.hora_inicio))
+            self.fecha_reserva = timezone.make_aware(
+                datetime.combine(self.turno.fecha, self.turno.hora_inicio)
+            )
         super().save(*args, **kwargs)
 
     def __str__(self):
         cliente_nombre = self.nombre_cliente or (self.cliente.get_full_name() if self.cliente else 'Sin cliente')
         fecha = self.fecha_reserva or (self.turno.fecha if self.turno else 'Sin fecha')
         return f"{cliente_nombre} - {self.servicio.nombre} ({fecha})"
-    
 
 
-
+# =========================
+# SEÑALES (SIGNALS)
+# =========================
 @receiver(post_save, sender=Reserva)
 def notificar_reserva(sender, instance, created, **kwargs):
     if not created:
@@ -180,7 +184,7 @@ def notificar_reserva(sender, instance, created, **kwargs):
         instance.cliente.get_full_name() if instance.cliente else 'Cliente'
     )
 
-    # Notificación al cliente (si está registrado)
+    # Notificación al cliente
     if instance.cliente:
         Notificacion.objects.create(
             usuario=instance.cliente,
@@ -189,12 +193,12 @@ def notificar_reserva(sender, instance, created, **kwargs):
             url='/perfil/'
         )
 
-    # Notificación a todos los administradores
+    # Notificación a los administradores
     admins = Usuario.objects.filter(rol='admin')
     for admin in admins:
         Notificacion.objects.create(
             usuario=admin,
             tipo='reserva',
             mensaje=f"Nueva reserva de {cliente_nombre} para {instance.servicio.nombre}.",
-            url='/admin-reservas/'  # ajusta a tu URL real del listado de reservas
+            url='/admin-reservas/'
         )
