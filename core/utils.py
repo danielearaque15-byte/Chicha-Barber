@@ -58,9 +58,9 @@ def enviar_correo_cancelacion_admin(correo_cliente, nombre, servicio, fecha):
     )
 
 
-def enviar_correo_compra(correo_cliente, nombre, carrito, total):
+def enviar_correo_venta(correo_cliente, nombre, carrito, total):
 
-    asunto = 'Confirmación de compra 💈'
+    asunto = 'Confirmación de venta 💈'
     # Formatear total con puntos de miles
     total_formateado = "{:,.0f}".format(total).replace(",", ".")
 
@@ -113,7 +113,7 @@ def enviar_correo_compra(correo_cliente, nombre, carrito, total):
                 </h1>
 
                 <p>
-                    Confirmación de compra
+                    Confirmación de venta
                 </p>
 
             </div>
@@ -124,11 +124,11 @@ def enviar_correo_compra(correo_cliente, nombre, carrito, total):
                 <h2>Hola {nombre} 👋</h2>
 
                 <p>
-                    Gracias por realizar tu compra en nuestra barbería.
+                    Gracias por realizar tu venta en nuestra barbería.
                 </p>
 
                 <h3 style="margin-top:30px;">
-                    🛒 Resumen de compra
+                    🛒 Resumen de venta
                 </h3>
 
                 <table style="

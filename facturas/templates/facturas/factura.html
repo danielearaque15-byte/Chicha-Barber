@@ -4,11 +4,11 @@
 {% block content %}
 
 <script>
-// Limpiar carrito de localStorage SOLO si venimos de una compra exitosa,
+// Limpiar carrito de localStorage SOLO si venimos de una venta exitosa,
 // no en cada visita a la página de facturas.
 (function() {
     var params = new URLSearchParams(window.location.search);
-    if (params.get('compra_exitosa') === '1') {
+    if (params.get('venta_exitosa') === '1') {
         localStorage.removeItem("carrito");
         // Limpiar el parámetro de la URL sin recargar
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -23,7 +23,7 @@
       <div class="card shadow-lg border-0 rounded-4 overflow-hidden bg-white mb-4">
         <div class="card-header bg-champaña color-champaña py-4 text-center text-white border-0">
           <div class="mb-2"><i class="bi bi-receipt-cutoff fs-1"></i></div>
-          <h4 class="mb-1 fw-bold">Compra #{{ factura.id }}</h4>
+          <h4 class="mb-1 fw-bold">venta #{{ factura.id }}</h4>
           <p class="mb-0 small text-white opacity-75">{{ factura.fecha_emision|date:"d/m/Y H:i" }}</p>
         </div>
 

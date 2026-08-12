@@ -11,13 +11,13 @@
   <div class="card border-0 rounded-4 shadow-lg overflow-hidden">
 
     <div class="p-4 d-flex align-items-center gap-3 color-negro-bg text-white">
-      {% if notificacion.tipo == 'compra' %}
+      {% if notificacion.tipo == 'venta' %}
         <div class="rounded-circle d-flex align-items-center justify-content-center bg-success bg-opacity-25 private-detalle-notificacion__div-2">
           <i class="bi bi-bag-check-fill fs-3 text-success"></i>
         </div>
         <div>
-          <span class="badge bg-success mb-1">Compra</span>
-          <h5 class="mb-0">Notificación de compra</h5>
+          <span class="badge bg-success mb-1">venta</span>
+          <h5 class="mb-0">Notificación de venta</h5>
         </div>
       {% else %}
         <div class="rounded-circle d-flex align-items-center justify-content-center bg-info bg-opacity-25 private-detalle-notificacion__div-3">
@@ -42,18 +42,18 @@
       {% if objeto_relacionado %}
         <hr>
         <h6 class="text-uppercase text-muted small mb-3 private-detalle-notificacion__h6-4">
-          Detalle {% if notificacion.tipo == 'compra' %}de la compra{% else %}de la reserva{% endif %}
+          Detalle {% if notificacion.tipo == 'venta' %}de la venta{% else %}de la reserva{% endif %}
         </h6>
 
-        {% if notificacion.tipo == 'compra' %}
+        {% if notificacion.tipo == 'venta' %}
           <ul class="list-group list-group-flush">
             <li class="list-group-item d-flex justify-content-between px-0">
-              <span class="text-muted">N° de compra</span>
+              <span class="text-muted">N° de venta</span>
               <span class="fw-semibold">#{{ objeto_relacionado.pk }}</span>
             </li>
             <li class="list-group-item d-flex justify-content-between px-0">
               <span class="text-muted">Fecha</span>
-              <span class="fw-semibold">{{ objeto_relacionado.fecha_compra|date:"d/m/Y H:i" }}</span>
+              <span class="fw-semibold">{{ objeto_relacionado.fecha_venta|date:"d/m/Y H:i" }}</span>
             </li>
             {% if objeto_relacionado.total %}
             <li class="list-group-item d-flex justify-content-between px-0">

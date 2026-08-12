@@ -3077,7 +3077,7 @@ function string2binary(str) {
 /**
  * Create a new blob with the given content and the given type.
  * @param {String|ArrayBuffer} part the content to put in the blob. DO NOT use
- * an Uint8Array because the stock browser of android 4 won't accept it (it
+ * an Uint8Array because the bitacora browser of android 4 won't accept it (it
  * will be silently converted to a string, "[object Uint8Array]").
  *
  * Use only ONE part to build the blob to avoid a memory leak in IE11 / Edge:

@@ -72,7 +72,7 @@ class RegistroActividad(models.Model):
     
 class Notificacion(models.Model):
     TIPO_CHOICES = (
-        ('compra', 'Compra'),
+        ('venta', 'venta'),
         ('reserva', 'Reserva'),
     )
 

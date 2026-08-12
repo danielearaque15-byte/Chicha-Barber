@@ -13,7 +13,7 @@
           </p>
         </div>
         <a
-          href="{% url 'historial_compras' %}"
+          href="{% url 'historial_ventas' %}"
           class="btn color-azul text-white fw-bold"
         >
           Volver al Historial
@@ -34,7 +34,7 @@
               <div class="mb-3">
                 <label class="text-dark small d-block">Nombre completo</label>
                 <span class="fw-bold text-dark"
-                  >{{ compra.nombre_cliente }}</span
+                  >{{ venta.nombre_cliente }}</span
                 >
               </div>
               <div class="mb-3">
@@ -42,13 +42,13 @@
                   >Correo electrónico</label
                 >
                 <span class="text-dark"
-                  >{{ compra.correo|default:"No especificado" }}</span
+                  >{{ venta.correo|default:"No especificado" }}</span
                 >
               </div>
               <div class="mb-3">
                 <label class="text-dark small d-block">Teléfono</label>
                 <span class="text-dark"
-                  >{{ compra.telefono|default:"No especificado" }}</span
+                  >{{ venta.telefono|default:"No especificado" }}</span
                 >
               </div>
               <div class="mb-3">
@@ -56,19 +56,19 @@
                   >Dirección de entrega</label
                 >
                 <span class="text-dark"
-                  >{{ compra.direccion|default:"No especificada" }}</span
+                  >{{ venta.direccion|default:"No especificada" }}</span
                 >
               </div>
               <div class="mb-3">
                 <label class="text-dark small d-block">Método de pago</label>
                 <span class="badge bg-secondary text-dark"
-                  >{{ compra.metodo_pago|default:"No especificado" }}</span
+                  >{{ venta.metodo_pago|default:"No especificado" }}</span
                 >
               </div>
               <div class="mb-3">
-                <label class="text-dark small d-block">Fecha de compra</label>
+                <label class="text-dark small d-block">Fecha de venta</label>
                 <span class="text-dark"
-                  >{{ compra.fecha_compra|date:"d/m/Y H:i" }}</span
+                  >{{ venta.fecha_venta|date:"d/m/Y H:i" }}</span
                 >
               </div>
 
@@ -81,7 +81,7 @@
 
                 <div
                   id="form-entrega"
-                  class="{% if compra.fecha_entrega %}d-none{% endif %}"
+                  class="{% if venta.fecha_entrega %}d-none{% endif %}"
                 >
                   <label class="text-dark small">Método de entrega</label>
                   <select
@@ -110,7 +110,7 @@
 
                 <div
                   id="log-entrega"
-                  class="p-3 border border-secondary rounded bg-secondary bg-opacity-10 {% if not compra.fecha_entrega %}d-none{% endif %}"
+                  class="p-3 border border-secondary rounded bg-secondary bg-opacity-10 {% if not venta.fecha_entrega %}d-none{% endif %}"
                 >
                   <p class="mb-1 small">
                     <strong>Estado:</strong>
@@ -119,21 +119,21 @@
                   <p class="mb-1 small">
                     <strong>Vía:</strong>
                     <span id="historial-metodo" class="text-dark"
-                      >{{ compra.metodo_logistica|default:"" }}</span
+                      >{{ venta.metodo_logistica|default:"" }}</span
                     >
                   </p>
                   <p class="mb-1 small">
                     <strong>Hora:</strong> <br /><span
                       id="historial-hora"
                       class="text-dark fw-bold"
-                      >{{ compra.fecha_entrega|date:"d/m/Y H:i:s" }}</span
+                      >{{ venta.fecha_entrega|date:"d/m/Y H:i:s" }}</span
                     >
                   </p>
                   <p class="mb-2 small">
                     <strong>Obs:</strong> <br /><span
                       id="historial-obs"
                       class="text-dark small"
-                      >{{ compra.observaciones|default:"Sin observaciones"
+                      >{{ venta.observaciones|default:"Sin observaciones"
                       }}</span
                     >
                   </p>
@@ -173,7 +173,7 @@
           >
             <div class="card-header color-champaña text-dark py-3">
               <h5 class="mb-0 fw-bold text-dark">
-                <i class="bi bi-box-seam me-2"></i>Productos Comprados
+                <i class="bi bi-box-seam me-2"></i>Productos ventados
               </h5>
             </div>
             <div class="card-body p-0 bg-white">
@@ -208,7 +208,7 @@
                         {{ detalle.producto.nombre }}
                       </td>
                       <td class="text-dark">
-                        ${{ detalle.producto.stock.precio_venta }}
+                        ${{ detalle.producto.bitacora.precio_venta }}
                       </td>
                       <td class="text-center">
                         <span class="badge bg-secondary text-dark"

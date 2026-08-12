@@ -3,7 +3,7 @@ from chat_ia.ai_service import obtener_respuesta_ia
 from servicios.models import Servicios, Promocion
 from productos.models import Producto, Categoria
 
-MENSAJE_BIENVENIDA = "¡Hola! 👋 Soy **ChichaBot**, tu asistente virtual de **Chicha Barber Studio**.\n\nEstoy aquí para ayudarte con:\n• 📅 Agendar citas\n• 🛒 Comprar productos\n• 💇 Servicios disponibles\n• ❓ Cualquier duda sobre la barbería\n\n¿En qué puedo ayudarte hoy?"
+MENSAJE_BIENVENIDA = "¡Hola! 👋 Soy **ChichaBot**, tu asistente virtual de **Chicha Barber Studio**.\n\nEstoy aquí para ayudarte con:\n• 📅 Agendar citas\n• 🛒 ventar productos\n• 💇 Servicios disponibles\n• ❓ Cualquier duda sobre la barbería\n\n¿En qué puedo ayudarte hoy?"
 
 def construir_contexto_dinamico():
     """Construye un contexto con datos reales de la BD para que la IA responda con info actualizada."""
@@ -38,9 +38,9 @@ def construir_contexto_dinamico():
     contexto_extra += "\n--- PRODUCTOS EN VENTA ---\n"
     if productos.exists():
         for p in productos:
-            stock = getattr(p, 'stock', None)
-            precio = f"${stock.precio_venta:.0f}" if stock and stock.precio_venta else "Precio no disponible"
-            cantidad = f"Stock: {stock.cantidad}" if stock else "Stock no disponible"
+            bitacora = getattr(p, 'bitacora', None)
+            precio = f"${bitacora.precio_venta:.0f}" if bitacora and bitacora.precio_venta else "Precio no disponible"
+            cantidad = f"bitacora: {bitacora.cantidad}" if bitacora else "bitacora no disponible"
             contexto_extra += f"- {p.nombre} | {precio} | {cantidad} | Categoría: {p.categoria.nombre if p.categoria else 'Sin categoría'}\n"
     else:
         contexto_extra += "- No hay productos disponibles actualmente.\n"

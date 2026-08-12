@@ -1751,12 +1751,12 @@ body.theme-light .chat-input:focus {
 .reservas-crear-cita-admin__div-1 { max-width: 700px; }
 .reservas-crear-cita-admin__div-2 { border-bottom: 1px solid rgba(0,0,0,0.08); }
 .productos-ver-datos-banco__th-1 { width: 35% }
-.productos-stock-admin__div-1 { width: 56px; height: 56px; }
-.productos-stock-admin__div-2 { width: 56px; height: 56px; }
-.productos-stock-admin__div-3 { width: 56px; height: 56px; }
-.productos-stock-admin__img-4 { width: 50px; height: 50px; object-fit: cover; }
-.productos-stock-admin__div-5 { width: 50px; height: 50px; }
-.productos-registrar-compra__div-1 { max-width: 700px }
+.productos-bitacora-admin__div-1 { width: 56px; height: 56px; }
+.productos-bitacora-admin__div-2 { width: 56px; height: 56px; }
+.productos-bitacora-admin__div-3 { width: 56px; height: 56px; }
+.productos-bitacora-admin__img-4 { width: 50px; height: 50px; object-fit: cover; }
+.productos-bitacora-admin__div-5 { width: 50px; height: 50px; }
+.productos-registrar-venta__div-1 { max-width: 700px }
 .productos-productos-galeria__div-1 { width: 18rem }
 .productos-productos-galeria__img-2 { height: 300px; object-fit: cover }
 .productos-productos-admin__div-1 { width: 56px; height: 56px; }
@@ -1764,9 +1764,9 @@ body.theme-light .chat-input:focus {
 .productos-productos-admin__div-3 { width: 56px; height: 56px; }
 .productos-productos-admin__img-4 { width: 50px; height: 50px; object-fit: cover; }
 .productos-productos-admin__div-5 { width: 50px; height: 50px; }
-.productos-historial-compras__div-1 { width: 56px; height: 56px; }
-.productos-editar-stock__div-1 { max-width: 600px }
-.productos-editar-stock__i-2 { color: #b48b64 }
+.productos-historial-ventas__div-1 { width: 56px; height: 56px; }
+.productos-editar-bitacora__div-1 { max-width: 600px }
+.productos-editar-bitacora__i-2 { color: #b48b64 }
 .productos-editar-producto__img-1 { max-width:180px; }
 .productos-confirmar-eliminar__div-1 { background-color: #1a1d20; min-height: 100vh; }
 .productos-confirmar-eliminar__div-2 { max-width: 500px; }

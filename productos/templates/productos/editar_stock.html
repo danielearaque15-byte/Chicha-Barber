@@ -18,7 +18,7 @@
 
                         <i class="bi bi-box-seam me-2"></i>
 
-                        Actualizar Stock
+                        Actualizar bitacora
 
                     </h4>
 
@@ -45,7 +45,7 @@
 
                             <input type="text"
                                    class="form-control bg-light"
-                                   value="{{ stock.producto.nombre }}"
+                                   value="{{ bitacora.producto.nombre }}"
                                    readonly>
 
                         </div>
@@ -87,26 +87,26 @@
                         <div class="row">
 
 
-                            <!-- Precio compra -->
+                            <!-- Precio venta -->
 
                             <div class="col-md-6 mb-3">
 
 
                                 <label class="form-label fw-semibold">
 
-                                    Precio Compra
+                                    Precio venta
 
                                 </label>
 
 
-                                {{ form.precio_compra }}
+                                {{ form.precio_venta }}
 
 
-                                {% if form.precio_compra.errors %}
+                                {% if form.precio_venta.errors %}
 
                                 <div class="text-danger small">
 
-                                    {{ form.precio_compra.errors }}
+                                    {{ form.precio_venta.errors }}
 
                                 </div>
 
@@ -194,7 +194,7 @@
                         <div class="d-flex justify-content-end gap-2">
 
 
-                            <a href="{% url 'lista_stock' %}"
+                            <a href="{% url 'lista_bitacora' %}"
                                class="btn btn-outline-secondary">
 
 

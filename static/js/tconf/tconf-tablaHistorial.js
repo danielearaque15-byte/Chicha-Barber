@@ -1,6 +1,6 @@
 $(document).ready(function () {
   // Busca el título dinámico dentro del h5 del Card Header y limpia espacios o íconos extra
-  var nombreTabla = $("h5").first().text().trim() || "Historial de Compras";
+  var nombreTabla = $("h5").first().text().trim() || "Historial de ventas";
   
   // Formatea la fecha de hoy para el nombre del archivo (DD-MM-YYYY)
   var fechaHoy = new Date()

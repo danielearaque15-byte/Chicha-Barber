@@ -15,7 +15,7 @@
 
         <div class="card-body p-4 p-md-5">
 
-          <form method="POST" action="{% url 'procesar_compra' %}" enctype="multipart/form-data" id="formCompra" onsubmit="syncCarrito()">
+          <form method="POST" action="{% url 'procesar_venta' %}" enctype="multipart/form-data" id="formventa" onsubmit="syncCarrito()">
             {% csrf_token %}
 
             <div class="mb-3">
@@ -101,7 +101,7 @@
             <input type="hidden" name="factura_id" value="{{ factura_id|default:'' }}">
 
             <button type="submit" class="btn color-azul w-100 mt-4 rounded-pill py-3 fw-bold shadow-sm">
-              Confirmar Compra
+              Confirmar venta
             </button>
 
           </form>
