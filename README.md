@@ -19,7 +19,7 @@ El sistema está dividido en las siguientes aplicaciones principales, respetando
 | **`usuarios`** | `Usuario` | Gestión de cuentas, autenticación y control de acceso. Utiliza un campo ENUM para los roles (ADMIN, BARBERO, CLIENTE) simplificando las consultas. |
 | **`servicios`** | `Servicio`, `Promocion`,'calificacion | Catálogo de servicios ofrecidos (con su duración en minutos) y gestión de descuentos o promociones con vigencia temporal. |
 | **`reservas`** | `Turno`, `Reserva`,  | Motor principal de citas. Administra la disponibilidad de los profesionales por bloques de tiempo (`Turnos`), asigna las `Reservas` congelando el precio histórico y recopila el feedback de los clientes . |
-| **`inventario`** | `Producto`, `MovimientoInventario` | Control de stock tipo Kardex. Administra el catálogo de artículos físicos y registra el historial detallado de entradas y salidas para auditoría. |
+| **`inventario`** | `Producto`, `MovimientoInventario` | Control de bitacora tipo Kardex. Administra el catálogo de artículos físicos y registra el historial detallado de entradas y salidas para auditoría. |
 | **`facturacion`** | `Factura`, `DetalleFactura` | Procesamiento unificado de pagos (POS). Permite cobrar en una sola transacción tanto los servicios prestados (mediante la `Reserva`) como la venta directa de `Productos`. |
 | **`configuracion`** | `Carrusel` | Administración del contenido visual dinámico del frontend, como los banners promocionales, optimizando y gestionando el ciclo de vida de las imágenes. |
 

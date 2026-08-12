@@ -7,7 +7,7 @@ load_dotenv()
 
 SYSTEM_PROMPT = CONTEXTO
 
-def obtener_respuesta_ia(prompt, historial=None):
+def obtener_respuesta_ia(prompt, historial=None, system_prompt_extra=None):
 
     api_key = os.environ.get("GROQ_API_KEY")
 
@@ -16,10 +16,15 @@ def obtener_respuesta_ia(prompt, historial=None):
 
     client = Groq(api_key=api_key)
 
+    # Construir system prompt: base + extra dinámico si existe
+    system_content = SYSTEM_PROMPT
+    if system_prompt_extra:
+        system_content += "\n\n" + system_prompt_extra
+
     messages = [
         {
             "role": "system",
-            "content": SYSTEM_PROMPT
+            "content": system_content
         }
     ]
 
@@ -40,7 +45,7 @@ def obtener_respuesta_ia(prompt, historial=None):
         respuesta = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             temperature=0.5,
-            max_tokens=120,
+            max_tokens=300,
             top_p=0.9,
             messages=messages
         )

@@ -1188,39 +1188,319 @@ body.theme-light .color-champaña .dataTables_length label,
   opacity: 0.6;
 }
 
-/* Corrección de visibilidad para el chat */
-#chatWidget {
-    color: #ffffff !important; /* Asegura que todo el texto sea blanco */
+/* ==========================================================================
+   CHAT WIDGET - Diseño Elegante tipo Chicha Barber
+   ========================================================================== */
+
+/* Contenedor principal del widget */
+.chat-widget {
+    background: #0d1117 !important;
+    border: 1px solid rgba(34, 174, 209, 0.2) !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(34, 174, 209, 0.1) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    animation: chatSlideIn 0.3s ease-out;
 }
 
+@keyframes chatSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Header con gradiente */
+.chat-header {
+    background: linear-gradient(135deg, #22aed1 0%, #2b50aa 100%) !important;
+    border-bottom: none !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.chat-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.chat-avatar {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.chat-title {
+    font-size: 0.95rem;
+    color: #fff;
+    letter-spacing: 0.5px;
+}
+
+.chat-status {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1;
+    margin-top: 1px;
+}
+
+.chat-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+}
+
+.chat-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff !important;
+}
+
+/* Body del chat */
+.chat-body {
+    background: #0d1117 !important;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(34, 174, 209, 0.3) transparent;
+}
+
+.chat-body::-webkit-scrollbar {
+    width: 4px;
+}
+
+.chat-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-body::-webkit-scrollbar-thumb {
+    background: rgba(34, 174, 209, 0.3);
+    border-radius: 10px;
+}
+
+.chat-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(34, 174, 209, 0.5);
+}
+
+/* Mensaje del usuario */
 .msg-user {
-    background-color: #2b50aa !important; /* Azul Oscuro */
+    max-width: 85%;
+}
+
+.msg-user-text {
+    background: linear-gradient(135deg, #2b50aa, #1a3a8a) !important;
     color: #ffffff !important;
-    padding: 10px 15px !important;
-    border-radius: 15px 15px 0 15px !important;
-    margin-bottom: 10px;
-    align-self: flex-end;
-    max-width: 85%;
-    border: 1px solid #22aed1;
+    padding: 10px 16px !important;
+    border-radius: 16px 16px 4px 16px !important;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    box-shadow: 0 2px 8px rgba(43, 80, 170, 0.3);
+    word-wrap: break-word;
+    position: relative;
 }
 
+.msg-user-text strong {
+    color: #22aed1;
+}
+
+/* Mensaje de la IA */
 .msg-ia {
-    background-color: #eee0cb !important; /* Color Champaña */
-    color: #170212 !important; /* Texto negro para que resalte sobre el champaña */
-    padding: 10px 15px !important;
-    border-radius: 15px 15px 15px 0 !important;
-    margin-bottom: 10px;
-    align-self: flex-start;
-    max-width: 85%;
-    font-weight: bold; /* Añadido para mejor legibilidad */
+    max-width: 90%;
 }
 
-/* Asegurar que el input de texto también se vea bien */
-#chatForm input {
-    color: #170212 !important;
+.msg-ia-avatar {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #22aed1, #2b50aa);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+    box-shadow: 0 2px 8px rgba(34, 174, 209, 0.3);
 }
-#chatForm input::placeholder {
-    color: #bbb !important;}
+
+.msg-ia-text {
+    background: rgba(34, 174, 209, 0.08) !important;
+    color: #e0e0e0 !important;
+    padding: 10px 16px !important;
+    border-radius: 16px 16px 16px 4px !important;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    border: 1px solid rgba(34, 174, 209, 0.15);
+    word-wrap: break-word;
+}
+
+.msg-ia-text strong {
+    color: #22aed1;
+}
+
+/* Indicador de escritura (typing dots) */
+.typing-dots span {
+    display: inline-block;
+    animation: typingDot 1.4s infinite;
+    font-size: 1.5rem;
+    line-height: 0.5;
+    color: #22aed1;
+    margin-right: 2px;
+}
+
+.typing-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typingDot {
+    0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+    30% { opacity: 1; transform: translateY(-4px); }
+}
+
+/* Footer del chat */
+.chat-footer {
+    background: #161b22 !important;
+    border-top: 1px solid rgba(34, 174, 209, 0.15) !important;
+}
+
+.chat-input {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(34, 174, 209, 0.2) !important;
+    color: #e0e0e0 !important;
+    border-radius: 12px !important;
+    padding: 10px 16px !important;
+    font-size: 0.88rem !important;
+    transition: all 0.3s ease !important;
+}
+
+.chat-input:focus {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: #22aed1 !important;
+    box-shadow: 0 0 0 3px rgba(34, 174, 209, 0.15) !important;
+    outline: none !important;
+}
+
+.chat-input::placeholder {
+    color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.chat-send-btn {
+    background: linear-gradient(135deg, #22aed1, #2b50aa) !important;
+    border: none !important;
+    color: #fff !important;
+    border-radius: 12px !important;
+    padding: 10px 18px !important;
+    margin-left: 8px;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 15px rgba(34, 174, 209, 0.3) !important;
+}
+
+.chat-send-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(34, 174, 209, 0.5) !important;
+}
+
+.chat-send-btn:active {
+    transform: translateY(0);
+}
+
+/* Botón flotante (FAB) */
+.chat-fab {
+    background: linear-gradient(135deg, #22aed1, #2b50aa) !important;
+    border: none !important;
+    box-shadow: 0 8px 30px rgba(34, 174, 209, 0.4) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    animation: pulse 2s infinite;
+}
+
+.chat-fab:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 40px rgba(34, 174, 209, 0.6) !important;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 8px 30px rgba(34, 174, 209, 0.4); }
+    50% { box-shadow: 0 8px 40px rgba(34, 174, 209, 0.6); }
+    100% { box-shadow: 0 8px 30px rgba(34, 174, 209, 0.4); }
+}
+
+/* =========================
+   ESTADO MINIMIZADO
+   ========================= */
+.chat-widget.minimized {
+    height: auto !important;
+    min-height: 0 !important;
+}
+
+.chat-widget.minimized .chat-body {
+    display: none !important;
+}
+
+.chat-widget.minimized .chat-footer {
+    display: none !important;
+}
+
+/* Light mode para el chat */
+body.theme-light .chat-widget {
+    background: #ffffff !important;
+    border-color: rgba(43, 80, 170, 0.15) !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(43, 80, 170, 0.08) !important;
+}
+
+body.theme-light .chat-body {
+    background: #f8f9fa !important;
+}
+
+body.theme-light .msg-ia-text {
+    background: rgba(34, 174, 209, 0.06) !important;
+    color: #333 !important;
+    border-color: rgba(43, 80, 170, 0.12) !important;
+}
+
+body.theme-light .msg-ia-text strong {
+    color: #2b50aa;
+}
+
+body.theme-light .chat-footer {
+    background: #ffffff !important;
+    border-top-color: rgba(43, 80, 170, 0.1) !important;
+}
+
+body.theme-light .chat-input {
+    background: #f0f2f5 !important;
+    border-color: rgba(43, 80, 170, 0.15) !important;
+    color: #333 !important;
+}
+
+body.theme-light .chat-input::placeholder {
+    color: #999 !important;
+}
+
+body.theme-light .chat-input:focus {
+    background: #fff !important;
+    border-color: #2b50aa !important;
+    box-shadow: 0 0 0 3px rgba(43, 80, 170, 0.1) !important;
+}
 
 /* ==========================================================================
    BEM AUTO-GENERATED SELECTORS (Refactored from inline styles)
@@ -1471,12 +1751,12 @@ body.theme-light .color-champaña .dataTables_length label,
 .reservas-crear-cita-admin__div-1 { max-width: 700px; }
 .reservas-crear-cita-admin__div-2 { border-bottom: 1px solid rgba(0,0,0,0.08); }
 .productos-ver-datos-banco__th-1 { width: 35% }
-.productos-stock-admin__div-1 { width: 56px; height: 56px; }
-.productos-stock-admin__div-2 { width: 56px; height: 56px; }
-.productos-stock-admin__div-3 { width: 56px; height: 56px; }
-.productos-stock-admin__img-4 { width: 50px; height: 50px; object-fit: cover; }
-.productos-stock-admin__div-5 { width: 50px; height: 50px; }
-.productos-registrar-compra__div-1 { max-width: 700px }
+.productos-bitacora-admin__div-1 { width: 56px; height: 56px; }
+.productos-bitacora-admin__div-2 { width: 56px; height: 56px; }
+.productos-bitacora-admin__div-3 { width: 56px; height: 56px; }
+.productos-bitacora-admin__img-4 { width: 50px; height: 50px; object-fit: cover; }
+.productos-bitacora-admin__div-5 { width: 50px; height: 50px; }
+.productos-registrar-venta__div-1 { max-width: 700px }
 .productos-productos-galeria__div-1 { width: 18rem }
 .productos-productos-galeria__img-2 { height: 300px; object-fit: cover }
 .productos-productos-admin__div-1 { width: 56px; height: 56px; }
@@ -1484,9 +1764,9 @@ body.theme-light .color-champaña .dataTables_length label,
 .productos-productos-admin__div-3 { width: 56px; height: 56px; }
 .productos-productos-admin__img-4 { width: 50px; height: 50px; object-fit: cover; }
 .productos-productos-admin__div-5 { width: 50px; height: 50px; }
-.productos-historial-compras__div-1 { width: 56px; height: 56px; }
-.productos-editar-stock__div-1 { max-width: 600px }
-.productos-editar-stock__i-2 { color: #b48b64 }
+.productos-historial-ventas__div-1 { width: 56px; height: 56px; }
+.productos-editar-bitacora__div-1 { max-width: 600px }
+.productos-editar-bitacora__i-2 { color: #b48b64 }
 .productos-editar-producto__img-1 { max-width:180px; }
 .productos-confirmar-eliminar__div-1 { background-color: #1a1d20; min-height: 100vh; }
 .productos-confirmar-eliminar__div-2 { max-width: 500px; }

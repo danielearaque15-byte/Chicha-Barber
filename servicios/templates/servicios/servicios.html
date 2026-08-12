@@ -14,7 +14,8 @@
         <div class="row g-4 justify-content-center">
             
             {% for servicio in servicios %}
-            <div class="col-md-6 col-lg-6 d-flex justify-content-center">
+            <!-- CAMBIO AQUÍ: col-lg-4 divide la fila en 3 columnas iguales (12/4 = 3) -->
+            <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
                 <div class="card bg-warning-subtle text-body h-100 shadow-lg border-0 rounded-4 overflow-hidden servicios-servicios__div-1">
                     
                     {% if servicio.imagen %}
@@ -33,7 +34,7 @@
                             <span class="text-body-secondary small fw-semibold d-flex align-items-center gap-2">
                                 <i class="bi bi-clock me-1"></i>{{ servicio.duracion }} min
                             </span>
-                            <a href="{% url 'crear_reserva' servicio.pk %}" class="btn btn-info text-white rounded-pill px-3">
+                            <a href="{% url 'crear_reserva' servicio.pk %}" class="btn btn-info text-white rounded-pill px-3 ">
                                 <i class="bi bi-calendar-check me-2"></i>RESERVAR CITA
                             </a>
                         </div>
