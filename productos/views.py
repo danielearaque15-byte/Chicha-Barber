@@ -3,13 +3,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import Compra, Producto, DetalleCompra, Stock, DatosTransferencia, Categoria, Proveedor
-from .forms import CompraForm, DetalleCompraForm, ProductoForm, StockForm, CategoriaForm, ProveedorForm
+from .models import venta, Producto, detalleventa, bitacora, DatosTransferencia, Categoria, Proveedor
+from .forms import ventaForm, detalleventaForm, ProductoForm, bitacoraForm, CategoriaForm, ProveedorForm
 from django.http import JsonResponse
 import json
 from django.db import transaction
 from django.db.models import Sum, Q
-from core.utils import enviar_correo_compra
+from core.utils import enviar_correo_venta
 from facturas.models import Factura, DetalleFactura
 from reservas.models import Reserva
 
@@ -126,7 +126,7 @@ def procesar_pago_cliente(request):
                         imagen_transaccion=comprobante_archivo
                     )
 
-                compra = Compra.objects.create(
+                venta = venta.objects.create(
                     usuario=request.user,
                     nombre_cliente=nombre,
                     correo=correo,
@@ -157,8 +157,8 @@ def procesar_pago_cliente(request):
                     producto = get_object_or_404(Producto, codigo_producto=item['id'])
                     cantidad = int(item['cantidad'])
 
-                    detalle_compra_obj = DetalleCompra.objects.create(
-                        compra=compra,
+                    detalle_venta_obj = detalleventa.objects.create(
+                        venta=venta,
                         producto=producto,
                         cantidad=cantidad
                     )
@@ -167,14 +167,14 @@ def procesar_pago_cliente(request):
                         factura=factura,
                         producto=producto,
                         cantidad=cantidad,
-                        precio_unitario=producto.stock.precio_venta,
-                        subtotal=detalle_compra_obj.subtotal
+                        precio_unitario=producto.bitacora.precio_venta,
+                        subtotal=detalle_venta_obj.subtotal
                     )
 
-                    total_general += detalle_compra_obj.subtotal
+                    total_general += detalle_venta_obj.subtotal
 
-                compra.total = total_general
-                compra.save(update_fields=['total'])
+                venta.total = total_general
+                venta.save(update_fields=['total'])
 
                 factura.total_pagado = total_general
                 factura.save(update_fields=['total_pagado'])
@@ -193,7 +193,7 @@ def procesar_pago_cliente(request):
             return redirect('carrito')
 
         try:
-            enviar_correo_compra(
+            enviar_correo_venta(
                 correo_cliente=correo,
                 nombre=nombre,
                 carrito=carrito_data,
@@ -208,10 +208,10 @@ def procesar_pago_cliente(request):
                 "Orden registrada. El administrador verificara tu comprobante de transferencia a la brevedad."
             )
         else:
-            messages.success(request, "Compra realizada con exito")
+            messages.success(request, "venta realizada con exito")
 
-        # Redirigir a facturas con parametro compra_exitosa para limpiar carrito
-        return redirect(reverse('facturas') + '?compra_exitosa=1')
+        # Redirigir a facturas con parametro venta_exitosa para limpiar carrito
+        return redirect(reverse('facturas') + '?venta_exitosa=1')
 
     return redirect('carrito')
 
@@ -284,116 +284,115 @@ def eliminar_producto(request, pk):
 
 
 # ==========================================
-# 🔥 STOCK (Inventario)
+# 🔥 bitacora (Inventario)
 # ==========================================
 
-def lista_stock(request):
-    stocks = Stock.objects.select_related('producto')
+def lista_bitacora(request):
+    bitacoras = bitacora.objects.select_related('producto')
 
-    stock_total = stocks.aggregate(total=Sum('cantidad'))['total'] or 0
-    valor_stock = sum((stock.cantidad or 0) * (stock.precio_venta or 0) for stock in stocks)
+    bitacora_total = bitacoras.aggregate(total=Sum('cantidad'))['total'] or 0
+    valor_bitacora = sum((bitacora.cantidad or 0) * (bitacora.precio_venta or 0) for bitacora in bitacoras)
 
     context = {
         'titulo': 'Inventario',
-        'stocks': stocks,
-        'total_productos': stocks.count(),
-        'stock_total': stock_total,
-        'stock_critico': stocks.filter(cantidad__lte=5).count(),
-        'stock_bajo': stocks.filter(cantidad__gt=5, cantidad__lte=10).count(),
-        'stock_optimo': stocks.filter(cantidad__gt=10).count(),
-        'valor_stock': valor_stock,
+        'bitacoras': bitacoras,
+        'total_productos': bitacoras.count(),
+        'bitacora_total': bitacora_total,
+        'bitacora_critico': bitacoras.filter(cantidad__lte=5).count(),
+        'bitacora_bajo': bitacoras.filter(cantidad__gt=5, cantidad__lte=10).count(),
+        'bitacora_optimo': bitacoras.filter(cantidad__gt=10).count(),
+        'valor_bitacora': valor_bitacora,
     }
 
-    return render(request, 'productos/stock_admin.html', context)
+    return render(request, 'productos/bitacora_admin.html', context)
 
 
-def editar_stock(request, pk):
-    stock = get_object_or_404(Stock, pk=pk)
+def editar_bitacora(request, pk):
+    bitacora = get_object_or_404(bitacora, pk=pk)
 
     if request.method == 'POST':
-        form = StockForm(request.POST, instance=stock)
+        form = bitacoraForm(request.POST, instance=bitacora)
 
         if form.is_valid():
             form.save()
-            messages.success(request, "Stock actualizado correctamente")
-            return redirect('lista_stock')
+            messages.success(request, "bitacora actualizado correctamente")
+            return redirect('lista_bitacora')
 
     else:
-        form = StockForm(instance=stock)
+        form = bitacoraForm(instance=bitacora)
 
     context = {
-        'titulo': f'Editar Stock - {stock.producto.nombre}',
+        'titulo': f'Editar bitacora - {bitacora.producto.nombre}',
         'form': form,
-        'stock': stock
+        'bitacora': bitacora
     }
 
-    return render(request, 'productos/editar_stock.html', context)
+    return render(request, 'productos/editar_bitacora.html', context)
 
 
 # ==========================================
-# 🟡 COMPRAS ADMIN (Gestion de historial)
+# 🟡 ventaS ADMIN (Gestion de historial)
 # ==========================================
 
-def registrar_compra(request):
+def registrar_venta(request):
     if request.method == 'POST':
-        form_compra = CompraForm(request.POST)
-        form_detalle = DetalleCompraForm(request.POST)
+        form_venta = ventaForm(request.POST)
+        form_detalle = detalleventaForm(request.POST)
 
-        if form_compra.is_valid() and form_detalle.is_valid():
-            nueva_compra = form_compra.save()
+        if form_venta.is_valid() and form_detalle.is_valid():
+            nueva_venta = form_venta.save()
 
             detalle = form_detalle.save(commit=False)
-            detalle.compra = nueva_compra
+            detalle.codigo_venta = nueva_venta
             detalle.save()
 
-            nueva_compra.total = detalle.subtotal
-            nueva_compra.save(update_fields=['total'])
+            nueva_venta.actualizar_total()
 
-            messages.success(request, "Compra registrada exitosamente")
-            return redirect('historial_compras')
+            messages.success(request, "venta registrada exitosamente")
+            return redirect('historial_ventas')
 
     else:
-        form_compra = CompraForm()
-        form_detalle = DetalleCompraForm()
+        form_venta = ventaForm()
+        form_detalle = detalleventaForm()
 
     context = {
-        'titulo': 'Registrar Nueva Compra',
-        'form_compra': form_compra,
+        'titulo': 'Registrar Nueva venta',
+        'form_venta': form_venta,
         'form_detalle': form_detalle
     }
 
     return render(request, 'productos/registrar_compra.html', context)
 
 
-def historial_compras(request):
-    compras = Compra.objects.all().order_by('-fecha_compra')
+def historial_ventas(request):
+    ventas = venta.objects.all().order_by('-fecha_venta')
 
     context = {
-        'titulo': 'Historial de Compras',
-        'compras': compras,
-        'total_compras': compras.count(),
+        'titulo': 'Historial de ventas',
+        'ventas': ventas,
+        'total_ventas': ventas.count(),
     }
 
-    return render(request, 'productos/historial_compras.html', context)
+    return render(request, 'productos/historial_ventas.html', context)
 
-def detalle_compra(request, pk):
-    compra = get_object_or_404(Compra, codigo_compra=pk)
+def detalle_venta(request, pk):
+    venta = get_object_or_404(venta, codigo_venta=pk)
 
     context = {
-        'titulo': 'Detalle de Compra',
-        'compra': compra,
-        'detalles': compra.detalles.all(),
-        'total_calculado': sum(d.subtotal for d in compra.detalles.all())
+        'titulo': 'Detalle de venta',
+        'venta': venta,
+        'detalles': venta.detalles.all(),
+        'total_calculado': sum(d.subtotal for d in venta.detalles.all())
     }
 
-    return render(request, 'productos/detalle_compra.html', context)
+    return render(request, 'productos/detalle_venta.html', context)
 
-def eliminar_compra(request, pk):
-    compra = get_object_or_404(Compra, codigo_compra=pk)
+def eliminar_venta(request, pk):
+    venta = get_object_or_404(venta, codigo_venta=pk)
     if request.method == 'POST':
-        compra.delete()
-        messages.success(request, "Compra eliminada")
-    return redirect('historial_compras')
+        venta.delete()
+        messages.success(request, "venta eliminada")
+    return redirect('historial_ventas')
 
 
 # ==========================================

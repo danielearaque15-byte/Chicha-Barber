@@ -263,7 +263,7 @@
                         <select class="form-select border-secondary text-dark bg-white" id="select-producto" name="producto_id">
                             <option value="" selected disabled>-- Elegir Producto --</option>
                             {% for p in productos %}
-                                <option value="{{ p.id }}">{{ p.nombre }} - (${{ p.stock.precio_venta|floatformat:0 }})</option>
+                                <option value="{{ p.id }}">{{ p.nombre }} - (${{ p.bitacora.precio_venta|floatformat:0 }})</option>
                             {% endfor %}
                         </select>
                     </div>

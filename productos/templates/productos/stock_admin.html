@@ -9,7 +9,7 @@
     <!-- RESUMEN DEL INVENTARIO -->
 
     <div class="row g-3 mb-4">
-        <!-- STOCK TOTAL -->
+        <!-- bitacora TOTAL -->
         <div class="col-md-4">
             <div class="card h-100 shadow-sm border border-dark border-opacity-10">
                 <div class="card-body py-3 px-4 d-flex align-items-center justify-content-between">
@@ -17,14 +17,14 @@
                         <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary bg-opacity-10 border border-primary border-opacity-25" style="width:48px;height:48px;">
                             <i class="bi bi-boxes text-primary fs-5"></i>
                         </div>
-                        <span class="text-dark opacity-75 small text-uppercase fw-bold mb-0">Stock Total</span>
+                        <span class="text-dark opacity-75 small text-uppercase fw-bold mb-0">bitacora Total</span>
                     </div>
-                    <h2 class="fw-bold mb-0 text-primary">{{ stock_total|default:"0" }}</h2>
+                    <h2 class="fw-bold mb-0 text-primary">{{ bitacora_total|default:"0" }}</h2>
                 </div>
             </div>
         </div>
 
-        <!-- STOCK BAJO -->
+        <!-- bitacora BAJO -->
         <div class="col-md-4">
             <div class="card h-100 shadow-sm border border-dark border-opacity-10">
                 <div class="card-body py-3 px-4 d-flex align-items-center justify-content-between">
@@ -32,9 +32,9 @@
                         <div class="rounded-circle d-flex align-items-center justify-content-center bg-warning bg-opacity-10 border border-warning border-opacity-25" style="width:48px;height:48px;">
                             <i class="bi bi-exclamation-triangle text-warning fs-5"></i>
                         </div>
-                        <span class="text-dark opacity-75 small text-uppercase fw-bold mb-0">Stock Bajo</span>
+                        <span class="text-dark opacity-75 small text-uppercase fw-bold mb-0">bitacora Bajo</span>
                     </div>
-                    <h2 class="fw-bold mb-0 text-warning">{{ stock_bajo|default:"0" }}</h2>
+                    <h2 class="fw-bold mb-0 text-warning">{{ bitacora_bajo|default:"0" }}</h2>
                 </div>
             </div>
         </div>
@@ -49,7 +49,7 @@
                         </div>
                         <span class="text-dark opacity-75 small text-uppercase fw-bold mb-0">Valor Inventario</span>
                     </div>
-                    <h2 class="fw-bold mb-0 text-success">${{ valor_stock|default:"0" }}</h2>
+                    <h2 class="fw-bold mb-0 text-success">${{ valor_bitacora|default:"0" }}</h2>
                 </div>
             </div>
         </div>
@@ -98,7 +98,7 @@
 
 
                             <th>
-                                Precio Compra
+                                Precio venta
                             </th>
 
 
@@ -134,7 +134,7 @@
                     <tbody>
 
 
-                    {% for s in stocks %}
+                    {% for s in bitacoras %}
 
 
 
@@ -232,13 +232,13 @@
 
 
 
-                        <!-- PRECIO COMPRA -->
+                        <!-- PRECIO venta -->
 
 
                         <td class="fw-semibold text-muted">
 
 
-                            ${{ s.precio_compra|floatformat:0 }}
+                            ${{ s.precio_venta|floatformat:0 }}
 
 
                         </td>
@@ -359,7 +359,7 @@
                         <td class="text-center">
 
 
-                            <a href="{% url 'editar_stock' s.producto.codigo_producto %}"
+                            <a href="{% url 'editar_bitacora' s.producto.codigo_producto %}"
                                class="btn btn-sm btn-outline-primary">
 
 

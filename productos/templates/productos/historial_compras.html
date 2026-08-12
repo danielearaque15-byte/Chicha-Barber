@@ -5,8 +5,8 @@
 <div class="container mt-4 mb-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold mb-0"><i class="bi bi-cart-check me-2"></i></h2>
-        <a href="{% url 'registrar_compra' %}" class="btn color-azul text-white fw-bold shadow-sm">
-            <i class="bi bi-plus-circle me-1"></i> Registrar Compra
+        <a href="{% url 'registrar_venta' %}" class="btn color-azul text-white fw-bold shadow-sm">
+            <i class="bi bi-plus-circle me-1"></i> Registrar venta
         </a>
     </div>
 
@@ -18,9 +18,9 @@
                         <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary bg-opacity-10 border border-primary border-opacity-25" style="width:48px;height:48px;">
                             <i class="bi bi-cart-check text-primary fs-5"></i>
                         </div>
-                        <span class="text-dark opacity-75 small text-uppercase fw-bold mb-0">Compras Registradas</span>
+                        <span class="text-dark opacity-75 small text-uppercase fw-bold mb-0">ventas Registradas</span>
                     </div>
-                    <h2 class="fw-bold mb-0 text-primary">{{ total_compras }}</h2>
+                    <h2 class="fw-bold mb-0 text-primary">{{ total_ventas }}</h2>
                 </div>
             </div>
         </div>
@@ -33,26 +33,26 @@
                     <thead class="thead-azul">
                         <tr>
                             <th scope="col" class="ps-4 py-3">ID de Registro</th>
-                            <th scope="col" class="py-3">Fecha de Compra</th>
+                            <th scope="col" class="py-3">Fecha de venta</th>
                             <th scope="col" class="text-center py-3">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for compra in compras %}
+                        {% for venta in ventas %}
                         <tr class="border-dark border-opacity-10">
-                            <td class="ps-4 fw-bold text-dark">#{{ compra.codigo_compra }}</td>
+                            <td class="ps-4 fw-bold text-dark">#{{ venta.codigo_venta }}</td>
                             <td class="fw-semibold text-dark">
                                 <i class="bi bi-calendar-event me-2 text-primary"></i>
-                                {{ compra.fecha_compra|date:"d/m/Y" }}
+                                {{ venta.fecha_venta|date:"d/m/Y" }}
                             </td>
                             <td class="text-center">
                                 <div class="d-flex gap-2 justify-content-center">
-                                    <a href="{% url 'detalle_compra' compra.codigo_compra %}" class="btn btn-sm btn-outline-info" title="Seleccionar">
+                                    <a href="{% url 'detalle_venta' venta.codigo_venta %}" class="btn btn-sm btn-outline-info" title="Seleccionar">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     <button class="btn btn-sm btn-outline-danger" title="Eliminar"
-                                        data-url="{% url 'eliminar_compra' compra.codigo_compra %}"
-                                        data-id="{{ compra.codigo_compra }}"
+                                        data-url="{% url 'eliminar_venta' venta.codigo_venta %}"
+                                        data-id="{{ venta.codigo_venta }}"
                                         onclick="abrirModalEliminar(this)">
                                         <i class="bi bi-trash"></i>
                                     </button>
@@ -63,7 +63,7 @@
                         <tr>
                             <td colspan="3" class="text-center py-5 text-muted">
                                 <i class="bi bi-clipboard-x fs-1 d-block mb-3 text-secondary-subtle"></i>
-                                No hay compras registradas en el sistema actualmente.
+                                No hay ventas registradas en el sistema actualmente.
                             </td>
                         </tr>
                         {% endfor %}

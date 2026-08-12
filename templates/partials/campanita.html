@@ -30,7 +30,7 @@
       <a href="{% url 'detalle_notificacion' n.pk %}"
          class="dropdown-item py-2 px-3 border-bottom {% if not n.leida %}fw-semibold{% endif %}">
         <div class="d-flex align-items-start gap-2">
-          {% if n.tipo == 'compra' %}
+          {% if n.tipo == 'venta' %}
             <i class="bi bi-bag-check-fill text-success mt-1"></i>
           {% else %}
             <i class="bi bi-calendar-check-fill text-info mt-1"></i>
