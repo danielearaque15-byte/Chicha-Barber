@@ -1,26 +1,64 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-# Definimos los roles fuera o dentro de la clase, está bien así.
-ROLES = (
-    ('cliente', 'Cliente'),
-    ('barbero', 'Barbero'),
-    ('admin', 'Administrador'),
-)
+
+class Rol(models.Model):
+    codigo = models.AutoField(primary_key=True, verbose_name="Código")
+    tipo_rol = models.CharField(
+        max_length=20,
+        unique=True,
+        verbose_name="Tipo de rol"
+    )
+
+    class Meta:
+        verbose_name = 'Rol'
+        verbose_name_plural = 'Roles'
+
+    def __str__(self):
+        return self.tipo_rol
+
 
 class Usuario(AbstractUser):
     # El documento será el 'username' interno de Django
     username = models.CharField(
-        max_length=20, 
-        unique=True, 
+        max_length=20,
+        unique=True,
         verbose_name="Número de Documento"
     )
     email = models.EmailField(unique=True)
+
+    # segundo_nombre y segundo_apellido: AbstractUser solo trae
+    # first_name y last_name, el MER pide 4 campos de nombre.
+    segundo_nombre = models.CharField(
+        max_length=150,
+        blank=True,
+        null=True,
+        verbose_name="Segundo nombre"
+    )
+    segundo_apellido = models.CharField(
+        max_length=150,
+        blank=True,
+        null=True,
+        verbose_name="Segundo apellido"
+    )
+
     telefono = models.CharField(max_length=15, verbose_name="Teléfono")
-    rol = models.CharField(max_length=20, choices=ROLES, default='cliente')
+
+    # FK real a Rol (antes era CharField con choices)
+    rol = models.ForeignKey(
+        Rol,
+        on_delete=models.PROTECT,
+        related_name='usuarios',
+        verbose_name='Rol'
+    )
+
     estado = models.BooleanField(default=True, verbose_name='Estado')
-    tema = models.CharField(max_length=10, default='dark', choices=[('light', 'Claro'), ('dark', 'Oscuro')])
-    
+    tema = models.CharField(
+        max_length=10,
+        default='dark',
+        choices=[('light', 'Claro'), ('dark', 'Oscuro')]
+    )
+
     # Campo específico para barberos
     especialidad = models.CharField(max_length=100, blank=True, null=True)
     foto_perfil = models.ImageField(
@@ -32,16 +70,17 @@ class Usuario(AbstractUser):
 
     # Configuración de Login: Entrarán con el EMAIL
     USERNAME_FIELD = 'email'
-    # Campos que pide el comando 'createsuperuser' (no incluyas el EMAIL ni el PASSWORD aquí)
+    # Campos que pide 'createsuperuser' (no incluyas EMAIL ni PASSWORD)
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
     def __str__(self):
-        return f"{self.get_full_name()} ({self.get_rol_display()})"
+        return f"{self.get_full_name()} ({self.rol.tipo_rol})"
 
     class Meta:
         verbose_name = 'Usuario'
         verbose_name_plural = 'Usuarios'
-        
+
+
 class RegistroActividad(models.Model):
     TIPO_CHOICES = (
         ('usuario', 'Usuario'),
@@ -69,7 +108,8 @@ class RegistroActividad(models.Model):
 
     def __str__(self):
         return f"{self.usuario} - {self.descripcion} ({self.fecha:%d/%m/%Y %H:%M})"
-    
+
+
 class Notificacion(models.Model):
     TIPO_CHOICES = (
         ('venta', 'venta'),
