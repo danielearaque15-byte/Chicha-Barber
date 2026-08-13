@@ -25,9 +25,9 @@ class FacturaTest(TestCase):
             estado=True
         )
         self.producto.refresh_from_db()
-        self.producto.stock.precio_compra = Decimal("1000.00")
-        self.producto.stock.precio_venta = Decimal("1500.00")
-        self.producto.stock.save()
+        self.producto.bitacora.precio_venta = Decimal("1000.00")
+        self.producto.bitacora.precio_venta = Decimal("1500.00")
+        self.producto.bitacora.save()
 
     def test_crear_factura_y_detalles(self):
 

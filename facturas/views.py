@@ -37,7 +37,7 @@ def facturas(request):
     )
 
     context = {
-        'titulo': 'Mis Compras Recientes',
+        'titulo': 'Mis ventas Recientes',
         'facturas': facturas,
     }
 
@@ -94,7 +94,7 @@ def crear_factura(request):
         pass
 
     context = {
-        'titulo': 'Crear nueva Compra',
+        'titulo': 'Crear nueva venta',
         'clientes': Cliente.objects.all(),
         'servicios': Servicios.objects.all(),
         'productos': Producto.objects.all(),
@@ -114,7 +114,7 @@ def detalle_factura(request, id):
     )
 
     context = {
-        'titulo': 'Detalle de la compra',
+        'titulo': 'Detalle de la venta',
         'factura': factura,
     }
 
@@ -131,7 +131,7 @@ def imprimir_factura(request, id):
     )
 
     context = {
-        'titulo': 'Imprimir Compra',
+        'titulo': 'Imprimir venta',
         'factura': factura,
     }
 
@@ -165,7 +165,7 @@ def actualizar_factura_adm(request, id):
                         factura.detalles.create(
                             producto=producto,
                             cantidad=cantidad,
-                            precio_unitario=float(precio_u) if precio_u else float(producto.stock.precio_venta)
+                            precio_unitario=float(precio_u) if precio_u else float(producto.bitacora.precio_venta)
                         )
                     
                     elif tipo == 'servicio':

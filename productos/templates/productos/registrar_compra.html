@@ -1,17 +1,17 @@
 {% extends 'base-admin.html' %}
 {% block content %}
-<div class="container mt-4 mb-5 productos-registrar-compra__div-1">
+<div class="container mt-4 mb-5 productos-registrar-venta__div-1">
   <style>
-    .registrar-compra-form .form-control,
-    .registrar-compra-form .form-select,
-    .registrar-compra-form textarea {
+    .registrar-venta-form .form-control,
+    .registrar-venta-form .form-select,
+    .registrar-venta-form textarea {
       background-color: #ffffff !important;
       color: #212529 !important;
       border-color: #ced4da !important;
     }
 
-    .registrar-compra-form .form-control::placeholder,
-    .registrar-compra-form .form-select {
+    .registrar-venta-form .form-control::placeholder,
+    .registrar-venta-form .form-select {
       color: #6c757d !important;
     }
   </style>
@@ -24,11 +24,11 @@
       class="card-header color-champaña text-dark py-3 d-flex justify-content-between align-items-center"
     >
       <span class="fw-bold text-dark fs-5">
-        <i class="bi bi-cart-plus me-2"></i>Registrar Nueva Compra
+        <i class="bi bi-cart-plus me-2"></i>Registrar Nueva venta
       </span>
 
       <a
-        href="{% url 'historial_compras' %}"
+        href="{% url 'historial_ventas' %}"
         class="btn btn-sm btn-outline-dark fw-bold border-0"
       >
         <i class="bi bi-arrow-left me-1"></i>Volver
@@ -37,38 +37,38 @@
 
     <div class="card-body p-4 bg-white">
       <form
-        class="registrar-compra-form"
+        class="registrar-venta-form"
         method="POST"
-        action="{% url 'registrar_compra' %}"
+        action="{% url 'registrar_venta' %}"
       >
         {% csrf_token %}
 
         <div class="mb-3">
           <label class="form-label fw-bold small">Nombre del Cliente</label>
-          {{ form_compra.nombre_cliente }}
+          {{ form_venta.nombre_cliente }}
         </div>
         <div class="mb-3">
           <label class="form-label fw-bold small">Correo</label>
-          {{ form_compra.correo }}
+          {{ form_venta.correo }}
         </div>
         <div class="mb-3">
           <label class="form-label fw-bold small">Teléfono</label>
-          {{ form_compra.telefono }}
+          {{ form_venta.telefono }}
         </div>
         <div class="mb-3">
           <label class="form-label fw-bold small">Dirección</label>
-          {{ form_compra.direccion }}
+          {{ form_venta.direccion }}
         </div>
         <div class="mb-3">
           <label class="form-label fw-bold small">Método de Pago</label>
-          {{ form_compra.metodo_pago }}
+          {{ form_venta.metodo_pago }}
         </div>
 
         <hr class="border-secondary my-4" />
 
         <div class="mb-3">
           <label class="form-label fw-bold small">Producto</label>
-          {{ form_detalle.producto }}
+          {{ form_detalle.codigo_producto }}
         </div>
         <div class="mb-4">
           <label class="form-label fw-bold small">Cantidad</label>
@@ -77,7 +77,7 @@
 
         <div class="d-flex gap-3 mt-4">
           <a
-            href="{% url 'historial_compras' %}"
+            href="{% url 'historial_ventas' %}"
             class="btn btn-outline-secondary w-50 fw-bold"
           >
             <i class="bi bi-x-circle me-1"></i>Cancelar

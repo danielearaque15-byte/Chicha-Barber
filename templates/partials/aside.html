@@ -165,35 +165,35 @@
                 </a>
 
                 <!-- Inventario -->
-                <a href="{% url 'lista_stock' %}"
+                <a href="{% url 'lista_bitacora' %}"
                    class="list-group-item list-group-item-action bg-dark border-0 ps-4
-                   {% if request.resolver_match.url_name == 'lista_stock' or request.resolver_match.url_name == 'editar_stock' %}
+                   {% if request.resolver_match.url_name == 'lista_bitacora' or request.resolver_match.url_name == 'editar_bitacora' %}
                    fw-bold
                    {% else %}
                    text-white-50
                    {% endif %}"
                    style="
-                   {% if request.resolver_match.url_name == 'lista_stock' or request.resolver_match.url_name == 'editar_stock' %}
+                   {% if request.resolver_match.url_name == 'lista_bitacora' or request.resolver_match.url_name == 'editar_bitacora' %}
                    color:#22aed1;
                    {% endif %}
                    ">
                     <i class="bi bi-boxes me-2"></i> Inventario
                 </a>
 
-                <!-- Compras -->
-                <a href="{% url 'historial_compras' %}"
+                <!-- ventas -->
+                <a href="{% url 'historial_ventas' %}"
                    class="list-group-item list-group-item-action bg-dark border-0 ps-4
-                   {% if request.resolver_match.url_name == 'historial_compras' or request.resolver_match.url_name == 'detalle_compra' or request.resolver_match.url_name == 'registrar_compra' %}
+                   {% if request.resolver_match.url_name == 'historial_ventas' or request.resolver_match.url_name == 'detalle_venta' or request.resolver_match.url_name == 'registrar_venta' %}
                    fw-bold
                    {% else %}
                    text-white-50
                    {% endif %}"
                    style="
-                   {% if request.resolver_match.url_name == 'historial_compras' or request.resolver_match.url_name == 'detalle_compra' or request.resolver_match.url_name == 'registrar_compra' %}
+                   {% if request.resolver_match.url_name == 'historial_ventas' or request.resolver_match.url_name == 'detalle_venta' or request.resolver_match.url_name == 'registrar_venta' %}
                    color:#22aed1;
                    {% endif %}
                    ">
-                    <i class="bi bi-cart-check me-2"></i> Compras
+                    <i class="bi bi-cart-check me-2"></i> ventas
                 </a>
             </div>
         </div>

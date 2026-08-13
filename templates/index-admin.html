@@ -171,7 +171,7 @@
       </div>
     </div>
 
-    <!-- Alertas de Stock e Inventario -->
+    <!-- Alertas de bitacora e Inventario -->
     <div class="col-lg-4">
       <div class="card border-0 rounded-4 h-100 shadow-sm templates-index-admin__div-15">
         <div class="card-header bg-transparent border-bottom border-secondary p-4">
@@ -179,26 +179,26 @@
         </div>
         <div class="card-body p-4">
           <div class="d-flex flex-column gap-3">
-            {% if productos_bajo_stock %}
-              {% for stock in productos_bajo_stock %}
+            {% if productos_bajo_bitacora %}
+              {% for bitacora in productos_bajo_bitacora %}
                 <div class="d-flex align-items-center justify-content-between p-3 rounded-3 templates-index-admin__div-16">
                   <div class="d-flex align-items-center gap-3">
                     <div class="bg-warning bg-opacity-25 text-warning rounded-3 p-2 d-flex align-items-center justify-content-center templates-index-admin__div-17">
                       <i class="bi bi-box-seam fs-5"></i>
                     </div>
                     <div>
-                      <div class="fw-semibold text-white">{{ stock.producto.nombre }}</div>
-                      <small class="text-white-50 templates-index-admin__small-18">Categoría: {{ stock.producto.get_categoria_display|default:"General" }}</small>
+                      <div class="fw-semibold text-white">{{ bitacora.producto.nombre }}</div>
+                      <small class="text-white-50 templates-index-admin__small-18">Categoría: {{ bitacora.producto.get_categoria_display|default:"General" }}</small>
                     </div>
                   </div>
                   <div class="text-end">
-                    <span class="badge bg-danger rounded-pill fw-bold templates-index-admin__span-19">{{ stock.cantidad }} unids.</span>
-                    <div class="text-white-50 templates-index-admin__div-20">Stock Crítico</div>
+                    <span class="badge bg-danger rounded-pill fw-bold templates-index-admin__span-19">{{ bitacora.cantidad }} unids.</span>
+                    <div class="text-white-50 templates-index-admin__div-20">bitacora Crítico</div>
                   </div>
                 </div>
               {% endfor %}
               <div class="text-center mt-2">
-                <a href="{% url 'lista_stock' %}" class="btn btn-sm btn-outline-warning w-100 rounded-pill py-2 fw-semibold">
+                <a href="{% url 'lista_bitacora' %}" class="btn btn-sm btn-outline-warning w-100 rounded-pill py-2 fw-semibold">
                   <i class="bi bi-plus-circle me-1"></i>Reabastecer Inventario
                 </a>
               </div>
@@ -208,7 +208,7 @@
                   <i class="bi bi-shield-check fs-1"></i>
                 </div>
                 <h6 class="fw-semibold text-white mb-1">Inventario Seguro</h6>
-                <p class="text-muted small mb-0 px-3">Todos los productos cuentan con niveles de stock adecuados (mayor a 15 unidades).</p>
+                <p class="text-muted small mb-0 px-3">Todos los productos cuentan con niveles de bitacora adecuados (mayor a 15 unidades).</p>
               </div>
             {% endif %}
           </div>
