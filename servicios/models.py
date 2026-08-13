@@ -97,3 +97,20 @@ class Calificacion(models.Model):
         return f"{self.cliente} - {self.servicio.nombre} ({self.puntuacion} estrellas)"
     
     
+    class promocion_servicio(models.Model):
+        promocion = models.ForeignKey(
+            Promocion,
+            on_delete=models.CASCADE,
+            related_name='promocion_servicio',
+            verbose_name='Promoción'
+        )
+        servicio = models.ForeignKey(
+            Servicios,
+            on_delete=models.CASCADE,
+            related_name='servicio_promocion',
+            verbose_name='Servicio'
+        )
+
+        class Meta:
+            verbose_name = 'Promoción-Servicio'
+            verbose_name_plural = 'Promociones-Servicios'
