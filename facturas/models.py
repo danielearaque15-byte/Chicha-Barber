@@ -144,6 +144,11 @@ class DetalleFactura(models.Model):
         self.subtotal = self.cantidad * self.precio_unitario
         super().save(*args, **kwargs)
 
+        # Si el detalle está asociado a una reserva, se actualiza el estado de la reserva
+        if self.reserva and self.reserva.estado != 'confirmada':
+            self.reserva.estado = 'confirmada'
+            self.reserva.save(update_fields=['estado'])
+
     def __str__(self):
         return f"Detalle Factura #{self.factura.id}"
 

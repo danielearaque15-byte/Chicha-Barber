@@ -99,106 +99,156 @@
     </div>
 
     <!-- PRODUCTOS -->
-    <div class="accordion-item bg-dark border-0">
-      <h2 class="accordion-header">
-        <button 
-            class="accordion-button {% if 'productos' in request.path and 'datos-banco' not in request.path %}{% else %}collapsed{% endif %} bg-dark {% if 'productos' in request.path and 'datos-banco' not in request.path %}text-white fw-bold{% else %}text-white{% endif %} shadow-none border-0 partials-aside__button-11"
+<div class="accordion-item bg-dark border-0">
+
+    <h2 class="accordion-header">
+
+        <button
+            class="accordion-button
+            {% if 'productos' in request.path and 'datos-banco' not in request.path %}
+            {% else %}
+            collapsed
+            {% endif %}
+            bg-dark
+            {% if 'productos' in request.path and 'datos-banco' not in request.path %}
+            text-white fw-bold
+            {% else %}
+            text-white
+            {% endif %}
+            shadow-none border-0 partials-aside__button-11"
+
             type="button"
+
             data-bs-toggle="collapse"
+
             data-bs-target="#collapseProductos"
-            {% if 'productos' in request.path and 'datos-banco' not in request.path %}{% endif %}>
-            <i class="bi bi-box-seam me-2"></i> Productos
+
+            aria-expanded="{% if 'productos' in request.path and 'datos-banco' not in request.path %}true{% else %}false{% endif %}">
+            
+            <i class="bi bi-box-seam me-2"></i>
+            Productos
+
         </button>
-      </h2>
 
-      <div id="collapseProductos"
-           class="accordion-collapse collapse {% if 'productos' in request.path and 'datos-banco' not in request.path %}show{% endif %}"
-           data-bs-parent="#sidebarAccordion">
+    </h2>
+
+
+    <div id="collapseProductos"
+
+         class="accordion-collapse collapse
+         {% if 'productos' in request.path and 'datos-banco' not in request.path %}
+         show
+         {% endif %}"
+
+         data-bs-parent="#sidebarAccordion">
+
         <div class="accordion-body p-0">
+
             <div class="list-group list-group-flush">
-                <!-- Lista Productos -->
+
+
+                <!-- ========================= -->
+                <!-- LISTA PRODUCTOS -->
+                <!-- ========================= -->
+
                 <a href="{% url 'lista_productos_admin' %}"
-                   class="list-group-item list-group-item-action bg-dark border-0 ps-4
-                   {% if request.resolver_match.url_name == 'lista_productos_admin' or request.resolver_match.url_name == 'crear_producto' or request.resolver_match.url_name == 'editar_producto' or request.resolver_match.url_name == 'eliminar_producto' %}
-                   fw-bold
-                   {% else %}
-                   text-white-50
-                   {% endif %}"
-                   style="
-                   {% if request.resolver_match.url_name == 'lista_productos_admin' or request.resolver_match.url_name == 'crear_producto' or request.resolver_match.url_name == 'editar_producto' or request.resolver_match.url_name == 'eliminar_producto' %}
-                   color:#22aed1;
-                   {% endif %}
-                   ">
-                    <i class="bi bi-list-ul me-2"></i> Lista de Productos
+                   class="list-group-item list-group-item-action bg-dark border-0 ps-4 {% if request.resolver_match.url_name == 'lista_productos_admin' or request.resolver_match.url_name == 'crear_producto' or request.resolver_match.url_name == 'editar_producto' or request.resolver_match.url_name == 'eliminar_producto' %}fw-bold{% else %}text-white-50{% endif %}"
+                   style="{% if request.resolver_match.url_name == 'lista_productos_admin' or request.resolver_match.url_name == 'crear_producto' or request.resolver_match.url_name == 'editar_producto' or request.resolver_match.url_name == 'eliminar_producto' %}color:#22aed1;{% endif %}">
+
+                    <i class="bi bi-list-ul me-2"></i>
+                    Lista de Productos
+
                 </a>
 
-                <!-- Categorías -->
+
+                <!-- ========================= -->
+                <!-- CATEGORÍAS -->
+                <!-- ========================= -->
+
                 <a href="{% url 'lista_categorias' %}"
-                   class="list-group-item list-group-item-action bg-dark border-0 ps-4
-                   {% if request.resolver_match.url_name == 'lista_categorias' or request.resolver_match.url_name == 'crear_categoria' or request.resolver_match.url_name == 'editar_categoria' or request.resolver_match.url_name == 'eliminar_categoria' %}
-                   fw-bold
-                   {% else %}
-                   text-white-50
-                   {% endif %}"
-                   style="
-                   {% if request.resolver_match.url_name == 'lista_categorias' or request.resolver_match.url_name == 'crear_categoria' or request.resolver_match.url_name == 'editar_categoria' or request.resolver_match.url_name == 'eliminar_categoria' %}
-                   color:#22aed1;
-                   {% endif %}
-                   ">
-                    <i class="bi bi-tags me-2"></i> Categorías
+                   class="list-group-item list-group-item-action bg-dark border-0 ps-4 {% if request.resolver_match.url_name == 'lista_categorias' or request.resolver_match.url_name == 'crear_categoria' or request.resolver_match.url_name == 'editar_categoria' or request.resolver_match.url_name == 'eliminar_categoria' %}fw-bold{% else %}text-white-50{% endif %}"
+                   style="{% if request.resolver_match.url_name == 'lista_categorias' or request.resolver_match.url_name == 'crear_categoria' or request.resolver_match.url_name == 'editar_categoria' or request.resolver_match.url_name == 'eliminar_categoria' %}color:#22aed1;{% endif %}">
+
+                    <i class="bi bi-tags me-2"></i>
+                    Categorías
+
                 </a>
 
-                <!-- Proveedores -->
+
+                <!-- ========================= -->
+                <!-- PROVEEDORES -->
+                <!-- ========================= -->
+
                 <a href="{% url 'lista_proveedores' %}"
-                   class="list-group-item list-group-item-action bg-dark border-0 ps-4
-                   {% if request.resolver_match.url_name == 'lista_proveedores' or request.resolver_match.url_name == 'crear_proveedor' or request.resolver_match.url_name == 'editar_proveedor' or request.resolver_match.url_name == 'eliminar_proveedor' %}
-                   fw-bold
-                   {% else %}
-                   text-white-50
-                   {% endif %}"
-                   style="
-                   {% if request.resolver_match.url_name == 'lista_proveedores' or request.resolver_match.url_name == 'crear_proveedor' or request.resolver_match.url_name == 'editar_proveedor' or request.resolver_match.url_name == 'eliminar_proveedor' %}
-                   color:#22aed1;
-                   {% endif %}
-                   ">
-                    <i class="bi bi-truck me-2"></i> Proveedores
+                   class="list-group-item list-group-item-action bg-dark border-0 ps-4 {% if request.resolver_match.url_name == 'lista_proveedores' or request.resolver_match.url_name == 'crear_proveedor' or request.resolver_match.url_name == 'editar_proveedor' or request.resolver_match.url_name == 'eliminar_proveedor' %}fw-bold{% else %}text-white-50{% endif %}"
+                   style="{% if request.resolver_match.url_name == 'lista_proveedores' or request.resolver_match.url_name == 'crear_proveedor' or request.resolver_match.url_name == 'editar_proveedor' or request.resolver_match.url_name == 'eliminar_proveedor' %}color:#22aed1;{% endif %}">
+
+                    <i class="bi bi-truck me-2"></i>
+                    Proveedores
+
                 </a>
 
-                <!-- Inventario -->
+
+                <!-- ========================= -->
+                <!-- INVENTARIO -->
+                <!-- ========================= -->
+
+                <a href="{% url 'lista_inventario' %}"
+                   class="list-group-item list-group-item-action bg-dark border-0 ps-4 {% if request.resolver_match.url_name == 'lista_inventario' or request.resolver_match.url_name == 'editar_inventario' %}fw-bold{% else %}text-white-50{% endif %}"
+                   style="{% if request.resolver_match.url_name == 'lista_inventario' or request.resolver_match.url_name == 'editar_inventario' %}color:#22aed1;{% endif %}">
+
+                    <i class="bi bi-boxes me-2"></i>
+                    Inventario
+
+                </a>
+
+                <a href="{% url 'lista_movimientos_inventario' %}"
+                   class="list-group-item list-group-item-action bg-dark border-0 ps-4 {% if request.resolver_match.url_name == 'lista_movimientos_inventario' or request.resolver_match.url_name == 'registrar_movimiento_inventario' or request.resolver_match.url_name == 'eliminar_movimiento_inventario' %}fw-bold{% else %}text-white-50{% endif %}"
+                   style="{% if request.resolver_match.url_name == 'lista_movimientos_inventario' or request.resolver_match.url_name == 'registrar_movimiento_inventario' or request.resolver_match.url_name == 'eliminar_movimiento_inventario' %}color:#22aed1;{% endif %}">
+                    <i class="bi bi-arrow-left-right me-2"></i>
+                    Movimiento de Inventario
+                </a>
+
                 <a href="{% url 'lista_bitacora' %}"
-                   class="list-group-item list-group-item-action bg-dark border-0 ps-4
-                   {% if request.resolver_match.url_name == 'lista_bitacora' or request.resolver_match.url_name == 'editar_bitacora' %}
-                   fw-bold
-                   {% else %}
-                   text-white-50
-                   {% endif %}"
-                   style="
-                   {% if request.resolver_match.url_name == 'lista_bitacora' or request.resolver_match.url_name == 'editar_bitacora' %}
-                   color:#22aed1;
-                   {% endif %}
-                   ">
-                    <i class="bi bi-boxes me-2"></i> Inventario
+                   class="list-group-item list-group-item-action bg-dark border-0 ps-4 {% if request.resolver_match.url_name == 'lista_bitacora' or request.resolver_match.url_name == 'editar_bitacora' %}fw-bold{% else %}text-white-50{% endif %}"
+                   style="{% if request.resolver_match.url_name == 'lista_bitacora' or request.resolver_match.url_name == 'editar_bitacora' %}color:#22aed1;{% endif %}">
+                    <i class="bi bi-journal-text me-2"></i>
+                    Bitácora
                 </a>
 
-                <!-- ventas -->
-                <a href="{% url 'historial_ventas' %}"
-                   class="list-group-item list-group-item-action bg-dark border-0 ps-4
-                   {% if request.resolver_match.url_name == 'historial_ventas' or request.resolver_match.url_name == 'detalle_venta' or request.resolver_match.url_name == 'registrar_venta' %}
-                   fw-bold
-                   {% else %}
-                   text-white-50
-                   {% endif %}"
-                   style="
-                   {% if request.resolver_match.url_name == 'historial_ventas' or request.resolver_match.url_name == 'detalle_venta' or request.resolver_match.url_name == 'registrar_venta' %}
-                   color:#22aed1;
-                   {% endif %}
-                   ">
-                    <i class="bi bi-cart-check me-2"></i> ventas
+                <!-- ========================= -->
+                <!-- ADQUISICIONES -->
+                <!-- ========================= -->
+
+                <a href="{% url 'lista_adquisiciones' %}"
+                   class="list-group-item list-group-item-action bg-dark border-0 ps-4 {% if request.resolver_match.url_name == 'lista_adquisiciones' or request.resolver_match.url_name == 'registrar_adquisicion' or request.resolver_match.url_name == 'editar_adquisicion' or request.resolver_match.url_name == 'eliminar_adquisicion' %}fw-bold{% else %}text-white-50{% endif %}"
+                   style="{% if request.resolver_match.url_name == 'lista_adquisiciones' or request.resolver_match.url_name == 'registrar_adquisicion' or request.resolver_match.url_name == 'editar_adquisicion' or request.resolver_match.url_name == 'eliminar_adquisicion' %}color:#22aed1;{% endif %}">
+
+                    <i class="bi bi-box-arrow-in-down me-2"></i>
+                    Adquisiciones
+
                 </a>
+                <!-- ========================= -->
+                <!-- VENTAS -->
+                <!-- ========================= -->
+
+                <a href="{% url 'historial_ventas' %}"
+                   class="list-group-item list-group-item-action bg-dark border-0 ps-4 {% if request.resolver_match.url_name == 'historial_ventas' or request.resolver_match.url_name == 'detalle_venta' or request.resolver_match.url_name == 'registrar_venta' %}fw-bold{% else %}text-white-50{% endif %}"
+                   style="{% if request.resolver_match.url_name == 'historial_ventas' or request.resolver_match.url_name == 'detalle_venta' or request.resolver_match.url_name == 'registrar_venta' %}color:#22aed1;{% endif %}">
+
+                    <i class="bi bi-cart-check me-2"></i>
+                    Ventas
+
+                </a>
+
+
             </div>
+
         </div>
-      </div>
+
     </div>
+
+</div>
 
     <!-- USUARIOS -->
     <div class="accordion-item bg-dark border-0 ">

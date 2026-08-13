@@ -1,0 +1,396 @@
+{% extends 'base-admin.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <!-- ENCABEZADO -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+              
+            </h2>
+
+            <p class="text-muted mb-0">
+            </p>
+        </div>
+
+        <a href="{% url 'registrar_adquisicion' %}"
+           class="btn color-azul text-white fw-bold shadow-sm">
+
+            <i class="bi bi-plus-circle me-1"></i>
+            Nueva Adquisición
+
+        </a>
+
+    </div>
+
+
+    <!-- RESUMEN -->
+    <div class="row g-3 mb-4">
+
+        <!-- TOTAL ADQUISICIONES -->
+        <div class="col-md-4">
+
+            <div class="card h-100 shadow-sm border border-dark border-opacity-10">
+
+                <div class="card-body py-3 px-4 d-flex align-items-center justify-content-between">
+
+                    <div class="d-flex align-items-center gap-2">
+
+                        <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary bg-opacity-10 border border-primary border-opacity-25"
+                             style="width:48px;height:48px;">
+
+                            <i class="bi bi-cart-check text-primary fs-5"></i>
+
+                        </div>
+
+                        <span class="text-dark opacity-75 small text-uppercase fw-bold">
+                            Total Adquisiciones
+                        </span>
+
+                    </div>
+
+                    <h2 class="fw-bold mb-0 text-primary">
+                        {{ total_adquisiciones|default:adquisiciones.count }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- UNIDADES ADQUIRIDAS -->
+        <div class="col-md-4">
+
+            <div class="card h-100 shadow-sm border border-dark border-opacity-10">
+
+                <div class="card-body py-3 px-4 d-flex align-items-center justify-content-between">
+
+                    <div class="d-flex align-items-center gap-2">
+
+                        <div class="rounded-circle d-flex align-items-center justify-content-center bg-success bg-opacity-10 border border-success border-opacity-25"
+                             style="width:48px;height:48px;">
+
+                            <i class="bi bi-boxes text-success fs-5"></i>
+
+                        </div>
+
+                        <span class="text-dark opacity-75 small text-uppercase fw-bold">
+                            Unidades Adquiridas
+                        </span>
+
+                    </div>
+
+                    <h2 class="fw-bold mb-0 text-success">
+                        {{ total_unidades|default:"0" }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- VALOR TOTAL -->
+        <div class="col-md-4">
+
+            <div class="card h-100 shadow-sm border border-dark border-opacity-10">
+
+                <div class="card-body py-3 px-4 d-flex align-items-center justify-content-between">
+
+                    <div class="d-flex align-items-center gap-2">
+
+                        <div class="rounded-circle d-flex align-items-center justify-content-center bg-warning bg-opacity-10 border border-warning border-opacity-25"
+                             style="width:48px;height:48px;">
+
+                            <i class="bi bi-currency-dollar text-warning fs-5"></i>
+
+                        </div>
+
+                        <span class="text-dark opacity-75 small text-uppercase fw-bold">
+                            Valor Total
+                        </span>
+
+                    </div>
+
+                    <h2 class="fw-bold mb-0 text-warning">
+                        ${{ valor_total|default:"0"|floatformat:0 }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TABLA -->
+    <div class="card shadow border-0">
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table id="tablaAdquisiciones"
+                       class="table table-hover align-middle">
+
+                    <thead class="thead-azul">
+
+                        <tr>
+
+                            <th>
+                                Código
+                            </th>
+
+                            <th>
+                                Producto
+                            </th>
+
+                            <th>
+                                Proveedor
+                            </th>
+
+                            <th>
+                                Fecha
+                            </th>
+
+                            <th>
+                                Cantidad
+                            </th>
+
+                            <th>
+                                Precio Compra
+                            </th>
+
+                            <th>
+                                Total
+                            </th>
+
+                            <th class="text-center">
+                                Acciones
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    {% for adquisicion in adquisiciones %}
+
+                    <tr>
+
+                        <!-- CÓDIGO -->
+
+                        <td class="fw-bold">
+
+                            #{{ adquisicion.pk }}
+
+                        </td>
+
+
+                        <!-- PRODUCTO -->
+
+                        <td>
+
+                            <div class="d-flex align-items-center">
+
+                                {% if adquisicion.codigo_producto.imagen %}
+
+                                    <img src="{{ adquisicion.codigo_producto.imagen.url }}"
+                                         class="rounded me-3"
+                                         style="width:55px;height:55px;object-fit:cover;">
+
+                                {% else %}
+
+                                    <div class="bg-secondary bg-opacity-25 rounded
+                                                d-flex align-items-center
+                                                justify-content-center me-3"
+                                         style="width:55px;height:55px;">
+
+                                        <i class="bi bi-image fs-4 text-secondary"></i>
+
+                                    </div>
+
+                                {% endif %}
+
+                                <div>
+
+                                    <h6 class="mb-0 fw-bold">
+
+                                        {{ adquisicion.codigo_producto.nombre }}
+
+                                    </h6>
+
+                                    <small class="text-muted">
+
+                                        {{ adquisicion.codigo_producto.categoria }}
+
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- PROVEEDOR -->
+
+                        <td>
+
+                            {% if adquisicion.codigo_proveedor %}
+
+                                <span class="fw-semibold">
+
+                                    {{ adquisicion.codigo_proveedor.nombre }}
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="text-muted">
+
+                                    Sin proveedor
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- FECHA -->
+
+                        <td>
+
+                            {{ adquisicion.fecha|date:"d/m/Y" }}
+
+                        </td>
+
+
+                        <!-- CANTIDAD -->
+
+                        <td>
+
+                            <span class="badge bg-primary">
+
+                                <i class="bi bi-box-seam me-1"></i>
+
+                                {{ adquisicion.cantidad }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- PRECIO COMPRA -->
+
+                        <td class="fw-semibold">
+
+                            ${{ adquisicion.precio_compra|floatformat:0 }}
+
+                        </td>
+
+
+                        <!-- TOTAL -->
+
+                        <td class="fw-bold text-success">
+
+                            ${{ adquisicion.total|floatformat:0 }}
+
+                        </td>
+
+
+                        <!-- ACCIONES -->
+
+                        <td class="text-center">
+
+                            <a href="{% url 'editar_adquisicion' adquisicion.pk %}"
+                               class="btn btn-sm btn-outline-primary"
+                               title="Editar">
+
+                                <i class="bi bi-pencil"></i>
+
+                            </a>
+
+
+                            <a href="{% url 'eliminar_adquisicion' adquisicion.pk %}"
+                               class="btn btn-sm btn-outline-danger"
+                               title="Eliminar"
+                               onclick="return confirm('¿Seguro que deseas eliminar esta adquisición?');">
+
+                                <i class="bi bi-trash"></i>
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="8"
+                            class="text-center py-5 text-muted">
+
+                            <i class="bi bi-cart-x fs-1"></i>
+
+                            <br>
+
+                            <span class="d-block mt-2">
+                                No hay adquisiciones registradas.
+                            </span>
+
+                            <a href="{% url 'registrar_adquisicion' %}"
+                               class="btn btn-sm color-azul text-white mt-3">
+
+                                <i class="bi bi-plus-circle me-1"></i>
+                                Registrar adquisición
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<link rel="stylesheet"
+      href="{% static 'css/datatables.css' %}">
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<script src="{% static 'js/datatables.js' %}"></script>
+
+<script src="{% static 'js/tconf/tconf-tablaAdquisiciones.js' %}"></script>
+
+{% endblock scripts %}
