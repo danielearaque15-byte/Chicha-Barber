@@ -27,6 +27,8 @@ El sistema está dividido en las siguientes aplicaciones principales, respetando
 
 ## Notas de Implementación
 
-*   **Autenticación:** El modelo `Usuario` debe extender de `AbstractUser` o `AbstractBaseUser` de Django, utilizando el identificador (ej. documento o email) según los requerimientos de acceso.
+*   **Script de Base de Datos MySQL:** El repositorio incluye el script [`chicha_barber.sql`](file:///C:/Users/SENA/Documents/GitHub/Chicha-Barber/chicha_barber.sql) con la estructura relacional DDL corregida y optimizada (incluyendo snapshots de `precio_unitario`, vinculo `codigo_reserva` en los detalles de facturación de servicios y borrado en cascada `ON DELETE CASCADE`).
+*   **Autenticación:** El modelo `Usuario` extiende de `AbstractUser` de Django, utilizando el identificador (ej. documento o email) según los requerimientos de acceso.
 *   **Gestión de Inventario:** Las salidas de inventario se gestionan automáticamente mediante señales (*Signals*) de Django (`post_save`) al momento de emitir una factura que contenga productos.
+*   **Facturación Integrada:** Al asociar una `Reserva` a un `DetalleFactura`, se preserva el precio histórico y se actualiza dinámicamente el estado de la reserva a `'confirmada'`.
 *   **Limpieza de Archivos:** El módulo de configuración utiliza señales (`pre_save`, `post_delete`) para eliminar archivos multimedia huérfanos (imágenes del carrusel) y optimizar el almacenamiento del servidor.

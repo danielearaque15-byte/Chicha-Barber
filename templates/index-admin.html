@@ -187,13 +187,13 @@
                       <i class="bi bi-box-seam fs-5"></i>
                     </div>
                     <div>
-                      <div class="fw-semibold text-white">{{ bitacora.producto.nombre }}</div>
-                      <small class="text-white-50 templates-index-admin__small-18">Categoría: {{ bitacora.producto.get_categoria_display|default:"General" }}</small>
+                      <div class="fw-semibold text-white">{{ bitacora.codigo_producto.nombre }}</div>
+                      <small class="text-white-50 templates-index-admin__small-18">Categoría: {{ bitacora.codigo_producto.codigo_categoria.nombre|default:"General" }}</small>
                     </div>
                   </div>
                   <div class="text-end">
-                    <span class="badge bg-danger rounded-pill fw-bold templates-index-admin__span-19">{{ bitacora.cantidad }} unids.</span>
-                    <div class="text-white-50 templates-index-admin__div-20">bitacora Crítico</div>
+                    <span class="badge bg-danger rounded-pill fw-bold templates-index-admin__span-19">{{ bitacora.cantidad_actual }} unids.</span>
+                    <div class="text-white-50 templates-index-admin__div-20">Inventario Crítico</div>
                   </div>
                 </div>
               {% endfor %}

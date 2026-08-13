@@ -1,20 +1,6 @@
 {% extends 'base-admin.html' %}
 {% block content %}
 <div class="container mt-4 mb-5 productos-registrar-venta__div-1">
-  <style>
-    .registrar-venta-form .form-control,
-    .registrar-venta-form .form-select,
-    .registrar-venta-form textarea {
-      background-color: #ffffff !important;
-      color: #212529 !important;
-      border-color: #ced4da !important;
-    }
-
-    .registrar-venta-form .form-control::placeholder,
-    .registrar-venta-form .form-select {
-      color: #6c757d !important;
-    }
-  </style>
   {% if messages %} {% for msg in messages %}
   <div class="alert alert-warning border-0">{{ msg }}</div>
   {% endfor %} {% endif %}
@@ -84,7 +70,7 @@
           </a>
           <button
             type="submit"
-            class="btn color-azul text-white fw-bold w-50 border-0"
+            class="btn btn-primary w-50 fw-bold"
           >
             <i class="bi bi-save me-1"></i>Guardar Registro
           </button>
