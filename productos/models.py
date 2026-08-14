@@ -10,6 +10,8 @@ from usuarios.models import Usuario, Notificacion
 # ==========================================================
 class Categoria(models.Model):
 
+    codigo = models.AutoField(primary_key=True)
+
     nombre = models.CharField(
         max_length=100,
         unique=True,
@@ -34,6 +36,8 @@ class Categoria(models.Model):
 # 2. PROVEEDOR
 # ==========================================================
 class Proveedor(models.Model):
+
+    codigo = models.AutoField(primary_key=True)
 
     nombre = models.CharField(
         max_length=150,
@@ -69,9 +73,6 @@ class Proveedor(models.Model):
         verbose_name_plural = "Proveedores"
 
 
-# ==========================================================
-# 3. PRODUCTO
-# ==========================================================
 class Producto(models.Model):
 
     codigo_producto = models.AutoField(
@@ -82,6 +83,15 @@ class Producto(models.Model):
         max_length=20,
         unique=True,
         blank=True
+    )
+
+    codigo_inventario = models.ForeignKey(
+        "Inventario",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="producto_principal",
+        verbose_name="Inventario"
     )
 
     nombre = models.CharField(
@@ -105,12 +115,10 @@ class Producto(models.Model):
         verbose_name="Activo"
     )
 
-    categoria = models.ForeignKey(
+    codigo_categoria = models.ForeignKey(
         Categoria,
         on_delete=models.PROTECT,
         related_name="productos",
-        null=True,
-        blank=False,
         verbose_name="Categoría"
     )
 
@@ -119,7 +127,6 @@ class Producto(models.Model):
         super().save(*args, **kwargs)
 
         if not self.codigo:
-
             self.codigo = f"PROD-{self.codigo_producto:05d}"
 
             super().save(
@@ -129,10 +136,13 @@ class Producto(models.Model):
     @property
     def stock_actual(self):
 
-        if hasattr(self, "bitacora") and self.bitacora:
-            return self.bitacora.cantidad
+        if self.codigo_inventario:
+            return self.codigo_inventario.cantidad_actual
 
-        return 0
+        try:
+            return self.inventario.cantidad_actual
+        except Inventario.DoesNotExist:
+            return 0
 
     @classmethod
     def total_productos(cls):
@@ -154,64 +164,154 @@ class Producto(models.Model):
         return f"{self.codigo} - {self.nombre}"
 
 
-# ==========================================================
-# 4. BITÁCORA / INVENTARIO
-# ==========================================================
-class bitacora(models.Model):
 
-    producto = models.OneToOneField(
+class Inventario(models.Model):
+
+    codigo = models.AutoField(
+        primary_key=True
+    )
+
+    codigo_producto = models.OneToOneField(
         Producto,
         on_delete=models.CASCADE,
-        related_name="bitacora"
-    )
-
-    cantidad = models.PositiveIntegerField(
-        default=0,
-        verbose_name="Cantidad en bitácora"
-    )
-
-    precio_venta = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=0.00,
-        verbose_name="Precio de Venta"
-    )
-
-    proveedor = models.ForeignKey(
-        Proveedor,
-        on_delete=models.SET_NULL,
+        related_name="inventario",
         null=True,
         blank=True,
-        related_name="bitacoras",
-        verbose_name="Proveedor"
+        verbose_name="Producto"
+    )
+
+    cantidad_actual = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Cantidad Actual"
+    )
+
+    stock_min = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Stock Mínimo"
+    )
+
+    stock_max = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Stock Máximo"
+    )
+
+    fecha_actualizacion = models.DateTimeField(
+        auto_now=True,
+        verbose_name="Fecha de Actualización"
+    )
+
+    observaciones = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Observaciones"
     )
 
     def __str__(self):
 
-        nombre_producto = (
-            self.producto.nombre
-            if self.producto
-            else "Sin producto"
-        )
+        if self.codigo_producto:
+            return (
+                f"{self.codigo_producto.nombre} - "
+                f"Stock: {self.cantidad_actual}"
+            )
 
+        return f"Inventario #{self.codigo}"
+
+class Bitacora(models.Model):
+
+    codigo = models.AutoField(
+        primary_key=True
+    )
+
+    codigo_inventario = models.ForeignKey(
+        Inventario,
+        on_delete=models.CASCADE,
+        related_name="bitacoras",
+        verbose_name="Inventario"
+    )
+
+    codigo_usuario = models.ForeignKey(
+        Usuario,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="bitacoras_inventario",
+        verbose_name="Usuario"
+    )
+
+    codigo_producto = models.ForeignKey(
+        Producto,
+        on_delete=models.CASCADE,
+        related_name="bitacoras",
+        verbose_name="Producto"
+    )
+
+    fecha = models.DateField(
+        auto_now_add=True,
+        verbose_name="Fecha"
+    )
+
+    hora = models.TimeField(
+        auto_now_add=True,
+        verbose_name="Hora"
+    )
+
+    tipo_cambio = models.CharField(
+        max_length=50,
+        verbose_name="Tipo de Cambio"
+    )
+
+    campo_actualizado = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name="Campo Actualizado"
+    )
+
+    valor_anterior = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name="Valor Anterior"
+    )
+
+    valor_actual = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name="Valor Actual"
+    )
+
+    motivo = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name="Motivo"
+    )
+
+    observaciones = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Observaciones"
+    )
+
+    def __str__(self):
         return (
-            f"{nombre_producto} - "
-            f"Bitácora: {self.cantidad} | "
-            f"Venta: ${self.precio_venta}"
+            f"Bitácora #{self.codigo} - "
+            f"{self.codigo_producto.nombre}"
         )
 
-
-# ==========================================================
-# 5. MOVIMIENTO DE INVENTARIO
-# ==========================================================
 class MovimientoInventario(models.Model):
+
+    codigo = models.AutoField(
+        primary_key=True
+    )
 
     TIPO_CHOICES = [
         ("entrada", "Entrada"),
         ("salida", "Salida"),
     ]
 
-    producto = models.ForeignKey(
+    codigo_producto = models.ForeignKey(
         Producto,
         on_delete=models.CASCADE,
         related_name="movimientos",
@@ -221,7 +321,7 @@ class MovimientoInventario(models.Model):
     tipo = models.CharField(
         max_length=10,
         choices=TIPO_CHOICES,
-        verbose_name="Tipo de movimiento"
+        verbose_name="Tipo de Movimiento"
     )
 
     cantidad = models.PositiveIntegerField(
@@ -233,48 +333,176 @@ class MovimientoInventario(models.Model):
         verbose_name="Fecha"
     )
 
-    motivo = models.CharField(
+    observacion = models.CharField(
         max_length=200,
-        verbose_name="Motivo"
+        verbose_name="Observación"
     )
 
     def __str__(self):
-
         return (
-            f"{self.producto.codigo} - "
+            f"{self.codigo_producto.codigo} - "
             f"{self.tipo} {self.cantidad}"
         )
 
+class Adquisicion(models.Model):
 
-# ==========================================================
-# 6. CREAR BITÁCORA AUTOMÁTICAMENTE
-# ==========================================================
-@receiver(post_save, sender=Producto)
-def crear_bitacora(sender, instance, created, **kwargs):
+    codigo = models.AutoField(
+        primary_key=True
+    )
 
-    if created:
+    codigo_proveedor = models.ForeignKey(
+        Proveedor,
+        on_delete=models.PROTECT,
+        related_name="adquisiciones",
+        verbose_name="Proveedor"
+    )
 
-        bitacora.objects.get_or_create(
-            producto=instance,
-            defaults={
-                "cantidad": 0,
-                "precio_venta": 0,
-            }
+    codigo_producto = models.ForeignKey(
+        Producto,
+        on_delete=models.PROTECT,
+        related_name="adquisiciones",
+        verbose_name="Producto"
+    )
+
+    cantidad = models.PositiveIntegerField(
+        verbose_name="Cantidad"
+    )
+
+    precio_compra = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name="Precio de Compra"
+    )
+
+    total = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name="Total"
+    )
+
+    fecha = models.DateField(
+        auto_now_add=True,
+        verbose_name="Fecha"
+    )
+
+    def __str__(self):
+        return (
+            f"Adquisición #{self.codigo} - "
+            f"{self.codigo_producto.nombre}"
         )
 
 
 # ==========================================================
-# 7. VENTA
-#
-# MER:
-#
-# venta
-# -------------------------
-# codigo_venta
-# codigo_usuario (FK)
-# total_compra
-# fecha
+# 8. CREAR INVENTARIO AUTOMÁTICAMENTE
 # ==========================================================
+@receiver(post_save, sender=Producto)
+def crear_inventario(sender, instance, created, **kwargs):
+
+    if created:
+
+        inventario, creado = Inventario.objects.get_or_create(
+            codigo_producto=instance,
+            defaults={
+                "cantidad_actual": 0,
+                "stock_min": 0,
+                "stock_max": 0,
+            }
+        )
+
+        if not instance.codigo_inventario_id:
+
+            Producto.objects.filter(
+                pk=instance.pk
+            ).update(
+                codigo_inventario=inventario
+            )
+
+class Promocion(models.Model):
+
+    codigo = models.AutoField(
+        primary_key=True
+    )
+
+    nombre = models.CharField(
+        max_length=100,
+        verbose_name="Nombre"
+    )
+
+    porcentaje_descuento = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        verbose_name="Porcentaje de Descuento"
+    )
+
+    descripcion = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Descripción"
+    )
+
+    fecha_inicio = models.DateField(
+        verbose_name="Fecha de Inicio"
+    )
+
+    fecha_fin = models.DateField(
+        verbose_name="Fecha de Fin"
+    )
+
+    imagen = models.ImageField(
+        upload_to="promociones/",
+        blank=True,
+        null=True,
+        verbose_name="Imagen"
+    )
+
+    estado = models.BooleanField(
+        default=True,
+        verbose_name="Estado"
+    )
+
+    def __str__(self):
+        return self.nombre
+
+
+class PromocionProducto(models.Model):
+
+    codigo = models.AutoField(
+        primary_key=True
+    )
+
+    codigo_promocion = models.ForeignKey(
+        Promocion,
+        on_delete=models.CASCADE,
+        related_name="productos_promocion",
+        verbose_name="Promoción"
+    )
+
+    codigo_producto = models.ForeignKey(
+        Producto,
+        on_delete=models.CASCADE,
+        related_name="promociones",
+        verbose_name="Producto"
+    )
+
+    estado = models.BooleanField(
+        default=True,
+        verbose_name="Estado"
+    )
+
+    valor_con_descuento = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name="Valor con Descuento"
+    )
+
+    def __str__(self):
+        return (
+            f"{self.codigo_producto.nombre} - "
+            f"{self.codigo_promocion.nombre}"
+        )
+
+
+
 class venta(models.Model):
 
     METODO_PAGO_CHOICES = [
@@ -298,16 +526,10 @@ class venta(models.Model):
         ),
     ]
 
-    # ------------------------------------------
-    # codigo_venta
-    # ------------------------------------------
     codigo_venta = models.AutoField(
         primary_key=True
     )
 
-    # ------------------------------------------
-    # codigo_usuario (FK)
-    # ------------------------------------------
     codigo_usuario = models.ForeignKey(
         Usuario,
         on_delete=models.SET_NULL,
@@ -317,9 +539,6 @@ class venta(models.Model):
         verbose_name="Usuario"
     )
 
-    # ------------------------------------------
-    # Datos adicionales del cliente
-    # ------------------------------------------
     nombre_cliente = models.CharField(
         max_length=100,
         verbose_name="Nombre del Cliente"
@@ -345,9 +564,6 @@ class venta(models.Model):
         verbose_name="Dirección"
     )
 
-    # ------------------------------------------
-    # Información del pago
-    # ------------------------------------------
     metodo_pago = models.CharField(
         max_length=50,
         choices=METODO_PAGO_CHOICES,
@@ -370,9 +586,6 @@ class venta(models.Model):
         verbose_name="Comprobante"
     )
 
-    # ------------------------------------------
-    # total_compra
-    # ------------------------------------------
     total_compra = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -380,9 +593,6 @@ class venta(models.Model):
         verbose_name="Total de Compra"
     )
 
-    # ------------------------------------------
-    # fecha
-    # ------------------------------------------
     fecha = models.DateTimeField(
         auto_now_add=True,
         verbose_name="Fecha"
@@ -407,34 +617,12 @@ class venta(models.Model):
         )
 
 
-# ==========================================================
-# 8. DETALLE DE VENTA
-#
-# MER:
-#
-# detalle_venta
-# -------------------------
-# codigo_detalle
-# codigo_venta (FK)
-# codigo_factura (FK)
-# codigo_producto (FK)
-# codigo_movimiento_producto (FK)
-# cantidad
-# valor_descuento
-# subtotal
-# ==========================================================
 class detalleventa(models.Model):
 
-    # ------------------------------------------
-    # codigo_detalle
-    # ------------------------------------------
     codigo_detalle = models.AutoField(
         primary_key=True
     )
 
-    # ------------------------------------------
-    # codigo_venta (FK)
-    # ------------------------------------------
     codigo_venta = models.ForeignKey(
         venta,
         on_delete=models.CASCADE,
@@ -442,9 +630,6 @@ class detalleventa(models.Model):
         verbose_name="Venta"
     )
 
-    # ------------------------------------------
-    # codigo_factura (FK)
-    # ------------------------------------------
     codigo_factura = models.ForeignKey(
         "facturas.Factura",
         on_delete=models.SET_NULL,
@@ -454,9 +639,6 @@ class detalleventa(models.Model):
         verbose_name="Factura"
     )
 
-    # ------------------------------------------
-    # codigo_producto (FK)
-    # ------------------------------------------
     codigo_producto = models.ForeignKey(
         Producto,
         on_delete=models.CASCADE,
@@ -464,9 +646,6 @@ class detalleventa(models.Model):
         verbose_name="Producto"
     )
 
-    # ------------------------------------------
-    # codigo_movimiento_producto (FK)
-    # ------------------------------------------
     codigo_movimiento_producto = models.ForeignKey(
         MovimientoInventario,
         on_delete=models.SET_NULL,
@@ -476,16 +655,10 @@ class detalleventa(models.Model):
         verbose_name="Movimiento de Inventario"
     )
 
-    # ------------------------------------------
-    # cantidad
-    # ------------------------------------------
     cantidad = models.PositiveIntegerField(
         verbose_name="Cantidad"
     )
 
-    # ------------------------------------------
-    # valor_descuento
-    # ------------------------------------------
     valor_descuento = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -493,9 +666,6 @@ class detalleventa(models.Model):
         verbose_name="Valor del Descuento"
     )
 
-    # ------------------------------------------
-    # subtotal
-    # ------------------------------------------
     subtotal = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -506,53 +676,42 @@ class detalleventa(models.Model):
 
     def save(self, *args, **kwargs):
 
-        stock = self.codigo_producto.bitacora
+        inventario = self.codigo_producto.inventario
 
-        # ------------------------------------------
-        # Calcular subtotal
-        # ------------------------------------------
         subtotal = (
             self.cantidad *
-            stock.precio_venta
+            getattr(inventario, "precio_venta", 0)
         )
 
-        # Aplicar descuento
         subtotal -= self.valor_descuento
 
-        # Evitar valores negativos
         if subtotal < 0:
             subtotal = 0
 
         self.subtotal = subtotal
 
-        # ------------------------------------------
-        # Validar stock al crear
-        # ------------------------------------------
+        # Validar stock cuando se crea
         if not self.pk:
 
-            if self.cantidad > stock.cantidad:
+            if self.cantidad > inventario.cantidad_actual:
 
                 raise ValueError(
                     f"Stock insuficiente para "
                     f"'{self.codigo_producto.nombre}'. "
-                    f"Disponible: {stock.cantidad}"
+                    f"Disponible: "
+                    f"{inventario.cantidad_actual}"
                 )
 
-        # ------------------------------------------
-        # Guardar detalle
-        # ------------------------------------------
         super().save(*args, **kwargs)
 
-        # ------------------------------------------
-        # Crear movimiento de inventario
-        # ------------------------------------------
+        # Crear movimiento
         if not self.codigo_movimiento_producto:
 
             movimiento = MovimientoInventario.objects.create(
-                producto=self.codigo_producto,
+                codigo_producto=self.codigo_producto,
                 tipo="salida",
                 cantidad=self.cantidad,
-                motivo=(
+                observacion=(
                     f"Venta Online #"
                     f"{self.codigo_venta.codigo_venta}"
                 )
@@ -566,13 +725,14 @@ class detalleventa(models.Model):
                 ]
             )
 
-            # --------------------------------------
-            # Descontar bitácora
-            # --------------------------------------
-            stock.cantidad -= self.cantidad
+            # Descontar inventario
+            inventario.cantidad_actual -= self.cantidad
 
-            stock.save(
-                update_fields=["cantidad"]
+            inventario.save(
+                update_fields=[
+                    "cantidad_actual",
+                    "fecha_actualizacion"
+                ]
             )
 
     def __str__(self):
@@ -584,7 +744,7 @@ class detalleventa(models.Model):
 
 
 # ==========================================================
-# 9. DATOS DE TRANSFERENCIA
+# 13. DATOS DE TRANSFERENCIA
 # ==========================================================
 class DatosTransferencia(models.Model):
 
@@ -634,7 +794,7 @@ class DatosTransferencia(models.Model):
 
 
 # ==========================================================
-# 10. NOTIFICACIÓN DE VENTA
+# 14. NOTIFICACIÓN DE VENTA
 # ==========================================================
 @receiver(post_save, sender=venta)
 def notificar_venta(

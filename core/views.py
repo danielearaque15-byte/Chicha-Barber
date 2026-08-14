@@ -46,10 +46,9 @@ def inicio_admin(request):
     from usuarios.models import Usuario
     from servicios.models import Servicios
     from reservas.models import Reserva
-    from productos.models import Producto
+    from productos.models import Producto, Inventario
     from facturas.models import Factura
     from django.db.models import Sum
-    from productos.models import bitacora
 
     # Estadísticas
     total_clientes = Usuario.objects.filter(rol__tipo_rol='cliente').count()
@@ -64,7 +63,7 @@ def inicio_admin(request):
     # Listas
     reservas_recientes = Reserva.objects.all().order_by('-id')[:5]
     facturas_recientes = Factura.objects.all().order_by('-fecha_emision')[:5]
-    productos_bajo_bitacora = bitacora.objects.filter(cantidad__lt=15).select_related('producto')[:5]
+    productos_bajo_bitacora = Inventario.objects.filter(cantidad_actual__lt=15).select_related('codigo_producto')[:5]
 
     context = {
         'nombre': request.user.first_name or request.user.username,

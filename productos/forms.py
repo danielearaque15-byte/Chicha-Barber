@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Producto,bitacora,venta,detalleventa,Proveedor,Categoria
+from .models import  Producto,Inventario,venta,detalleventa,Proveedor,Categoria
 
 
 
@@ -17,7 +17,7 @@ class ProductoForm(forms.ModelForm):
         fields = [
             'nombre',
             'descripcion',
-            'categoria',
+            'codigo_categoria',
             'imagen',
             'estado'
         ]
@@ -37,7 +37,7 @@ class ProductoForm(forms.ModelForm):
                 }
             ),
 
-            'categoria': forms.Select(
+            'codigo_categoria': forms.Select(
                 attrs={
                     'class': 'form-select'
                 }
@@ -58,42 +58,50 @@ class ProductoForm(forms.ModelForm):
 
 
 # ==========================================================
-# FORMULARIO BITÁCORA
-# Cantidad, precio y proveedor
+# FORMULARIO INVENTARIO
+# Cantidad, stock mínimo, stock máximo y observaciones
 # ==========================================================
 
-class bitacoraForm(forms.ModelForm):
+class InventarioForm(forms.ModelForm):
 
     class Meta:
 
-        model = bitacora
+        model = Inventario
 
         fields = [
-            'cantidad',
-            'precio_venta',
-            'proveedor'
+            'cantidad_actual',
+            'stock_min',
+            'stock_max',
+            'observaciones'
         ]
 
         widgets = {
 
-            'cantidad': forms.NumberInput(
+            'cantidad_actual': forms.NumberInput(
                 attrs={
                     'class': 'form-control',
                     'min': '0'
                 }
             ),
 
-            'precio_venta': forms.NumberInput(
+            'stock_min': forms.NumberInput(
                 attrs={
                     'class': 'form-control',
-                    'min': '0',
-                    'step': '0.01'
+                    'min': '0'
                 }
             ),
 
-            'proveedor': forms.Select(
+            'stock_max': forms.NumberInput(
                 attrs={
-                    'class': 'form-select'
+                    'class': 'form-control',
+                    'min': '0'
+                }
+            ),
+
+            'observaciones': forms.Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'rows': 3
                 }
             ),
         }
@@ -106,7 +114,6 @@ class bitacoraForm(forms.ModelForm):
 class ventaForm(forms.ModelForm):
 
     class Meta:
-
         model = venta
 
         fields = [
@@ -190,7 +197,7 @@ class detalleventaForm(forms.ModelForm):
             'cantidad': 'Cantidad'
         }
 
-    
+
 # ==========================================================
 # FORMULARIO CATEGORÍA
 # ==========================================================
@@ -201,7 +208,10 @@ class CategoriaForm(forms.ModelForm):
 
         model = Categoria
 
-        fields = ['nombre','descripcion']
+        fields = [
+            'nombre',
+            'descripcion'
+        ]
 
         widgets = {
 

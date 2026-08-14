@@ -1,0 +1,192 @@
+{% extends 'base-admin.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <!-- ENCABEZADO -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                
+            </h2>
+
+            <p class="text-muted mb-0">
+                
+            </p>
+        </div>
+
+        <a href="{% url 'lista_movimientos_inventario' %}"
+           class="btn color-azul text-white fw-bold shadow-sm">
+
+            <i class="bi bi-arrow-left me-1"></i>
+            Volver
+        </a>
+
+    </div>
+
+
+    <!-- FORMULARIO -->
+
+    <div class="card shadow border-0">
+
+        <div class="card-body p-4">
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <div class="row g-4">
+
+                    <!-- PRODUCTO -->
+
+                    <div class="col-md-6">
+
+                        <label for="producto_id"
+                               class="form-label fw-bold">
+
+                            Producto
+
+                        </label>
+
+                        <select name="producto_id"
+                                id="producto_id"
+                                class="form-select"
+                                required>
+
+                            <option value="">
+                                Seleccione un producto
+                            </option>
+
+                            {% for producto in productos %}
+
+                                <option value="{{ producto.codigo_producto }}">
+
+                                    {{ producto.nombre }}
+
+                                    - #{{ producto.codigo_producto }}
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- TIPO -->
+
+                    <div class="col-md-6">
+
+                        <label for="tipo"
+                               class="form-label fw-bold">
+
+                            Tipo de movimiento
+
+                        </label>
+
+                        <select name="tipo"
+                                id="tipo"
+                                class="form-select"
+                                required>
+
+                            <option value="">
+                                Seleccione el tipo
+                            </option>
+
+                            <option value="entrada">
+                                Entrada
+                            </option>
+
+                            <option value="salida">
+                                Salida
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- CANTIDAD -->
+
+                    <div class="col-md-6">
+
+                        <label for="cantidad"
+                               class="form-label fw-bold">
+
+                            Cantidad
+
+                        </label>
+
+                        <input type="number"
+                               name="cantidad"
+                               id="cantidad"
+                               class="form-control"
+                               min="1"
+                               required>
+
+                    </div>
+
+
+                    <!-- MOTIVO -->
+
+                    <div class="col-md-6">
+
+                        <label for="motivo"
+                               class="form-label fw-bold">
+
+                            Motivo
+
+                        </label>
+
+                        <input type="text"
+                               name="motivo"
+                               id="motivo"
+                               class="form-control"
+                               placeholder="Ej: Compra, venta, ajuste...">
+
+                    </div>
+
+
+                    <!-- BOTONES -->
+
+                    <div class="col-12">
+
+                        <hr>
+
+                        <div class="d-flex justify-content-end gap-2">
+
+                            <a href="{% url 'lista_movimientos_inventario' %}"
+                               class="btn btn-outline-secondary">
+
+                                Cancelar
+
+                            </a>
+
+                            <button type="submit"
+                                    class="btn color-azul text-white fw-bold">
+
+                                <i class="bi bi-save me-1"></i>
+
+                                Registrar Movimiento
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock content %}
