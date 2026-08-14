@@ -21,7 +21,7 @@ from .models import (
     Proveedor,
     Bitacora,
 )
-from .forms import ventaForm,detalleventaForm,ProductoForm,InventarioForm,CategoriaForm,ProveedorForm
+from .forms import ventaForm, detalleventaForm, ProductoForm, InventarioForm, CategoriaForm, ProveedorForm, AdquisicionForm
 from core.utils import enviar_correo_venta
 from facturas.models import Factura, DetalleFactura
 from reservas.models import Reserva
@@ -44,7 +44,7 @@ def productos_galeria(request):
     productos = Producto.objects.filter(
         estado=True
     ).select_related(
-        'categoria'
+        'codigo_categoria'
     )
 
     if buscar:
@@ -55,7 +55,7 @@ def productos_galeria(request):
 
     if categoria_id and categoria_id.isdigit():
         productos = productos.filter(
-            categoria_id=int(categoria_id)
+            codigo_categoria_id=int(categoria_id)
         )
 
     context = {
@@ -66,7 +66,7 @@ def productos_galeria(request):
 
     return render(
         request,
-        'productos/productos_galeria.html',
+        'productos/productos/Productos_galeria.html',
         context
     )
 
@@ -79,7 +79,7 @@ def productos_galeria(request):
 def carrito(request):
     return render(
         request,
-        'productos/carrito.html'
+        'productos/carrito/Carrito.html'
     )
 
 
@@ -105,7 +105,7 @@ def pago(request):
 
     return render(
         request,
-        'productos/pago.html',
+        'productos/pagos/pago.html',
         context
     )
 
@@ -482,7 +482,7 @@ def lista_productos_admin(request):
 
     return render(
         request,
-        'productos/productos_admin.html',
+        'productos/productos/productos_admin.html',
         context
     )
 
@@ -515,7 +515,7 @@ def crear_producto(request):
 
     return render(
         request,
-        'productos/crear_producto.html',
+        'productos/productos/crear_producto.html',
         {
             'titulo': 'Crear Producto',
             'form': form
@@ -559,7 +559,7 @@ def editar_producto(request, pk):
 
     return render(
         request,
-        'productos/editar_producto.html',
+        'productos/productos/editar_producto.html',
         {
             'titulo': 'Editar Producto',
             'form': form,
@@ -613,7 +613,7 @@ def lista_bitacora(request):
 
     return render(
         request,
-        'productos/bitacora.html',
+        'productos/bitacora/bitacora.html',
         context
     )
 
@@ -661,9 +661,17 @@ def lista_inventario(request):
         cantidad_actual__gt=10
     ).count()
 
+    stock_total = inventario_total
+    stock_bajo = inventarios.filter(
+        cantidad_actual__lte=10
+    ).count()
+
     context = {
         'titulo': 'Inventario',
         'inventarios': inventarios,
+        'total_inventario': inventario_total,
+        'stock_total': stock_total,
+        'stock_bajo': stock_bajo,
         'inventario_total': inventario_total,
         'inventario_critico': inventario_critico,
         'inventario_bajo': inventario_bajo,
@@ -672,7 +680,7 @@ def lista_inventario(request):
 
     return render(
         request,
-        'productos/inventario.html',
+        'productos/inventario/inventario.html',
         context
     )
 
@@ -712,7 +720,7 @@ def editar_inventario(request, pk):
 
     return render(
         request,
-        'productos/editar_inventario.html',
+        'productos/inventario/editar_inventario.html',
         {
             'titulo': 'Editar Inventario',
             'form': form,
@@ -743,7 +751,7 @@ def lista_movimientos_inventario(request):
 
     return render(
         request,
-        'productos/movimiento_inventario.html',
+        'productos/inventario/movimiento_inventario.html',
         context
     )
 
@@ -872,7 +880,7 @@ def registrar_movimiento_inventario(request):
 
     return render(
         request,
-        'productos/movimiento_inventario_registar.html',
+        'productos/inventario/movimiento_inventario_registar.html',
         {
             'productos': productos,
             'titulo': 'Registrar Movimiento'
@@ -953,12 +961,23 @@ def lista_adquisiciones(request):
         .order_by('-fecha')
     )
 
+    total_adquisiciones = adquisiciones.count()
+    total_unidades = adquisiciones.aggregate(
+        total=Sum('cantidad')
+    )['total'] or 0
+    valor_total = adquisiciones.aggregate(
+        total=Sum('total')
+    )['total'] or Decimal('0')
+
     return render(
         request,
-        'productos/adquisicion.html',
+        'productos/compras/adquisicion.html',
         {
             'adquisiciones': adquisiciones,
-            'titulo': 'Adquisiciones'
+            'titulo': 'Adquisiciones',
+            'total_adquisiciones': total_adquisiciones,
+            'total_unidades': total_unidades,
+            'valor_total': valor_total,
         }
     )
 
@@ -981,6 +1000,13 @@ def registrar_adquisicion(request):
                 request.POST.get(
                     'cantidad',
                     1
+                )
+            )
+
+            cantidad_venta = int(
+                request.POST.get(
+                    'cantidad_venta',
+                    0
                 )
             )
 
@@ -1051,30 +1077,36 @@ def registrar_adquisicion(request):
                     codigo_proveedor=proveedor,
                     codigo_producto=producto,
                     cantidad=cantidad,
+                    cantidad_venta=cantidad_venta,
                     precio_compra=precio_compra,
                     total=total,
-                    fecha=request.POST.get('fecha')
                 )
             )
+
+            # Actualizar precio del producto si hay cantidad_venta
+            if cantidad_venta > 0:
+                producto.precio = cantidad_venta
+                producto.save(update_fields=['precio'])
 
             inventario, creado = (
                 Inventario.objects.get_or_create(
                     codigo_producto=producto,
                     defaults={
-                        'cantidad_actual': 0
+                        'cantidad_actual': 0,
+                        'stock_min': 0,
+                        'stock_max': 0,
                     }
                 )
             )
 
             inventario.cantidad_actual += cantidad
-
-            inventario.save()
+            inventario.save(update_fields=['cantidad_actual'])
 
             MovimientoInventario.objects.create(
-                producto=producto,
+                codigo_producto=producto,
                 tipo='entrada',
                 cantidad=cantidad,
-                motivo=(
+                observacion=(
                     f"Adquisición #{adquisicion_obj.pk} "
                     f"a {proveedor.nombre}"
                 )
@@ -1099,7 +1131,7 @@ def registrar_adquisicion(request):
 
     return render(
         request,
-        'productos/crear_adquisicion.html',
+        'productos/compras/crear_adquisicion.html',
         context
     )
 
@@ -1119,6 +1151,13 @@ def editar_adquisicion(request, pk):
                 request.POST.get(
                     'cantidad',
                     1
+                )
+            )
+
+            nueva_cantidad_venta = int(
+                request.POST.get(
+                    'cantidad_venta',
+                    0
                 )
             )
 
@@ -1224,6 +1263,10 @@ def editar_adquisicion(request, pk):
                 nueva_cantidad
             )
 
+            adquisicion_obj.cantidad_venta = (
+                nueva_cantidad_venta
+            )
+
             adquisicion_obj.precio_compra = (
                 nuevo_precio
             )
@@ -1234,6 +1277,13 @@ def editar_adquisicion(request, pk):
             )
 
             adquisicion_obj.save()
+
+            # Actualizar precio del producto
+            if nueva_cantidad_venta > 0:
+                adquisicion_obj.codigo_producto.precio = nueva_cantidad_venta
+                adquisicion_obj.codigo_producto.save(
+                    update_fields=['precio']
+                )
 
         messages.success(
             request,
@@ -1246,7 +1296,7 @@ def editar_adquisicion(request, pk):
 
     return render(
         request,
-        'productos/editar_adquisicion.html',
+        'productos/compras/editar_adquisicion.html',
         {
             'adquisicion': adquisicion_obj,
             'titulo': 'Editar Adquisición'
@@ -1372,7 +1422,7 @@ def registrar_venta(request):
 
     return render(
         request,
-        'productos/registrar_compra.html',
+        'productos/compras/registrar_compra.html',
         context
     )
 
@@ -1393,7 +1443,7 @@ def historial_ventas(request):
 
     return render(
         request,
-        'productos/ventas.html',
+        'productos/ventas/ventas.html',
         context
     )
 
@@ -1419,7 +1469,7 @@ def detalle_venta(request, pk):
 
     return render(
         request,
-        'productos/detalle_venta.html',
+        'productos/ventas/detalle_venta.html',
         context
     )
 
@@ -1550,7 +1600,7 @@ def editar_datos_banco(request):
 
     return render(
         request,
-        'productos/editar_datos_banco.html',
+        'productos/banco/editar_datos_banco.html',
         {
             'titulo': 'Editar Datos Bancarios',
             'datos': datos
@@ -1563,7 +1613,7 @@ def ver_datos_banco(request):
 
     return render(
         request,
-        'productos/ver_datos_banco.html',
+        'productos/banco/ver_datos_banco.html',
         {
             'titulo': 'Datos Bancarios',
             'datos': DatosTransferencia.get_solo()
@@ -1602,7 +1652,7 @@ def crear_categoria(request):
 
     return render(
         request,
-        'productos/crear_categoria.html',
+        'productos/categorias/crear_categoria.html',
         {
             'form': form
         }
@@ -1619,7 +1669,7 @@ def lista_categorias(request):
 
     return render(
         request,
-        'productos/lista_categoria.html',
+        'productos/categorias/lista_categoria.html',
         {
             'titulo': 'Categorías',
             'categorias': categorias
@@ -1631,7 +1681,7 @@ def editar_categoria(request, id):
 
     categoria = get_object_or_404(
         Categoria,
-        id=id
+        codigo=id
     )
 
     if request.method == 'POST':
@@ -1662,7 +1712,7 @@ def editar_categoria(request, id):
 
     return render(
         request,
-        'productos/editar_categoria.html',
+        'productos/categorias/editar_categoria.html',
         {
             'form': form,
             'categoria': categoria
@@ -1674,7 +1724,7 @@ def eliminar_categoria(request, id):
 
     categoria = get_object_or_404(
         Categoria,
-        id=id
+        codigo=id
     )
 
     categoria.delete()
@@ -1720,7 +1770,7 @@ def crear_proveedor(request):
 
     return render(
         request,
-        'productos/crear_proveedor.html',
+        'productos/proveedores/crear_proveedor.html',
         {
             'form': form
         }
@@ -1737,7 +1787,7 @@ def lista_proveedores(request):
 
     return render(
         request,
-        'productos/lista_proveedores.html',
+        'productos/proveedores/lista_proveedores.html',
         {
             'titulo': 'Proveedores',
             'proveedores': proveedores
@@ -1749,7 +1799,7 @@ def editar_proveedor(request, id):
 
     proveedor = get_object_or_404(
         Proveedor,
-        id=id
+        codigo=id
     )
 
     if request.method == 'POST':
@@ -1780,7 +1830,7 @@ def editar_proveedor(request, id):
 
     return render(
         request,
-        'productos/editar_proveedor.html',
+        'productos/proveedores/editar_proveedor.html',
         {
             'form': form,
             'proveedor': proveedor
@@ -1792,7 +1842,7 @@ def eliminar_proveedor(request, id):
 
     proveedor = get_object_or_404(
         Proveedor,
-        id=id
+        codigo=id
     )
 
     proveedor.delete()

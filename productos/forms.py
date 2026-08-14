@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import  Producto,Inventario,venta,detalleventa,Proveedor,Categoria
+from .models import Producto, Inventario, venta, detalleventa, Proveedor, Categoria, Adquisicion
 
 
 
@@ -18,6 +18,7 @@ class ProductoForm(forms.ModelForm):
             'nombre',
             'descripcion',
             'codigo_categoria',
+            'precio',
             'imagen',
             'estado'
         ]
@@ -40,6 +41,14 @@ class ProductoForm(forms.ModelForm):
             'codigo_categoria': forms.Select(
                 attrs={
                     'class': 'form-select'
+                }
+            ),
+
+            'precio': forms.NumberInput(
+                attrs={
+                    'class': 'form-control',
+                    'min': '0',
+                    'step': '0.01'
                 }
             ),
 
@@ -283,6 +292,71 @@ class ProveedorForm(forms.ModelForm):
             'direccion': forms.TextInput(
                 attrs={
                     'class': 'form-control'
+                }
+            ),
+        }
+
+
+# ==========================================================
+# FORMULARIO ADQUISICIÓN
+# ==========================================================
+
+class AdquisicionForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Adquisicion
+
+        fields = [
+            'codigo_proveedor',
+            'codigo_producto',
+            'cantidad',
+            'cantidad_venta',
+            'precio_compra',
+            'total'
+        ]
+
+        widgets = {
+
+            'codigo_proveedor': forms.Select(
+                attrs={
+                    'class': 'form-select'
+                }
+            ),
+
+            'codigo_producto': forms.Select(
+                attrs={
+                    'class': 'form-select'
+                }
+            ),
+
+            'cantidad': forms.NumberInput(
+                attrs={
+                    'class': 'form-control',
+                    'min': '1'
+                }
+            ),
+
+            'cantidad_venta': forms.NumberInput(
+                attrs={
+                    'class': 'form-control',
+                    'min': '0'
+                }
+            ),
+
+            'precio_compra': forms.NumberInput(
+                attrs={
+                    'class': 'form-control',
+                    'min': '0',
+                    'step': '0.01'
+                }
+            ),
+
+            'total': forms.NumberInput(
+                attrs={
+                    'class': 'form-control',
+                    'min': '0',
+                    'step': '0.01'
                 }
             ),
         }

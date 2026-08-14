@@ -224,7 +224,7 @@
                                     </h6>
 
                                     <small class="text-muted">
-                                        {{ inventario.codigo_producto.categoria }}
+                                        {{ inventario.codigo_producto.codigo_categoria.nombre|default:"Sin categoría" }}
                                     </small>
 
                                 </div>
@@ -236,7 +236,7 @@
 
                         <!-- CATEGORÍA -->
                         <td>
-                            {{ inventario.codigo_producto.categoria }}
+                            {{ inventario.codigo_producto.codigo_categoria.nombre|default:"Sin categoría" }}
                         </td>
 
 
