@@ -42,7 +42,7 @@
                         <i class="bi bi-person-vcard me-2 text-success"></i>Mi Perfil
                     </a>
                 </li>
-               {% if user.rol == 'admin' or user.rol == 'barbero' %}
+               {% if user.rol.tipo_rol == 'admin' or user.rol.tipo_rol == 'barbero' %}
                 <li class="nav-item">
                     <a class="nav-link px-4 py-3 border-bottom" href="{% url 'inicio_admin' %}">
                         <i class="bi bi-grid-1x2-fill me-2 text-primary"></i>Panel Admin

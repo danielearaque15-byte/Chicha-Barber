@@ -106,7 +106,7 @@
                         <tr class="align-middle usuarios-lista-usuarios__tr-15">
                             <td class="ps-4">
                                 <div class="d-flex align-items-center gap-2">
-                                    <div class="usuarios-lista-usuarios__div-16" class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white {% if usuario.rol == 'barbero' %}bg-info {% elif usuario.rol == 'admin' %}bg-danger {% else %}bg-warning text-dark{% endif %}">
+                                    <div class="usuarios-lista-usuarios__div-16" class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white {% if usuario.rol.tipo_rol == 'barbero' %}bg-info {% elif usuario.rol.tipo_rol == 'admin' %}bg-danger {% else %}bg-warning text-dark{% endif %}">
                                         {{ usuario.get_full_name|first|upper }}
                                     </div>
                                     {{ usuario.get_full_name }}
@@ -116,10 +116,10 @@
                             <td>{{ usuario.telefono|default:"—" }}</td>
                             <td>
                                 <span class="badge
-                                    {% if usuario.rol == 'barbero' %}bg-info text-dark
-                                    {% elif usuario.rol == 'admin' %}bg-danger
+                                    {% if usuario.rol.tipo_rol == 'barbero' %}bg-info text-dark
+                                    {% elif usuario.rol.tipo_rol == 'admin' %}bg-danger
                                     {% else %}bg-warning text-dark{% endif %}">
-                                    {{ usuario.get_rol_display }}
+                                    {{ usuario.rol.tipo_rol }}
                                 </span>
                             </td>
                             <td>
