@@ -38,10 +38,12 @@ def construir_contexto_dinamico():
     contexto_extra += "\n--- PRODUCTOS EN VENTA ---\n"
     if productos.exists():
         for p in productos:
-            bitacora = getattr(p, 'bitacora', None)
-            precio = f"${bitacora.precio_venta:.0f}" if bitacora and bitacora.precio_venta else "Precio no disponible"
-            cantidad = f"bitacora: {bitacora.cantidad}" if bitacora else "bitacora no disponible"
-            contexto_extra += f"- {p.nombre} | {precio} | {cantidad} | Categoría: {p.categoria.nombre if p.categoria else 'Sin categoría'}\n"
+            categoria = getattr(p, 'codigo_categoria', None)
+            contexto_extra += (
+                f"- {p.nombre} | Precio: ${p.precio:.0f} | "
+                f"Categoría: {categoria.nombre if categoria else 'Sin categoría'} | "
+                f"Estado: {'Activo' if p.estado else 'Inactivo'}\n"
+            )
     else:
         contexto_extra += "- No hay productos disponibles actualmente.\n"
 

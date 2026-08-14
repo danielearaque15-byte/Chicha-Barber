@@ -94,7 +94,7 @@
 
                             <td class="fw-bold">
 
-                                {{ categoria.id }}
+                                {{ categoria.codigo }}
 
                             </td>
 
@@ -153,7 +153,7 @@
                                     <!-- EDITAR -->
 
 
-                                    <a href="{% url 'editar_categoria' categoria.id %}"
+                                    <a href="{% url 'editar_categoria' categoria.codigo %}"
                                        class="btn btn-sm btn-outline-primary"
                                        title="Editar">
 
@@ -169,7 +169,7 @@
                                     <!-- ELIMINAR -->
 
 
-                                    <a href="{% url 'eliminar_categoria' categoria.id %}"
+                                    <a href="{% url 'eliminar_categoria' categoria.codigo %}"
                                        class="btn btn-sm btn-outline-danger"
                                        title="Eliminar"
                                        onclick="return confirm('¿Deseas eliminar esta categoría?');">
