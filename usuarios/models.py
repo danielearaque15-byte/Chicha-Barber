@@ -17,13 +17,25 @@ class Rol(models.Model):
     def __str__(self):
         return self.tipo_rol
 
+from django.contrib.auth.models import AbstractUser, UserManager
 
+
+class UsuarioManager(UserManager):
+    def create_superuser(self, username, email=None, password=None, **extra_fields):
+        if not extra_fields.get('rol'):
+            rol_admin, _ = Rol.objects.get_or_create(tipo_rol='admin')
+            extra_fields['rol'] = rol_admin
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return super().create_superuser(username, email, password, **extra_fields)
+    
 class Usuario(AbstractUser):
+    objects = UsuarioManager()
     # El documento será el 'username' interno de Django
     username = models.CharField(
         max_length=20,
         unique=True,
-        verbose_name="Número de Documento"
+        verbose_name="Número de Documento",
     )
     email = models.EmailField(unique=True)
 

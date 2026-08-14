@@ -119,6 +119,8 @@ class Producto(models.Model):
         Categoria,
         on_delete=models.PROTECT,
         related_name="productos",
+        null=True,
+        blank=True,
         verbose_name="Categoría"
     )
 
@@ -226,6 +228,8 @@ class Bitacora(models.Model):
         Inventario,
         on_delete=models.CASCADE,
         related_name="bitacoras",
+        null=True,
+        blank=True,
         verbose_name="Inventario"
     )
 
@@ -238,25 +242,38 @@ class Bitacora(models.Model):
         verbose_name="Usuario"
     )
 
+    # Antes tenía un OneToOneField llamado 'producto' en el modelo viejo.
+    # Ahora es una FK normal en el nuevo esquema de auditoría.
+    # Nullable temporalmente porque no hay forma de mapear los registros
+    # viejos (que ya no se van a conservar) a este nuevo significado.
     codigo_producto = models.ForeignKey(
         Producto,
         on_delete=models.CASCADE,
         related_name="bitacoras",
+        null=True,
+        blank=True,
         verbose_name="Producto"
     )
 
     fecha = models.DateField(
         auto_now_add=True,
+        null=True,
+        blank=True,
         verbose_name="Fecha"
     )
 
     hora = models.TimeField(
         auto_now_add=True,
+        null=True,
+        blank=True,
         verbose_name="Hora"
     )
 
+    # También nullable temporalmente por la misma razón.
     tipo_cambio = models.CharField(
         max_length=50,
+        blank=True,
+        default='',
         verbose_name="Tipo de Cambio"
     )
 
@@ -297,7 +314,7 @@ class Bitacora(models.Model):
     def __str__(self):
         return (
             f"Bitácora #{self.codigo} - "
-            f"{self.codigo_producto.nombre}"
+            f"{self.codigo_producto.nombre if self.codigo_producto else 'Sin producto'}"
         )
 
 class MovimientoInventario(models.Model):
@@ -335,6 +352,8 @@ class MovimientoInventario(models.Model):
 
     observacion = models.CharField(
         max_length=200,
+        null=True,
+        blank=True,
         verbose_name="Observación"
     )
 
