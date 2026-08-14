@@ -42,7 +42,17 @@ urlpatterns = [
     path('bitacora/', views.lista_bitacora, name='lista_bitacora'),
     path('bitacora/editar/<int:pk>/', views.editar_bitacora, name='editar_bitacora'),
 
+    path('inventario/',views.lista_inventario, name='lista_inventario'),
+    path('inventario/editar/<int:pk>/',views.editar_inventario,name='editar_inventario'),
+    path('movimientos-inventario/',views.lista_movimientos_inventario,name='lista_movimientos_inventario'),
+    path('movimientos-inventario/registrar/',views.registrar_movimiento_inventario,name='registrar_movimiento_inventario'),
+    path('movimientos-inventario/eliminar/<int:pk>/',views.eliminar_movimiento_inventario,name='eliminar_movimiento_inventario' ), 
 
+
+    path('adquisiciones/',views.lista_adquisiciones,name='lista_adquisiciones'),
+    path('adquisicion/crear/',views.registrar_adquisicion,name='registrar_adquisicion'),
+    path('adquisicion/editar/<int:pk>/',views.editar_adquisicion,name='editar_adquisicion'),
+    path('adquisicion/eliminar/<int:pk>/',views.eliminar_adquisicion,name='eliminar_adquisicion'),
     # =========================
     # 🟡 ventaS
     # =========================
@@ -51,4 +61,7 @@ urlpatterns = [
     path('historial/', views.historial_ventas, name='historial_ventas'),
     path('historial/<int:pk>/', views.detalle_venta, name='detalle_venta'),
     path('historial/eliminar/<int:pk>/', views.eliminar_venta, name='eliminar_venta'),
+
+    
+
   ] 
