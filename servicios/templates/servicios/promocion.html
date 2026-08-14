@@ -3,61 +3,72 @@
 
 {% block content %}
 
- <div class="container">
-        
+<div class="container-fluid py-5 min-vh-100 d-flex flex-column justify-content-center">
+    
+    <div class="container">
         <div class="text-center mb-5">
-            <h1 class="text-light fw-bold fs-1 mb-4 w-75 mx-auto h-100 text-white text-uppercase">Nuestras Promociones</h1>
-            <p class="fs-4 text-body-secondary text-light">Descubre nuestras ofertas especiales y ahorra en tus servicios preferidos.</p>
-            <hr class="w-25 mx-auto text-body opacity-50">
+            <h1 class="display-4 fw-bold text-uppercase text-white mb-4">Nuestras Promociones</h1>
+            <p class="fs-4 text-white opacity-75">Descubre nuestras ofertas especiales y ahorra en tus servicios preferidos.</p>
+            <hr class="w-25 mx-auto opacity-50 text-white">    
         </div>
 
-</div>
-    
-
-    <div class="container">
-        <div class="row row-cols-1 row-cols-md-3 g-4 bg-transparent p-4 rounded-3 shadow-sm">
-
-
+        <div class="row g-4 justify-content-center">
+            
             {% for promocion in promociones %}
-            <div class="col d-flex justify-content-center">
-                <div class="card h-100 shadow-sm border-0 w-75 rounded-4" >
+            <!-- col-lg-4 para mantener 3 por fila en tamaño mediano adecuado -->
+            <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
+                
+                <!-- Tarjeta con ancho máximo controlado para equilibrar el tamaño -->
+                <div class="card bg-warning-subtle text-body h-100 shadow-lg border-0 rounded-4 overflow-hidden servicios-servicios__div-1 w-100" style="max-width: 300px;">
+                    
                     {% if promocion.imagen %}
-                        <img src="{{ promocion.imagen.url }}" alt="{{ promocion.nombre }}" class="card-img-top rounded-4 servicios-promocion__img-1">
+                        <img src="{{ promocion.imagen.url }}" loading="lazy" class="card-img-top servicios-servicios__img-2 object-fit-cover" style="height: 200px;" alt="{{ promocion.nombre }}">
                     {% else %}
-                        <!-- Imagen por defecto si no hay imagen de servicio, usa 'img/Fondo.png' como sugeriste -->
-                        <img src="{% static 'img/Fondo.png' %}" alt="Servicio sin imagen" class="card-img-top rounded-4 servicios-promocion__img-2">
+                        <img src="{% static 'img/Fondo.png' %}" loading="lazy" class="card-img-top servicios-servicios__img-3 object-fit-cover" style="height: 200px;" alt="{{ promocion.nombre }}">
                     {% endif %}
 
-
-                    <div class="card-body rounded-4 d-flex flex-column bg-body-tertiary">
-                        <h5 class="card-title text-center fw-bold text-body">{{ promocion.nombre }}</h5>
-                        <hr>
-                        <p class="card-text text-body-secondary small">{{ promocion.descripcion }}</p>
+                    <!-- Relleno medio p-3 -->
+                    <div class="card-body d-flex flex-column text-center p-3">
+                        <h5 class="card-title fw-bold mb-2 text-body-emphasis fs-4">{{ promocion.nombre }}</h5>
+                        <p class="card-text text-body-secondary mb-3 flex-grow-1 text-start small">{{ promocion.descripcion }}</p>
                         
-                        <div class="mt-auto">
-                            <p class="mb-1"><strong> Duración:</strong> {{ promocion.duracion }}</p>
-                            <p class="card-text text-primary fw-bold"><strong>Descuento:</strong> {{ promocion.porcentaje_descuento|floatformat:"0" }}%</p>
-                            
-                            <a class="btn btn-cyan fw-bold text-black w-100 mt-2 color-azul rounded-4" 
-                               href="{% url 'crear_reserva_promocion' promocion.id %}"
+                        <h3 class="fw-bold mb-3 text-body-emphasis fs-3">{{ promocion.porcentaje_descuento|floatformat:0 }}% OFF</h3>
+                        
+                        <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top border-body-secondary">
+                            <span class="text-body-secondary small fw-semibold d-flex align-items-center gap-1">
+                                <i class="bi bi-clock me-1"></i>{{ promocion.duracion }}
+                            </span>
+                            <a href="{% url 'crear_reserva_promocion' promocion.id %}" 
+                               class="btn btn-info text-white rounded-pill px-3 py-2 fw-semibold"
                                onclick="return gestionarSeleccion(event)">
-                                Reservar ahora
+                                <i class="bi bi-calendar-check me-1"></i>RESERVAR
                             </a>
                         </div>
                     </div>
                 </div>
             </div>
+            {% empty %}
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-lg border-0 rounded-4 text-center p-5 card-empty-hover">
+                    <div class="card-body">
+                        <i class="bi bi-inboxes display-1 text-body-secondary mb-4 d-block"></i>
+                        <h3 class="fw-bold mb-3 text-body-emphasis">¡Próximamente nuevas promociones!</h3>
+                        <p class="fs-5 mb-4 text-body-secondary">
+                            En este momento no tenemos promociones disponibles para mostrar en nuestro catálogo. ¡Vuelve pronto!
+                        </p>
+                        <a href="/" class="btn btn-outline-dark px-4 py-2 rounded-pill fw-bold">
+                            <i class="bi bi-house-door me-2"></i>Ir al inicio
+                        </a>
+                    </div>
+                </div>
+            </div>
             {% endfor %}
-
         </div>
     </div>
-</main>
-
-    </section>
-</main>
+</div>
 
 <script>
-function gestionarSeleccion(event, urlOriginal) {
+function gestionarSeleccion(event) {
     var estaAutenticado = {{ user.is_authenticated|yesno:"true,false" }};
     if (!estaAutenticado) {
         event.preventDefault();

@@ -9,7 +9,7 @@ from django.core.mail import send_mail
 from usuarios.forms import RegistroForm
 from usuarios.models import Usuario, Rol
 from .models import Servicios, Promocion, Calificacion
-from .forms import PromocionEditarForm, PromocionForm, ServiciosForm, ServiciosEditarForm, calificacionForm, ResponderCalificacionForm
+from .forms import PromocionEditarForm, PromocionForm, ServiciosForm, ServiciosEditarForm, CalificacionForm, ResponderCalificacionForm
 
 def servicios(request):
     servicios = Servicios.objects.all()

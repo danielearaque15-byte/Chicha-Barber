@@ -1609,13 +1609,13 @@ body.theme-light .chat-input:focus {
 .templates-index-clientes__span-18 { transition: all 0.3s ease }
 .templates-index-clientes__button-19 { z-index: 3; width: 10% }
 .templates-index-clientes__span-20 { transition: all 0.3s ease }
-.templates-index-clientes__h2-21 { color: white; font-family: &quot;Arial&quot;, sans-serif }
+.templates-index-clientes__h2-21 { color: white; font-family: quot;Arialquot;, sans-serif }
 .templates-index-clientes__div-22 { width: 65px; height: 65px; border: 2px solid #eee0cb }
 .templates-index-clientes__i-23 { color: #eee0cb }
-.templates-index-clientes__h5-24 { color: black; font-family: &quot;Arial&quot;, sans-serif }
+.templates-index-clientes__h5-24 { color: black; font-family: quot;Arialquot;, sans-serif }
 .templates-index-clientes__div-25 { color: #eee0cb }
-.templates-index-clientes__p-26 { color: black; font-family: &quot;Arial&quot;, sans-serif }
-.templates-index-clientes__h2-27 { font-family: &quot;Arial&quot;, sans-serif }
+.templates-index-clientes__p-26 { color: black; font-family: quot;Arialquot; sans-serif }
+.templates-index-clientes__h2-27 { font-family: quot;Arialquot; sans-serif }
 .templates-index-clientes__div-28 { max-height: 450px; min-height: 300px }
 .templates-index-clientes__iframe-29 { border: 0 }
 .templates-index-admin__div-1 { background: rgba(20, 24, 32, 0.85); backdrop-filter: blur(10px); }
@@ -1883,3 +1883,19 @@ body.theme-light .chat-input:focus {
   color: #22aed1 !important;
   border-color: rgba(34, 174, 209, 0.3) !important;
 }
+
+
+
+#servicios animacion al apasar el cursor 
+
+.servicios-servicios__div-1 {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.servicios-servicios__div-1:hover {
+    transform: translateY(-10px);
+}
+
+
+    
+  
