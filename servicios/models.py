@@ -1,11 +1,11 @@
 import os
 from django.utils.text import slugify # type: ignore
 from django.db import models # type: ignore
+from django.conf import settings
 
 def renombrar_imagen_servicio(instance, filename):
     ext = filename.split('.')[-1]
     nombre_limpio = slugify(instance.nombre)
-    # Genera algo como: "servicios/corte-de-cabello_5.jpg"
     return os.path.join('servicios/', f"{nombre_limpio}_{instance.pk}.{ext}")
 
 class Servicios(models.Model):
@@ -24,19 +24,17 @@ class Servicios(models.Model):
         return self.nombre
         
     def save(self, *args, **kwargs):
-        # Si es un servicio nuevo, primero lo guardamos sin la imagen para que la BD le asigne un ID
         if self.pk is None and self.imagen:
             imagen_temp = self.imagen
             self.imagen = None
             super().save(*args, **kwargs)
-            self.imagen = imagen_temp # Restauramos la imagen para guardarla con el ID generado
+            self.imagen = imagen_temp
             kwargs.pop('force_insert', None)
         super().save(*args, **kwargs)
 
 def renombrar_imagen_promocion(instance, filename):
     ext = filename.split('.')[-1]
     nombre_limpio = slugify(instance.nombre)
-    # Genera algo como: "promociones/descuento-verano_3.png"
     return os.path.join('promociones/', f"{nombre_limpio}_{instance.pk}.{ext}")
     
 class Promocion(models.Model):
@@ -82,7 +80,18 @@ class Calificacion(models.Model):
         related_name='calificaciones',
         verbose_name='Servicios'
     )
-    cliente = models.CharField(max_length=150, verbose_name='Cliente')
+
+    cliente = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='calificaciones',
+        verbose_name='Cliente'
+    )
+
+    cliente_nombre = models.CharField(max_length=150, verbose_name='Nombre del cliente (respaldo)')
+
     puntuacion = models.IntegerField(verbose_name='Puntuación')
     comentario = models.TextField(verbose_name='Comentario')
     fecha_calificacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de calificación')
@@ -94,23 +103,5 @@ class Calificacion(models.Model):
         ordering = ['-fecha_calificacion']
 
     def __str__(self):
-        return f"{self.cliente} - {self.servicio.nombre} ({self.puntuacion} estrellas)"
-    
-    
-    class promocion_servicio(models.Model):
-        promocion = models.ForeignKey(
-            Promocion,
-            on_delete=models.CASCADE,
-            related_name='promocion_servicio',
-            verbose_name='Promoción'
-        )
-        servicio = models.ForeignKey(
-            Servicios,
-            on_delete=models.CASCADE,
-            related_name='servicio_promocion',
-            verbose_name='Servicio'
-        )
-
-        class Meta:
-            verbose_name = 'Promoción-Servicio'
-            verbose_name_plural = 'Promociones-Servicios'
+        nombre = self.cliente.get_full_name() if self.cliente else self.cliente_nombre
+        return f"{nombre} - {self.servicio.nombre} ({self.puntuacion} estrellas)"

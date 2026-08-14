@@ -137,51 +137,6 @@ class Carrusel(models.Model):
 
 
 # ============================================================
-# IMAGEN
-# Corresponde a la entidad "imagen" identificada en el MER.
-# ============================================================
-
-def imagen_upload_path(instance, filename):
-    ext = filename.split('.')[-1]
-    nombre_limpio = slugify(instance.nombre)
-
-    return os.path.join(
-        'imagenes/',
-        f'{nombre_limpio}_{instance.pk}.{ext}'
-    )
-
-
-class Imagen(models.Model):
-    codigo = models.AutoField(
-        primary_key=True,
-        verbose_name='Código'
-    )
-
-    nombre = models.CharField(
-        max_length=150,
-        verbose_name='Nombre'
-    )
-
-    fecha_creacion = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='Fecha de creación'
-    )
-
-    imagen = models.ImageField(
-        upload_to=imagen_upload_path,
-        verbose_name='Imagen'
-    )
-
-    class Meta:
-        verbose_name = 'Imagen'
-        verbose_name_plural = 'Imágenes'
-        db_table = 'imagen'
-
-    def __str__(self):
-        return self.nombre
-
-
-# ============================================================
 # CONFIGURACIÓN
 # Corresponde a la entidad "configuracion" del MER.
 # ============================================================
@@ -214,6 +169,61 @@ class Configuracion(models.Model):
         verbose_name = 'Configuración'
         verbose_name_plural = 'Configuraciones'
         db_table = 'configuracion'
+
+    def __str__(self):
+        return self.nombre
+
+
+# ============================================================
+# IMAGEN
+# Corresponde a la entidad "imagen" identificada en el MER.
+# ============================================================
+
+def imagen_upload_path(instance, filename):
+    ext = filename.split('.')[-1]
+    nombre_limpio = slugify(instance.nombre)
+
+    return os.path.join(
+        'imagenes/',
+        f'{nombre_limpio}_{instance.pk}.{ext}'
+    )
+
+
+class Imagen(models.Model):
+    codigo = models.AutoField(
+        primary_key=True,
+        verbose_name='Código'
+    )
+
+    # Corrección: FK que faltaba según el MER ("imagen pertenece a configuracion")
+    configuracion = models.ForeignKey(
+        Configuracion,
+        on_delete=models.CASCADE,
+        related_name='imagenes',
+        null=True,
+        blank=True,
+        verbose_name='Configuración'
+    )
+
+    nombre = models.CharField(
+        max_length=150,
+        verbose_name='Nombre'
+    )
+
+    fecha_creacion = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Fecha de creación'
+    )
+
+    imagen = models.ImageField(
+        upload_to=imagen_upload_path,
+        verbose_name='Imagen'
+    )
+
+    class Meta:
+        verbose_name = 'Imagen'
+        verbose_name_plural = 'Imágenes'
+        db_table = 'imagen'
 
     def __str__(self):
         return self.nombre

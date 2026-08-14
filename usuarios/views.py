@@ -8,7 +8,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.shortcuts import render
 
-from .models import Usuario, RegistroActividad, Notificacion
+from .models import Usuario, RegistroActividad, Notificacion, Rol
 from .forms import (
     RegistroForm,
     CustomLoginForm,
@@ -73,7 +73,8 @@ def registro_view(request):
             
             # 🔥 CORRECCIÓN: Asignamos un tema por defecto para evitar el IntegrityError (NOT NULL)
             user.tema = 'light'
-            user.rol = "cliente"
+            # Corrección: rol ahora es FK, no string. Se asigna el objeto Rol correspondiente.
+            user.rol = Rol.objects.get(tipo_rol='cliente')
             user.is_staff = False
             user.is_superuser = False
             user.save()
@@ -105,7 +106,8 @@ def lista_usuarios(request):
     rol_filtro = request.GET.get('rol')
 
     if rol_filtro:
-        usuarios = Usuario.objects.filter(rol=rol_filtro)
+        # Corrección: rol es FK, se filtra por el campo relacionado tipo_rol
+        usuarios = Usuario.objects.filter(rol__tipo_rol=rol_filtro)
     else:
         usuarios = Usuario.objects.all()
 
@@ -123,15 +125,15 @@ def lista_usuarios(request):
         'total_usuarios': Usuario.objects.count(),
 
         'total_clientes': Usuario.objects.filter(
-            rol='cliente'
+            rol__tipo_rol='cliente'
         ).count(),
 
         'total_barberos': Usuario.objects.filter(
-            rol='barbero'
+            rol__tipo_rol='barbero'
         ).count(),
 
         'total_admins': Usuario.objects.filter(
-            rol='admin'
+            rol__tipo_rol='admin'
         ).count(),
 
         'rol_filtro': rol_filtro,
@@ -146,6 +148,7 @@ def crear_usuario_admin(request):
         if form.is_valid():
             user = form.save(commit=False)
             user.tema = 'light'
+            # form.cleaned_data['rol'] ya es un objeto Rol (ModelChoiceField)
             user.rol = form.cleaned_data['rol']
             user.is_staff = form.cleaned_data.get('is_staff', False)
             user.is_superuser = False
@@ -154,7 +157,8 @@ def crear_usuario_admin(request):
             RegistroActividad.objects.create(
                 usuario=request.user,
                 tipo='usuario',
-                descripcion=f'Creó el usuario "{user.get_full_name()}" con rol {user.get_rol_display()}'
+                # Corrección: get_rol_display() ya no existe (era de choices)
+                descripcion=f'Creó el usuario "{user.get_full_name()}" con rol {user.rol.tipo_rol}'
             )
 
             messages.success(request, "✅ Usuario creado con éxito.")
@@ -300,7 +304,7 @@ def perfil(request):
                         messages.error(request, f"❌ {error}")
 
     reservas = Reserva.objects.filter(cliente=request.user).order_by('-fecha_reserva')
-    ventas = venta.objects.filter(correo=request.user.email).order_by('-fecha_venta')
+    ventas = venta.objects.filter(correo=request.user.email).order_by('-fecha')
     facturas = Factura.objects.filter(cliente=request.user).order_by('-fecha_emision')
 
     context = {
@@ -310,7 +314,8 @@ def perfil(request):
         'facturas': facturas,
     }
 
-    if request.user.rol == 'admin':
+    # Corrección: rol es FK, se compara contra el campo tipo_rol
+    if request.user.rol.tipo_rol == 'admin':
         context['actividades'] = RegistroActividad.objects.all()[:20]
 
     return render(request, 'private/perfil.html', context)
@@ -333,7 +338,8 @@ def detalle_notificacion(request, pk):
     rel_id = match.group(1) if match else None
 
     # ---- ADMIN / BARBERO: va directo a la tabla correspondiente ----
-    if request.user.rol in ('admin', 'barbero'):
+    # Corrección: rol es FK, se compara contra tipo_rol
+    if request.user.rol.tipo_rol in ('admin', 'barbero'):
         if notificacion.tipo == 'reserva':
             return redirect('ver_agenda')
 

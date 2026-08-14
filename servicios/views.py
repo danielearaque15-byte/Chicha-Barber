@@ -7,7 +7,7 @@ from django.contrib import messages # type: ignore
 from django.core.mail import send_mail
 
 from usuarios.forms import RegistroForm
-from usuarios.models import Usuario
+from usuarios.models import Usuario, Rol
 from .models import Servicios, Promocion, Calificacion
 from .forms import PromocionEditarForm, PromocionForm, ServiciosForm, ServiciosEditarForm, calificacionForm, ResponderCalificacionForm
 
@@ -34,8 +34,8 @@ def registro(request, servicio_pk):
         if form.is_valid():
             user = form.save(commit=False)
 
-            # 🔥 FIJO: todos son cliente
-            user.rol = "cliente"
+            # Corrección: rol ahora es FK, no string
+            user.rol = Rol.objects.get(tipo_rol='cliente')
 
             # Seguridad extra
             user.is_staff = False
@@ -74,7 +74,7 @@ def login(request):
 
 @login_required
 def crear_servicios(request):
-    if not (request.user.is_staff or getattr(request.user, 'rol', None) == 'admin'):
+    if not (request.user.is_staff or getattr(getattr(request.user, 'rol', None), 'tipo_rol', None) == 'admin'):
         messages.error(request, "Acceso denegado. Solo administradores.")
         return redirect('listado-admin')
 
@@ -128,7 +128,7 @@ def listado_promocion(request):
 
 @login_required
 def editar_servicios(request, pk):
-    if not (request.user.is_staff or getattr(request.user, 'rol', None) == 'admin'):
+    if not (request.user.is_staff or getattr(getattr(request.user, 'rol', None), 'tipo_rol', None) == 'admin'):
         messages.error(request, "Acceso denegado.")
         return redirect('listado-admin')
 
@@ -151,7 +151,7 @@ def editar_servicios(request, pk):
 
 @login_required
 def eliminar_servicios(request, pk):
-    if not (request.user.is_staff or getattr(request.user, 'rol', None) == 'admin'):
+    if not (request.user.is_staff or getattr(getattr(request.user, 'rol', None), 'tipo_rol', None) == 'admin'):
         messages.error(request, "Acceso denegado.")
         return redirect('listado-admin')
 
@@ -167,7 +167,7 @@ def eliminar_servicios(request, pk):
 
 @login_required
 def crear_promocion(request):
-    if not (request.user.is_staff or getattr(request.user, 'rol', None) == 'admin'):
+    if not (request.user.is_staff or getattr(getattr(request.user, 'rol', None), 'tipo_rol', None) == 'admin'):
         messages.error(request, "Acceso denegado.")
         return redirect('listado-promocion')
 
@@ -190,7 +190,7 @@ def crear_promocion(request):
 
 @login_required
 def editar_promocion(request, pk):
-    if not (request.user.is_staff or getattr(request.user, 'rol', None) == 'admin'):
+    if not (request.user.is_staff or getattr(getattr(request.user, 'rol', None), 'tipo_rol', None) == 'admin'):
         messages.error(request, "Acceso denegado.")
         return redirect('listado-promocion')
 
@@ -209,7 +209,7 @@ def editar_promocion(request, pk):
 
 @login_required
 def eliminar_promocion(request, pk):
-    if not (request.user.is_staff or getattr(request.user, 'rol', None) == 'admin'):
+    if not (request.user.is_staff or getattr(getattr(request.user, 'rol', None), 'tipo_rol', None) == 'admin'):
         messages.error(request, "Acceso denegado.")
         return redirect('listado-promocion')
 
@@ -242,24 +242,25 @@ def listado_calificacion(request):
 
 def responder_calificacion(request, pk):
     # Seguridad: Solo administradores
-    if not request.user.is_authenticated or not (request.user.is_staff or getattr(request.user, 'rol', None) == 'admin'):
+    if not request.user.is_authenticated or not (request.user.is_staff or getattr(getattr(request.user, 'rol', None), 'tipo_rol', None) == 'admin'):
         messages.error(request, "Acceso denegado. Solo los administradores pueden responder calificaciones.")
         return redirect('listado-calificacion')
 
     calificacion = get_object_or_404(Calificacion, pk=pk)
     form = ResponderCalificacionForm(request.POST or None)
 
+    # Corrección: cliente ahora es FK directa a Usuario (o None si no se pudo enlazar).
+    # Ya no hace falta buscar por nombre.
+    nombre_cliente = calificacion.cliente.get_full_name() if calificacion.cliente else calificacion.cliente_nombre
+    correo_destino = calificacion.cliente.email if calificacion.cliente else None
+
     if request.method == 'POST':
         if form.is_valid():
             texto_respuesta = form.cleaned_data['respuesta']
-            
-            # Buscamos el usuario por su primer nombre (según el modelo Calificacion)
-            usuario = Usuario.objects.filter(first_name=calificacion.cliente).first()
-            correo_destino = usuario.email if usuario else None
 
             if correo_destino:
                 asunto = "Respuesta a tu calificación - ChichaBarber"
-                cuerpo = f"Hola {calificacion.cliente},\n\nEl administrador respondió: {texto_respuesta}"
+                cuerpo = f"Hola {nombre_cliente},\n\nEl administrador respondió: {texto_respuesta}"
                 try:
                     send_mail(
                         asunto, cuerpo, 'chichabarber39@gmail.com',
@@ -279,7 +280,7 @@ def responder_calificacion(request, pk):
     context = {
         'form': form,
         'calificacion': calificacion,
-        'titulo': f'Responder a {calificacion.cliente}'
+        'titulo': f'Responder a {nombre_cliente}'
     }
     return render(request, 'servicios/responder-calificacion.html', context)
 
@@ -287,13 +288,25 @@ def guardar_calificacion_view(request):
     if request.method == 'POST':
         form = calificacionForm(request.POST)
         if form.is_valid():
-            form.save()
+            calificacion = form.save(commit=False)
+
+            # Corrección: si el cliente tiene sesión iniciada, se enlaza
+            # directamente a su cuenta; si no, solo queda el nombre de respaldo.
+            if request.user.is_authenticated:
+                calificacion.cliente = request.user
+                if not calificacion.cliente_nombre:
+                    calificacion.cliente_nombre = request.user.get_full_name() or request.user.username
+
+            calificacion.save()
             messages.success(request, "✅ ¡Gracias por tu calificación!")
             return redirect('calificacion')
     return redirect('calificacion')
 
 def eliminar_calificacion(request, pk):
     calificacion = get_object_or_404(Calificacion, pk=pk)
+
+    nombre_cliente = calificacion.cliente.get_full_name() if calificacion.cliente else calificacion.cliente_nombre
+
     if request.method == 'POST':
         calificacion.delete()
         messages.success(request, 'Calificación eliminada.')
@@ -301,6 +314,6 @@ def eliminar_calificacion(request, pk):
     
     context = {
         'calificacion': calificacion,
-        'titulo': f'Eliminar calificación de {calificacion.cliente}'
+        'titulo': f'Eliminar calificación de {nombre_cliente}'
     }
     return render(request, 'servicios/eliminar_calificacion.html', context)
