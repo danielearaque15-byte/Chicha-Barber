@@ -21,10 +21,10 @@
                 <div class="card h-100 shadow-lg border-0 bg-body-tertiary rounded-4 overflow-hidden servicios-calificacion__div-1 ">
                     <img src="{% if item.servicio.imagen %}{{ item.servicio.imagen.url }}{% else %}{% static 'img/corte/corte_1.jpg' %}{% endif %}" class="card-img-top servicios-calificacion__img-2" alt="{{ item.servicio.nombre }}">
                     <div class="card-body d-flex flex-column text-center p-4">
-                        <h5 class="card-title fw-bold text-body mb-1">{{ item.cliente }}</h5>
+                        <h5 class="card-title fw-bold text-body mb-1">{{ item.cliente.get_full_name|default:item.cliente_nombre }}</h5>
                         <div class="text-warning mb-2 small">
                             {% for i in "12345"|make_list %}
-                                {% if forloop.counter = item.puntuacion %}
+                                {% if forloop.counter <= item.puntuacion %}
                                     <i class="bi bi-star-fill"></i>
                                 {% else %}
                                     <i class="bi bi-star"></i>

@@ -9,7 +9,7 @@ urlpatterns = [
     path('', views.productos_galeria, name='productos_galeria'),
     path('carrito/', views.carrito, name='carrito'),
     path('pago/', views.pago, name='pago'),
-    path('procesar_pago_cliente/', views.procesar_pago_cliente, name='procesar_compra'),
+    path('procesar_pago_cliente/', views.procesar_pago_cliente, name='procesar_venta'),
     # =========================
     # 🔵 ADMIN PRODUCTOS
     # =========================
@@ -37,18 +37,31 @@ urlpatterns = [
    path('proveedor/eliminar/<int:id>/',views.eliminar_proveedor,name='eliminar_proveedor'),
  
     # =========================
-    # 🔥 STOCK
+    # 🔥 bitacora
     # =========================
-    path('stock/', views.lista_stock, name='lista_stock'),
-    path('stock/editar/<int:pk>/', views.editar_stock, name='editar_stock'),
+    path('bitacora/', views.lista_bitacora, name='lista_bitacora'),
+    path('bitacora/editar/<int:pk>/', views.editar_bitacora, name='editar_bitacora'),
+
+    path('inventario/',views.lista_inventario, name='lista_inventario'),
+    path('inventario/editar/<int:pk>/',views.editar_inventario,name='editar_inventario'),
+    path('movimientos-inventario/',views.lista_movimientos_inventario,name='lista_movimientos_inventario'),
+    path('movimientos-inventario/registrar/',views.registrar_movimiento_inventario,name='registrar_movimiento_inventario'),
+    path('movimientos-inventario/eliminar/<int:pk>/',views.eliminar_movimiento_inventario,name='eliminar_movimiento_inventario' ), 
 
 
+    path('adquisiciones/',views.lista_adquisiciones,name='lista_adquisiciones'),
+    path('adquisicion/crear/',views.registrar_adquisicion,name='registrar_adquisicion'),
+    path('adquisicion/editar/<int:pk>/',views.editar_adquisicion,name='editar_adquisicion'),
+    path('adquisicion/eliminar/<int:pk>/',views.eliminar_adquisicion,name='eliminar_adquisicion'),
     # =========================
-    # 🟡 COMPRAS
+    # 🟡 ventaS
     # =========================
-    path('registrar-compra/', views.registrar_compra, name='registrar_compra'),
-    path('historial/registrar/', views.registrar_compra, name='registrar_compra'),  # ← nueva
-    path('historial/', views.historial_compras, name='historial_compras'),
-    path('historial/<int:pk>/', views.detalle_compra, name='detalle_compra'),
-    path('historial/eliminar/<int:pk>/', views.eliminar_compra, name='eliminar_compra'),
+    path('registrar-venta/', views.registrar_venta, name='registrar_venta'),
+    path('historial/registrar/', views.registrar_venta, name='registrar_venta'),  # ← nueva
+    path('historial/', views.historial_ventas, name='historial_ventas'),
+    path('historial/<int:pk>/', views.detalle_venta, name='detalle_venta'),
+    path('historial/eliminar/<int:pk>/', views.eliminar_venta, name='eliminar_venta'),
+
+    
+
   ] 

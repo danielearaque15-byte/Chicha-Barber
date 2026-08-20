@@ -5,14 +5,14 @@ from django.test import TestCase
 from usuarios.models import Usuario
 from productos.models import (
     Producto,
-    Stock,
-    Compra,
-    DetalleCompra,
+    bitacora,
+    venta,
+    detalleventa,
     MovimientoInventario
 )
 
 
-class ProductoCompraTest(TestCase):
+class ProductoventaTest(TestCase):
 
     def setUp(self):
         self.usuario = Usuario.objects.first() or Usuario.objects.create_user(
@@ -31,29 +31,29 @@ class ProductoCompraTest(TestCase):
             estado=True
         )
 
-        # El signal crea automáticamente el stock
+        # El signal crea automáticamente el bitacora
         self.producto.refresh_from_db()
 
-        self.producto.stock.cantidad = 20
-        self.producto.stock.precio_compra = Decimal("3000.00")
-        self.producto.stock.precio_venta = Decimal("5000.00")
-        self.producto.stock.save()
+        self.producto.bitacora.cantidad = 20
+        self.producto.bitacora.precio_venta = Decimal("3000.00")
+        self.producto.bitacora.precio_venta = Decimal("5000.00")
+        self.producto.bitacora.save()
 
     def test_crear_producto(self):
 
         print("\n========== PRODUCTO ==========")
         print("Código:", self.producto.codigo)
         print("Nombre:", self.producto.nombre)
-        print("Precio Compra:", self.producto.stock.precio_compra)
-        print("Precio Venta:", self.producto.stock.precio_venta)
-        print("Stock:", self.producto.stock.cantidad)
+        print("Precio venta:", self.producto.bitacora.precio_venta)
+        print("Precio Venta:", self.producto.bitacora.precio_venta)
+        print("bitacora:", self.producto.bitacora.cantidad)
 
-        self.assertEqual(self.producto.stock.cantidad, 20)
+        self.assertEqual(self.producto.bitacora.cantidad, 20)
 
-    def test_crear_compra(self):
+    def test_crear_venta(self):
 
-        compra = Compra.objects.create(
-            usuario=self.usuario,
+        v = venta.objects.create(
+            codigo_usuario=self.usuario,
             nombre_cliente="Pedro",
             correo="pedro@gmail.com",
             telefono="3001234567",
@@ -62,46 +62,46 @@ class ProductoCompraTest(TestCase):
             estado_pago="completado"
         )
 
-        detalle = DetalleCompra.objects.create(
-            compra=compra,
-            producto=self.producto,
+        detalle = detalleventa.objects.create(
+            codigo_venta=v,
+            codigo_producto=self.producto,
             cantidad=3
         )
 
-        compra.actualizar_total()
+        v.actualizar_total()
 
-        compra.refresh_from_db()
-        self.producto.stock.refresh_from_db()
+        v.refresh_from_db()
+        self.producto.bitacora.refresh_from_db()
 
-        print("\n========== COMPRA ==========")
-        print("Compra:", compra.codigo_compra)
-        print("Cliente:", compra.nombre_cliente)
-        print("Total:", compra.total)
+        print("\n========== venta ==========")
+        print("venta:", v.codigo_venta)
+        print("Cliente:", v.nombre_cliente)
+        print("Total:", v.total_compra)
 
         print("\n========== DETALLE ==========")
-        print("Producto:", detalle.producto.nombre)
+        print("Producto:", detalle.codigo_producto.nombre)
         print("Cantidad:", detalle.cantidad)
         print("Subtotal:", detalle.subtotal)
 
-        print("\n========== STOCK ==========")
-        print("Stock restante:", self.producto.stock.cantidad)
+        print("\n========== bitacora ==========")
+        print("bitacora restante:", self.producto.bitacora.cantidad)
 
         self.assertEqual(detalle.subtotal, Decimal("15000.00"))
-        self.assertEqual(compra.total, Decimal("15000.00"))
-        self.assertEqual(self.producto.stock.cantidad, 17)
+        self.assertEqual(v.total_compra, Decimal("15000.00"))
+        self.assertEqual(self.producto.bitacora.cantidad, 17)
 
     def test_movimiento_inventario(self):
 
-        compra = Compra.objects.create(
-            usuario=self.usuario,
+        v = venta.objects.create(
+            codigo_usuario=self.usuario,
             nombre_cliente="Pedro",
             metodo_pago="persona",
             estado_pago="completado"
         )
 
-        DetalleCompra.objects.create(
-            compra=compra,
-            producto=self.producto,
+        detalleventa.objects.create(
+            codigo_venta=v,
+            codigo_producto=self.producto,
             cantidad=2
         )
 
@@ -116,10 +116,10 @@ class ProductoCompraTest(TestCase):
         self.assertEqual(movimiento.tipo, "salida")
         self.assertEqual(movimiento.cantidad, 2)
 
-    def test_stock_insuficiente(self):
+    def test_bitacora_insuficiente(self):
 
-        compra = Compra.objects.create(
-            usuario=self.usuario,
+        v = venta.objects.create(
+            codigo_usuario=self.usuario,
             nombre_cliente="Pedro",
             metodo_pago="persona",
             estado_pago="completado"
@@ -127,12 +127,12 @@ class ProductoCompraTest(TestCase):
 
         with self.assertRaises(ValueError):
 
-            DetalleCompra.objects.create(
-                compra=compra,
-                producto=self.producto,
+            detalleventa.objects.create(
+                codigo_venta=v,
+                codigo_producto=self.producto,
                 cantidad=100
             )
 
-        print("\n[OK] Se detectó correctamente el stock insuficiente.")
+        print("\n[OK] Se detectó correctamente el bitacora insuficiente.")
 
 # Create your tests here.

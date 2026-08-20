@@ -122,10 +122,11 @@ class PromocionEditarForm(ModelForm):
 class CalificacionForm(ModelForm):
     class Meta:
         model = Calificacion
-        fields = ['servicio', 'cliente', 'puntuacion', 'comentario']
+        # Corrección: se quita 'cliente' — ahora se asigna automáticamente
+        # en la vista con request.user, no lo llena el usuario a mano.
+        fields = ['servicio', 'puntuacion', 'comentario']
         widgets = {
             'servicio': forms.Select(attrs={'class': 'form-control'}),
-            'cliente': forms.TextInput(attrs={'class': 'form-control'}),
             'puntuacion': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 5}),
             'comentario': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             

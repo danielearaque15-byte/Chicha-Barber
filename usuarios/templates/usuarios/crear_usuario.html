@@ -10,7 +10,7 @@
         </div>
 
         <div class="card-body p-4">
-            <form method="post">
+            <form method="post" id="form-crear-usuario" novalidate>
                 {% csrf_token %}
 
                 <div class="row g-3">
@@ -19,40 +19,45 @@
                         <label class="form-label fw-semibold text-dark">Número de Documento</label>
                         {{ form.username }}
                         {% if form.username.errors %}
-                            <div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>
+                            <div class="text-danger small mt-1 js-server-error">{{ form.username.errors.0 }}</div>
                         {% endif %}
+                        <div class="text-danger small mt-1 js-live-error" id="err-username"></div>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-semibold text-dark">Teléfono</label>
                         {{ form.telefono }}
                         {% if form.telefono.errors %}
-                            <div class="text-danger small mt-1">{{ form.telefono.errors.0 }}</div>
+                            <div class="text-danger small mt-1 js-server-error">{{ form.telefono.errors.0 }}</div>
                         {% endif %}
+                        <div class="text-danger small mt-1 js-live-error" id="err-telefono"></div>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-semibold text-dark">Nombre</label>
                         {{ form.first_name }}
                         {% if form.first_name.errors %}
-                            <div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>
+                            <div class="text-danger small mt-1 js-server-error">{{ form.first_name.errors.0 }}</div>
                         {% endif %}
+                        <div class="text-danger small mt-1 js-live-error" id="err-first_name"></div>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-semibold text-dark">Apellido</label>
                         {{ form.last_name }}
                         {% if form.last_name.errors %}
-                            <div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>
+                            <div class="text-danger small mt-1 js-server-error">{{ form.last_name.errors.0 }}</div>
                         {% endif %}
+                        <div class="text-danger small mt-1 js-live-error" id="err-last_name"></div>
                     </div>
 
                     <div class="col-12">
                         <label class="form-label fw-semibold text-dark">Correo Electrónico</label>
                         {{ form.email }}
                         {% if form.email.errors %}
-                            <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+                            <div class="text-danger small mt-1 js-server-error">{{ form.email.errors.0 }}</div>
                         {% endif %}
+                        <div class="text-danger small mt-1 js-live-error" id="err-email"></div>
                     </div>
 
                     <div class="col-md-6">
@@ -76,16 +81,25 @@
                         <label class="form-label fw-semibold text-dark">Contraseña</label>
                         {{ form.password1 }}
                         {% if form.password1.errors %}
-                            <div class="text-danger small mt-1">{{ form.password1.errors.0 }}</div>
+                            <div class="text-danger small mt-1 js-server-error">{{ form.password1.errors.0 }}</div>
                         {% endif %}
+                        <ul class="small mt-1 mb-0 ps-3" id="pwd-rules">
+                            <li id="rule-len" class="text-muted">Mínimo 8 caracteres</li>
+                            <li id="rule-upper" class="text-muted">Al menos una mayúscula</li>
+                            <li id="rule-lower" class="text-muted">Al menos una minúscula</li>
+                            <li id="rule-digit" class="text-muted">Al menos un número</li>
+                            <li id="rule-special" class="text-muted">Al menos un carácter especial (!@#$%...)</li>
+                            <li id="rule-space" class="text-muted">Sin espacios</li>
+                        </ul>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-semibold text-dark">Confirmar Contraseña</label>
                         {{ form.password2 }}
                         {% if form.password2.errors %}
-                            <div class="text-danger small mt-1">{{ form.password2.errors.0 }}</div>
+                            <div class="text-danger small mt-1 js-server-error">{{ form.password2.errors.0 }}</div>
                         {% endif %}
+                        <div class="text-danger small mt-1 js-live-error" id="err-password2"></div>
                     </div>
 
                 </div>
@@ -104,4 +118,112 @@
 
     </div>
 </div>
+
+<script>
+(function () {
+    "use strict";
+
+    // ---- Mismas reglas que core/validators.py y usuarios/forms.py ----
+    var RE_NOMBRE = /^[A-Za-zÁÉÍÓÚÜáéíóúüÑñ]+(?:\s[A-Za-zÁÉÍÓÚÜáéíóúüÑñ]+)*$/;
+    var RE_SOLO_NUMEROS = /^\d+$/;
+    var RE_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    var RE_ESPECIAL = /[!"#$%&'()*+,\-./:;<=>?@[\]^_`{|}~]/;
+
+    function byId(id) { return document.getElementById(id); }
+
+    function setError(id, mensaje) {
+        var el = byId('err-' + id);
+        if (!el) return;
+        el.textContent = mensaje || '';
+    }
+
+    // Oculta el error del servidor apenas el usuario empieza a corregir el campo
+    function ocultarErrorServidor(input) {
+        var wrapper = input.closest('.col-md-6, .col-12');
+        if (!wrapper) return;
+        var serverErr = wrapper.querySelector('.js-server-error');
+        if (serverErr) serverErr.style.display = 'none';
+    }
+
+    function validarCampo(input, regex, mensaje, idError) {
+        input.addEventListener('input', function () {
+            ocultarErrorServidor(input);
+            var valor = input.value.trim();
+            if (valor === '') {
+                setError(idError, '');
+                return;
+            }
+            setError(idError, regex.test(valor) ? '' : mensaje);
+        });
+    }
+
+    // ---- Campos de texto simples ----
+    var elUsername = byId('id_username');
+    if (elUsername) {
+        validarCampo(elUsername, RE_SOLO_NUMEROS,
+            'Solo se permiten números, sin espacios ni letras.', 'username');
+    }
+
+    var elTelefono = byId('id_telefono');
+    if (elTelefono) {
+        validarCampo(elTelefono, RE_SOLO_NUMEROS,
+            'Solo se permiten números, sin espacios ni letras.', 'telefono');
+    }
+
+    var elNombre = byId('id_first_name');
+    if (elNombre) {
+        validarCampo(elNombre, RE_NOMBRE,
+            'Este campo solo puede contener letras, sin números, símbolos ni espacios dobles.', 'first_name');
+    }
+
+    var elApellido = byId('id_last_name');
+    if (elApellido) {
+        validarCampo(elApellido, RE_NOMBRE,
+            'Este campo solo puede contener letras, sin números, símbolos ni espacios dobles.', 'last_name');
+    }
+
+    var elEmail = byId('id_email');
+    if (elEmail) {
+        validarCampo(elEmail, RE_EMAIL,
+            'Ingresa un correo electrónico válido.', 'email');
+    }
+
+    // ---- Contraseña: checklist en vivo ----
+    var elPass1 = byId('id_password1');
+    var elPass2 = byId('id_password2');
+
+    function marcar(id, ok) {
+        var li = byId(id);
+        if (!li) return;
+        li.classList.toggle('text-success', ok);
+        li.classList.toggle('text-danger', !ok);
+        li.classList.toggle('text-muted', false);
+    }
+
+    if (elPass1) {
+        elPass1.addEventListener('input', function () {
+            ocultarErrorServidor(elPass1);
+            var v = elPass1.value;
+            marcar('rule-len', v.length >= 8);
+            marcar('rule-upper', /[A-Z]/.test(v));
+            marcar('rule-lower', /[a-z]/.test(v));
+            marcar('rule-digit', /[0-9]/.test(v));
+            marcar('rule-special', RE_ESPECIAL.test(v));
+            marcar('rule-space', v.length > 0 && v === v.trim() && !/\s/.test(v));
+            if (elPass2 && elPass2.value) {
+                setError('password2', elPass2.value === v ? '' : 'Las contraseñas no coinciden.');
+            }
+        });
+    }
+
+    if (elPass2) {
+        elPass2.addEventListener('input', function () {
+            ocultarErrorServidor(elPass2);
+            if (!elPass1) return;
+            setError('password2', elPass2.value === elPass1.value ? '' : 'Las contraseñas no coinciden.');
+        });
+    }
+
+})();
+</script>
 {% endblock %}

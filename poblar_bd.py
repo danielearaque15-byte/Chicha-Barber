@@ -16,18 +16,33 @@ from usuarios.models import Usuario
 import servicios.models
 from servicios.models import Servicios, Promocion, Calificacion
 from reservas.models import Reserva, Turno
-from productos.models import Producto, Stock, Compra, DetalleCompra, Categoria, Proveedor
+from productos.models import (
+    Producto,
+    Inventario,
+    Bitacora,
+    MovimientoInventario,
+    Adquisicion,
+    venta,
+    detalleventa,
+    Categoria,
+    Proveedor,
+)
 from facturas.models import Factura, DetalleFactura
 
 def limpiar_datos():
     print("Limpiando datos anteriores...")
-    # Ahora el script limpia todo automáticamente para garantizar datos frescos
+    # Orden para evitar conflictos de FK con el modelo actual
     DetalleFactura.objects.all().delete()
     Factura.objects.all().delete()
-    DetalleCompra.objects.all().delete()
-    Compra.objects.all().delete()
-    Stock.objects.all().delete()
+    detalleventa.objects.all().delete()
+    venta.objects.all().delete()
+    MovimientoInventario.objects.all().delete()
+    Bitacora.objects.all().delete()
+    Adquisicion.objects.all().delete()
+    Inventario.objects.all().delete()
     Producto.objects.all().delete()
+    Categoria.objects.all().delete()
+    Proveedor.objects.all().delete()
     servicios.models.Calificacion.objects.all().delete()
     Reserva.objects.all().delete()
     Turno.objects.all().delete()
@@ -250,8 +265,8 @@ def poblar_calificaciones_servicios():
                 comentario=random.choice(comentarios)
             )
 
-def poblar_productos_y_stock():
-    print("Poblando Productos y Stock...")
+def poblar_productos_y_bitacora():
+    print("Poblando Productos, inventario y bitácora...")
 
     # --- Crear Categorías ---
     print("  Creando Categorías...")
@@ -281,61 +296,94 @@ def poblar_productos_y_stock():
         'Shampoo de Cuidado', 'Navaja Profesional', 'Brocha de Afeitar',
         'Tónico Capilar', 'Peine de Madera', 'Bálsamo Hidratante', 'Aftershave'
     ]
-    
+
     try:
-        for idx, nombre in enumerate(nombres_productos):
-            precio_c = random.randint(2, 10) * 1000
+        for nombre in nombres_productos:
             producto, created = Producto.objects.get_or_create(
                 nombre=nombre,
                 defaults={
                     'descripcion': f'Producto de alta calidad para barbería: {nombre}.',
-                    'categoria': random.choice(categorias),
+                    'codigo_categoria': random.choice(categorias),
+                    'estado': True,
                 }
             )
 
-            # Si el producto ya existía pero no tenía categoría, se la asignamos
-            if not created and not producto.categoria:
-                producto.categoria = random.choice(categorias)
-                producto.save(update_fields=['categoria'])
+            if not created and not producto.codigo_categoria:
+                producto.codigo_categoria = random.choice(categorias)
+                producto.save(update_fields=['codigo_categoria'])
 
-            # Asignar/actualizar el Stock con precio_compra, precio_venta y proveedor
-            stock, _ = Stock.objects.get_or_create(producto=producto)
-            stock.cantidad = random.randint(15, 50)
-            stock.precio_compra = precio_c
-            stock.precio_venta = precio_c + (random.randint(2, 8) * 1000)
-            stock.proveedor = random.choice(proveedores)
-            stock.save()
+            inventario, _ = Inventario.objects.get_or_create(
+                codigo_producto=producto,
+                defaults={
+                    'cantidad_actual': random.randint(15, 50),
+                    'stock_min': random.randint(5, 10),
+                    'stock_max': random.randint(40, 80),
+                    'observaciones': 'Inventario cargado automáticamente por poblar_bd.',
+                }
+            )
+
+            if not producto.codigo_inventario_id:
+                producto.codigo_inventario = inventario
+                producto.save(update_fields=['codigo_inventario'])
+
+            inventario.cantidad_actual = random.randint(15, 60)
+            inventario.stock_min = random.randint(5, 10)
+            inventario.stock_max = random.randint(50, 100)
+            inventario.save(update_fields=['cantidad_actual', 'stock_min', 'stock_max', 'fecha_actualizacion'])
+
+            Bitacora.objects.create(
+                codigo_inventario=inventario,
+                codigo_producto=producto,
+                codigo_usuario=None,
+                tipo_cambio='entrada',
+                campo_actualizado='cantidad_actual',
+                valor_anterior='0',
+                valor_actual=str(inventario.cantidad_actual),
+                motivo='Carga inicial',
+                observaciones='Registro generado por poblar_bd.',
+            )
     except Exception as e:
-        print(f"  ⚠️ Error al poblar productos/stock: {e}")
+        print(f"  ⚠️ Error al poblar productos/inventario/bitácora: {e}")
 
-def poblar_compras():
-    print("Poblando Compras...")
+def poblar_ventas():
+    print("Poblando ventas...")
     try:
         productos = list(Producto.objects.all())
         if not productos:
-            print("  ⚠️ No se pueden crear compras porque no hay productos.")
+            print("  ⚠️ No se pueden crear ventas porque no hay productos.")
             return
 
+        clientes = list(Usuario.objects.filter(rol='cliente'))
+        if not clientes:
+            clientes = [Usuario.objects.order_by('id').first()] if Usuario.objects.exists() else []
+
         for i in range(1, 11):
-            compra, created = Compra.objects.get_or_create(
-                correo=f"comprador{i}@correo.com",
-                defaults={
-                    'nombre_cliente': f"Comprador Prueba {i}",
-                    'telefono': f"30099900{i:02d}",
-                    'direccion': f"Carrera {i} # {i}-{i*2}",
-                    'metodo_pago': random.choice(['persona', 'contraentrega'])
-                }
+            cliente = random.choice(clientes) if clientes else None
+            venta_obj = venta.objects.create(
+                codigo_usuario=cliente,
+                nombre_cliente=f"Cliente Prueba {i}",
+                correo=f"ventador{i}@correo.com",
+                telefono=f"30099900{i:02d}",
+                direccion=f"Carrera {i} # {i}-{i*2}",
+                metodo_pago=random.choice(['persona', 'contraentrega', 'transferencia']),
+                estado_pago='completado',
             )
-            
-            if created:
-                # Añadimos un detalle (artículo) a esta compra
-                DetalleCompra.objects.create(
-                    compra=compra,
-                    producto=random.choice(productos),
-                    cantidad=random.randint(1, 3)
+
+            detalle = detalleventa.objects.create(
+                codigo_venta=venta_obj,
+                codigo_producto=random.choice(productos),
+                cantidad=random.randint(1, 3),
+                valor_descuento=0,
+            )
+
+            venta_obj.actualizar_total()
+            if detalle.codigo_movimiento_producto:
+                detalle.codigo_movimiento_producto.observacion = (
+                    f"Venta Online #{venta_obj.codigo_venta}"
                 )
+                detalle.codigo_movimiento_producto.save(update_fields=['observacion'])
     except Exception as e:
-        print(f"  ⚠️ Error al poblar compras: {e}")
+        print(f"  ⚠️ Error al poblar ventas: {e}")
 
 def poblar_calificaciones():
     print("Poblando Calificaciones de Usuarios...")
@@ -404,7 +452,7 @@ def poblar_facturas():
 
     # 2. Facturas de Venta Directa (Productos)
     for i in range(5):
-        cliente = random.choice(clientes)
+        cliente = random.choice(clientes) if clientes else None
         factura = Factura.objects.create(
             cliente=cliente,
             total_pagado=0,
@@ -415,8 +463,7 @@ def poblar_facturas():
         for _ in range(random.randint(1, 3)):
             prod = random.choice(productos)
             cant = random.randint(1, 2)
-            # El precio_venta ahora está en el modelo Stock, accedemos a través de la relación
-            precio_venta = float(prod.stock.precio_venta) if hasattr(prod, 'stock') and prod.stock else 0
+            precio_venta = float(random.randint(10, 50) * 1000)
             sub = precio_venta * cant
             DetalleFactura.objects.create(
                 factura=factura,
@@ -440,8 +487,8 @@ if __name__ == '__main__':
     poblar_reservas()
     poblar_calificaciones_servicios() 
     
-    poblar_productos_y_stock()
-    poblar_compras()
+    poblar_productos_y_bitacora()
+    poblar_ventas()
     poblar_facturas()
     poblar_calificaciones()
     print("✅ ¡Base de datos poblada con éxito!")

@@ -75,7 +75,7 @@
                             <td class="ps-4">
                                 <h6 class="mb-0 fw-bold text-dark">{{ calificacion.servicio.nombre }}</h6>
                             </td>
-                            <td>{{ calificacion.cliente }}</td>
+                            <td>{{ calificacion.cliente.get_full_name|default:calificacion.cliente_nombre }}</td>
                             <td class="text-center">
                                 {% for i in "12345" %}
                                     {% if forloop.counter <= calificacion.puntuacion %}

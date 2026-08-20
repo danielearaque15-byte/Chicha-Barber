@@ -47,7 +47,7 @@
               <span class="text-white-50 fw-bold text-uppercase partials-header-admin__span-2">Rol de administrador</span
               >
               <span class="small fw-semibold text-white"
-                >{{ user.get_rol_display|default:"Admin" }}</span
+                >{{ user.rol.tipo_rol|default:"Admin" }}</span
               >
             </li>
             <li>
@@ -55,7 +55,7 @@
                 <i class="bi bi-person-vcard me-2"></i>Mi Perfil
               </a>
             </li>
-            {% if user.rol == 'admin' or user.rol == 'barbero' %}
+            {% if user.rol.tipo_rol == 'admin' or user.rol.tipo_rol == 'barbero' %}
             <li>
               <a class="dropdown-item py-2 fw-bold" href="{% url 'inicio' %}">
                 <i class="bi bi-grid-1x2-fill me-2"></i>Ver página web

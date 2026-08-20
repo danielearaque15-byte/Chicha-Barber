@@ -1,11 +1,14 @@
 from django import forms
-from .models import Producto, Stock, Compra, DetalleCompra, Proveedor, Categoria
+
+from .models import  Producto,Inventario,venta,detalleventa,Proveedor,Categoria
 
 
-# ==========================================
-# 🔹 FORMULARIO PRODUCTO
+
+# ==========================================================
+# FORMULARIO PRODUCTO
 # Solo información del catálogo
-# ==========================================
+# ==========================================================
+
 class ProductoForm(forms.ModelForm):
 
     class Meta:
@@ -14,7 +17,7 @@ class ProductoForm(forms.ModelForm):
         fields = [
             'nombre',
             'descripcion',
-            'categoria',
+            'codigo_categoria',
             'imagen',
             'estado'
         ]
@@ -34,7 +37,7 @@ class ProductoForm(forms.ModelForm):
                 }
             ),
 
-            'categoria': forms.Select(
+            'codigo_categoria': forms.Select(
                 attrs={
                     'class': 'form-select'
                 }
@@ -54,63 +57,64 @@ class ProductoForm(forms.ModelForm):
         }
 
 
+# ==========================================================
+# FORMULARIO INVENTARIO
+# Cantidad, stock mínimo, stock máximo y observaciones
+# ==========================================================
 
-# ==========================================
-# 🔹 FORMULARIO STOCK
-# Cantidad, precios y proveedor
-# ==========================================
-class StockForm(forms.ModelForm):
+class InventarioForm(forms.ModelForm):
 
     class Meta:
 
-        model = Stock
+        model = Inventario
 
         fields = [
-            'cantidad',
-            'precio_compra',
-            'precio_venta',
-            'proveedor'
+            'cantidad_actual',
+            'stock_min',
+            'stock_max',
+            'observaciones'
         ]
 
         widgets = {
 
-            'cantidad': forms.NumberInput(
+            'cantidad_actual': forms.NumberInput(
                 attrs={
-                    'class':'form-control',
-                    'min':'0'
+                    'class': 'form-control',
+                    'min': '0'
                 }
             ),
 
-            'precio_compra': forms.NumberInput(
+            'stock_min': forms.NumberInput(
                 attrs={
-                    'class':'form-control'
+                    'class': 'form-control',
+                    'min': '0'
                 }
             ),
 
-            'precio_venta': forms.NumberInput(
+            'stock_max': forms.NumberInput(
                 attrs={
-                    'class':'form-control'
+                    'class': 'form-control',
+                    'min': '0'
                 }
             ),
 
-            'proveedor': forms.Select(
+            'observaciones': forms.Textarea(
                 attrs={
-                    'class':'form-select'
+                    'class': 'form-control',
+                    'rows': 3
                 }
             ),
-
         }
 
 
+# ==========================================================
+# FORMULARIO VENTA
+# ==========================================================
 
-# ==========================================
-# 🔹 FORMULARIO COMPRA
-# ==========================================
-class CompraForm(forms.ModelForm):
+class ventaForm(forms.ModelForm):
 
     class Meta:
-
-        model = Compra
+        model = venta
 
         fields = [
             'nombre_cliente',
@@ -124,161 +128,82 @@ class CompraForm(forms.ModelForm):
 
             'nombre_cliente': forms.TextInput(
                 attrs={
-                    'class':'form-control'
+                    'class': 'form-control'
                 }
             ),
 
             'correo': forms.EmailInput(
                 attrs={
-                    'class':'form-control'
+                    'class': 'form-control'
                 }
             ),
 
             'telefono': forms.TextInput(
                 attrs={
-                    'class':'form-control'
+                    'class': 'form-control'
                 }
             ),
 
             'direccion': forms.TextInput(
                 attrs={
-                    'class':'form-control'
+                    'class': 'form-control'
                 }
             ),
 
             'metodo_pago': forms.Select(
                 attrs={
-                    'class':'form-select'
+                    'class': 'form-select'
                 }
             ),
         }
 
 
-
-# ==========================================
-# 🔹 FORMULARIO DETALLE COMPRA
+# ==========================================================
+# FORMULARIO DETALLE VENTA
 # Validación de inventario
-# ==========================================
-class DetalleCompraForm(forms.ModelForm):
+# ==========================================================
+
+class detalleventaForm(forms.ModelForm):
 
     class Meta:
 
-        model = DetalleCompra
+        model = detalleventa
 
         fields = [
-            'producto',
+            'codigo_producto',
             'cantidad'
         ]
 
         widgets = {
 
-            'producto': forms.Select(
+            'codigo_producto': forms.Select(
                 attrs={
-                    'class':'form-select'
+                    'class': 'form-select'
                 }
             ),
 
             'cantidad': forms.NumberInput(
                 attrs={
-                    'class':'form-control',
-                    'min':'1'
+                    'class': 'form-control',
+                    'min': '1'
                 }
             ),
+        }
 
+        labels = {
+
+            'codigo_producto': 'Producto',
+
+            'cantidad': 'Cantidad'
         }
 
 
-    def clean(self):
-
-        cleaned_data = super().clean()
-
-        producto = cleaned_data.get('producto')
-        cantidad = cleaned_data.get('cantidad')
-
-
-        if producto and cantidad:
-
-            stock = getattr(producto, 'stock', None)
-
-
-            if not stock:
-
-                raise forms.ValidationError(
-                    "Este producto no tiene stock registrado."
-                )
-
-
-            if cantidad > stock.cantidad:
-
-                raise forms.ValidationError(
-                    f"Stock insuficiente para {producto.nombre}. "
-                    f"Disponible: {stock.cantidad}"
-                )
-
-
-        return cleaned_data
-
-
-
-
-# ==========================================
-# 🔹 FORMULARIO PAGO CLIENTE
-# ==========================================
-class PagoForm(forms.Form):
-
-    nombre = forms.CharField(
-        widget=forms.TextInput(
-            attrs={
-                'class':'form-control'
-            }
-        )
-    )
-
-
-    correo = forms.EmailField(
-        widget=forms.EmailInput(
-            attrs={
-                'class':'form-control'
-            }
-        )
-    )
-
-
-    telefono = forms.CharField(
-        widget=forms.TextInput(
-            attrs={
-                'class':'form-control'
-            }
-        )
-    )
-
-
-    direccion = forms.CharField(
-        widget=forms.TextInput(
-            attrs={
-                'class':'form-control'
-            }
-        )
-    )
-
-
-    metodo_pago = forms.ChoiceField(
-
-        choices=[
-            ('persona','Pago en persona'),
-            ('contraentrega','Pago contraentrega'),
-            ('transferencia','Transferencia Bancaria')
-        ],
-
-        widget=forms.Select(
-            attrs={
-                'class':'form-select'
-            }
-        )
-    )
+# ==========================================================
+# FORMULARIO CATEGORÍA
+# ==========================================================
 
 class CategoriaForm(forms.ModelForm):
-    
+
     class Meta:
 
         model = Categoria
@@ -293,33 +218,34 @@ class CategoriaForm(forms.ModelForm):
             'nombre': forms.TextInput(
                 attrs={
                     'class': 'form-control border-secondary',
-                    'placeholder': 'Ingrese el nombre de la categoría'
+                    'placeholder': (
+                        'Ingrese el nombre de la categoría'
+                    )
                 }
             ),
-
 
             'descripcion': forms.Textarea(
                 attrs={
                     'class': 'form-control border-secondary',
-                    'placeholder': 'Descripción de la categoría',
+                    'placeholder': (
+                        'Descripción de la categoría'
+                    ),
                     'rows': 4
                 }
             ),
-
         }
-
 
         labels = {
 
             'nombre': 'Nombre de Categoría',
 
             'descripcion': 'Descripción'
-
         }
 
-# ==========================================
-# 🔹 FORMULARIO PROVEEDOR
-# ==========================================
+
+# ==========================================================
+# FORMULARIO PROVEEDOR
+# ==========================================================
 
 class ProveedorForm(forms.ModelForm):
 
@@ -359,5 +285,4 @@ class ProveedorForm(forms.ModelForm):
                     'class': 'form-control'
                 }
             ),
-
         }

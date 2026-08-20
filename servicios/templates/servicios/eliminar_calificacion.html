@@ -7,7 +7,7 @@
 
     <div class="card bg-dark text-white shadow border-secondary">
         <div class="card-body">
-            <p class="lead">¿Estás seguro de que quieres eliminar la calificación de <strong>{{ calificacion.cliente }}</strong> para el servicio <strong>{{ calificacion.servicio.nombre }}</strong>?</p>
+            <p class="lead">¿Estás seguro de que quieres eliminar la calificación de <strong>{{ calificacion.cliente.get_full_name|default:calificacion.cliente_nombre }}</strong> para el servicio <strong>{{ calificacion.servicio.nombre }}</strong>?</p>
             <p class="text-danger">Esta acción no se puede deshacer.</p>
 
             <form method="post">

@@ -23,7 +23,7 @@
 
             <div class="row g-3 mb-4">
               <h6 class="fw-bold text-secondary border-bottom pb-2">
-                <i class="bi bi-person-vcard me-2"></i>Información de Compra
+                <i class="bi bi-person-vcard me-2"></i>Información de venta
               </h6>
 
               <div class="col-md-6">
@@ -159,9 +159,9 @@
                   {% for producto in productos %}
                   <option
                     value="{{ producto.codigo_producto }}"
-                    data-precio="{{ producto.stock.precio_venta }}"
+                    data-precio="{{ producto.bitacora.precio_venta }}"
                   >
-                    {{ producto.nombre }} - ${{ producto.stock.precio_venta }}
+                    {{ producto.nombre }} - ${{ producto.bitacora.precio_venta }}
                   </option>
                   {% endfor %}
                 </select>
@@ -207,7 +207,7 @@
                 <tbody id="cuerpo-tabla">
                   <tr id="fila-vacia">
                     <td colspan="6" class="text-muted py-3 small">
-                      No has agregado ningún concepto a esta compra.
+                      No has agregado ningún concepto a esta venta.
                     </td>
                   </tr>
                 </tbody>
@@ -255,7 +255,7 @@
                 type="submit"
                 class="btn color-azul text-dark fw-bold rounded-pill px-5 shadow border-0"
               >
-                <i class="bi bi-save2 me-2"></i>Emitir Compra Unificada
+                <i class="bi bi-save2 me-2"></i>Emitir venta Unificada
               </button>
             </div>
           </form>

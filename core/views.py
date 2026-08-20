@@ -20,7 +20,7 @@ class CustomLoginView(LoginView):
         if url:
             return url
         # Redirigir al panel si es administrador, de lo contrario al inicio
-        if self.request.user.rol == 'admin':
+        if self.request.user.rol.tipo_rol == 'admin':
             return reverse_lazy('inicio_admin')
         return reverse_lazy('inicio')
 
@@ -40,20 +40,19 @@ def inicio(request):
     return render(request, 'index-clientes.html', context)
 
 def inicio_admin(request):
-    if not request.user.is_authenticated or request.user.rol not in ['admin', 'barbero']:
+    if not request.user.is_authenticated or request.user.rol.tipo_rol not in ['admin', 'barbero']:
         return redirect('login')
         
     from usuarios.models import Usuario
     from servicios.models import Servicios
     from reservas.models import Reserva
-    from productos.models import Producto
+    from productos.models import Producto, Inventario
     from facturas.models import Factura
     from django.db.models import Sum
-    from productos.models import Stock
 
     # Estadísticas
-    total_clientes = Usuario.objects.filter(rol='cliente').count()
-    total_barberos = Usuario.objects.filter(rol='barbero').count()
+    total_clientes = Usuario.objects.filter(rol__tipo_rol='cliente').count()
+    total_barberos = Usuario.objects.filter(rol__tipo_rol='barbero').count()
     total_servicios = Servicios.objects.count()
     total_productos = Producto.objects.count()
     total_reservas = Reserva.objects.exclude(estado='cancelada').count()
@@ -64,7 +63,7 @@ def inicio_admin(request):
     # Listas
     reservas_recientes = Reserva.objects.all().order_by('-id')[:5]
     facturas_recientes = Factura.objects.all().order_by('-fecha_emision')[:5]
-    productos_bajo_stock = Stock.objects.filter(cantidad__lt=15).select_related('producto')[:5]
+    productos_bajo_bitacora = Inventario.objects.filter(cantidad_actual__lt=15).select_related('codigo_producto')[:5]
 
     context = {
         'nombre': request.user.first_name or request.user.username,
@@ -78,7 +77,7 @@ def inicio_admin(request):
         'total_facturas': total_facturas,
         'reservas_recientes': reservas_recientes,
         'facturas_recientes': facturas_recientes,
-        'productos_bajo_stock': productos_bajo_stock,
+        'productos_bajo_bitacora': productos_bajo_bitacora,
     }
     return render(request, 'index-admin.html', context)
 
@@ -92,6 +91,3 @@ def crear_promocion(request):
             return redirect('crear_promocion')
         else:
             messages.error(request, 'Error al crear la promoción. Por favor, inténtalo de nuevo.')
-            
-            
-  

@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
-from .models import Usuario, ROLES
+from .models import Usuario, Rol
 from core.validators import validar_password_fuerte
 
 # ==========================================
@@ -162,14 +162,8 @@ class CrearUsuarioAdminForm(UserCreationForm):
         widget=forms.EmailInput(attrs={'class': 'form-control'})
     )
 
-    ROL_CHOICES = [
-        ('cliente', 'Cliente'),
-        ('barbero', 'Barbero'),
-        ('admin', 'Administrador'),
-    ]
-
-    rol = forms.ChoiceField(
-        choices=ROL_CHOICES,
+    rol = forms.ModelChoiceField(
+        queryset=Rol.objects.all(),
         label="Rol",
         widget=forms.Select(attrs={'class': 'form-select'})
     )

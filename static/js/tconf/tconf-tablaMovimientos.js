@@ -1,8 +1,6 @@
 $(document).ready(function () {
-  // Busca el título dinámico dentro del h5 del Card Header y limpia espacios o íconos extra
-  var nombreTabla = $("h5").first().text().trim() || "Historial de ventas";
-  
-  // Formatea la fecha de hoy para el nombre del archivo (DD-MM-YYYY)
+  var nombreTabla = "Movimientos de inventario";
+
   var fechaHoy = new Date()
     .toLocaleDateString("es-ES", {
       day: "2-digit",
@@ -10,8 +8,7 @@ $(document).ready(function () {
       year: "numeric",
     })
     .replace(/\//g, "-");
-    
-  // Formatea la fecha con hora para el encabezado interno del documento
+
   var fechaConHora = new Date().toLocaleDateString("es-ES", {
     day: "2-digit",
     month: "2-digit",
@@ -20,8 +17,7 @@ $(document).ready(function () {
     minute: "2-digit",
   });
 
-  // Inicialización de DataTables apuntando al ID de la tabla de historial
-  $("#tablaHistorial").DataTable({
+  $("#tablaMovimientos").DataTable({
     language: {
       sProcessing: "Procesando...",
       sLengthMenu: "Mostrar _MENU_ registros",
@@ -58,7 +54,7 @@ $(document).ready(function () {
         title: nombreTabla,
         messageTop: "Exportado el: " + fechaConHora,
         exportOptions: {
-          columns: ":not(:last-child)", // Excluye la columna "Acción" de las exportaciones
+          columns: ":not(:last-child)",
         },
       },
       {
@@ -84,7 +80,7 @@ $(document).ready(function () {
       },
     ],
     columnDefs: [
-      { orderable: false, targets: [-1] }, // Desactiva el ordenamiento en los botones de Acción
+      { orderable: false, targets: [-1] },
     ],
   });
 });
