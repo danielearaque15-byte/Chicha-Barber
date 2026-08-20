@@ -27,7 +27,7 @@ class PromocionEditarForm(ModelForm):
 class calificacionForm(ModelForm):
     class Meta:
         model = Calificacion
-        # Corrección: se quita 'cliente' — ahora se asigna automáticamente
+        # Se quita 'cliente' — ahora se asigna automáticamente
         # en la vista con request.user, no lo llena el usuario a mano.
         fields = ['servicio', 'puntuacion', 'comentario']
         widgets = {

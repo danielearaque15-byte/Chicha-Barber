@@ -55,7 +55,14 @@
             </div>
 
             <div class="row g-3">
-                <div class="col-6">
+                <div class="col-4">
+                    <label class="form-label cb-label">Tipo Doc.</label>
+                    <div class="position-relative">
+                        <span class="input-icon">🪪</span>
+                        {{ form.tipo_documento }}
+                    </div>
+                </div>
+                <div class="col-4">
                     <label class="form-label cb-label">N° Documento</label>
                     <div class="position-relative">
                         <span class="input-icon">🪪</span>
@@ -63,7 +70,7 @@
                     </div>
                     <small class="form-hint text-white opacity-50">{{ form.username.help_text }}</small>
                 </div>
-                <div class="col-6">
+                <div class="col-4">
                     <label class="form-label cb-label">Teléfono</label>
                     <div class="position-relative">
                         <span class="input-icon">📞</span>

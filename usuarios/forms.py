@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
-from .models import Usuario, Rol
+from .models import Usuario, RolUsuario, TipoDocumento
 from core.validators import validar_password_fuerte
 
 # ==========================================
@@ -70,9 +70,19 @@ class RegistroForm(UserCreationForm):
         widget=forms.EmailInput(attrs={'class': 'form-control'})
     )
 
+    tipo_documento = forms.ChoiceField(
+        choices=TipoDocumento.choices,
+        label="Tipo de documento",
+        widget=forms.Select(attrs={
+            'class': 'form-select cb-input w-100',
+            'style': 'background-color: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.2);'
+        })
+    )
+
     class Meta:
         model = Usuario
         fields = (
+            'tipo_documento',
             'username',
             'first_name',
             'last_name',
@@ -162,8 +172,8 @@ class CrearUsuarioAdminForm(UserCreationForm):
         widget=forms.EmailInput(attrs={'class': 'form-control'})
     )
 
-    rol = forms.ModelChoiceField(
-        queryset=Rol.objects.all(),
+    rol = forms.ChoiceField(
+        choices=RolUsuario.choices,
         label="Rol",
         widget=forms.Select(attrs={'class': 'form-select'})
     )
@@ -251,9 +261,21 @@ class EditarUsuarioForm(forms.ModelForm):
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
     )
 
+    tipo_documento = forms.ChoiceField(
+        choices=TipoDocumento.choices,
+        label="Tipo de documento",
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+
+    rol = forms.ChoiceField(
+        choices=RolUsuario.choices,
+        label="Rol",
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+
     class Meta:
         model = Usuario
-        fields = ('first_name', 'last_name', 'email', 'telefono', 'is_staff', 'estado')
+        fields = ('tipo_documento', 'first_name', 'last_name', 'email', 'telefono', 'rol', 'is_staff', 'estado')
 
     def clean_email(self):
         email = self.cleaned_data.get('email', '').strip().lower()
@@ -284,9 +306,15 @@ class EditarPerfilForm(forms.ModelForm):
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Teléfono', 'pattern': r'^\d+$'})
     )
 
+    tipo_documento = forms.ChoiceField(
+        choices=TipoDocumento.choices,
+        label="Tipo de documento",
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+
     class Meta:
         model = Usuario
-        fields = ['first_name', 'last_name', 'telefono', 'email', 'foto_perfil']
+        fields = ['tipo_documento', 'first_name', 'last_name', 'telefono', 'email', 'foto_perfil']
         widgets = {
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Correo electrónico'}),
             'foto_perfil': forms.ClearableFileInput(attrs={'class': 'form-control'}),

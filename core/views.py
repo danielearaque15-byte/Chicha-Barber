@@ -10,6 +10,7 @@ from django.urls import reverse_lazy
 from servicios.forms import ServiciosEditarForm, ServiciosForm, PromocionForm
 from servicios.models import Promocion
 from usuarios.forms import CustomLoginForm
+from usuarios.models import RolUsuario
 
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
@@ -20,7 +21,7 @@ class CustomLoginView(LoginView):
         if url:
             return url
         # Redirigir al panel si es administrador, de lo contrario al inicio
-        if self.request.user.rol.tipo_rol == 'admin':
+        if self.request.user.rol == RolUsuario.ADMIN:
             return reverse_lazy('inicio_admin')
         return reverse_lazy('inicio')
 
@@ -40,7 +41,7 @@ def inicio(request):
     return render(request, 'index-clientes.html', context)
 
 def inicio_admin(request):
-    if not request.user.is_authenticated or request.user.rol.tipo_rol not in ['admin', 'barbero']:
+    if not request.user.is_authenticated or request.user.rol not in (RolUsuario.ADMIN, RolUsuario.BARBERO):
         return redirect('login')
         
     from usuarios.models import Usuario
@@ -51,8 +52,8 @@ def inicio_admin(request):
     from django.db.models import Sum
 
     # Estadísticas
-    total_clientes = Usuario.objects.filter(rol__tipo_rol='cliente').count()
-    total_barberos = Usuario.objects.filter(rol__tipo_rol='barbero').count()
+    total_clientes = Usuario.objects.filter(rol=RolUsuario.CLIENTE).count()
+    total_barberos = Usuario.objects.filter(rol=RolUsuario.BARBERO).count()
     total_servicios = Servicios.objects.count()
     total_productos = Producto.objects.count()
     total_reservas = Reserva.objects.exclude(estado='cancelada').count()

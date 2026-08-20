@@ -1,29 +1,45 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Usuario
+from .models import Usuario, RegistroActividad, Notificacion
+
 
 @admin.register(Usuario)
 class UsuarioAdmin(UserAdmin):
-    # Campos que se verán en la tabla principal del panel de administración
-    list_display = ('email', 'username', 'first_name', 'last_name', 'rol', 'estado', 'is_staff')
-    
-    # Filtros laterales para buscar usuarios rápidamente por su rol o estado
-    list_filter = ('rol', 'estado', 'is_staff')
-    
-    # Campos por los que podrás buscar en la barra de búsqueda
-    search_fields = ('email', 'username', 'first_name', 'last_name')
-    ordering = ('email',)
+    list_display = (
+        'username', 'tipo_documento', 'first_name', 'last_name',
+        'email', 'telefono', 'rol', 'estado', 'date_joined',
+    )
+    list_filter = ('rol', 'estado', 'tipo_documento', 'is_staff')
+    search_fields = ('username', 'first_name', 'last_name', 'email', 'telefono')
+    ordering = ('-date_joined',)
 
-    # Agregamos tus campos personalizados al formulario de edición del usuario
-    fieldsets = UserAdmin.fieldsets + (
-        ('Información de la Barbería', {
-            'fields': ('telefono', 'rol', 'estado', 'especialidad', 'foto_perfil')
+    fieldsets = (
+        (None, {'fields': ('username', 'password', 'tipo_documento')}),
+        ('Información personal', {
+            'fields': (
+                'first_name', 'segundo_nombre',
+                'last_name', 'segundo_apellido',
+                'email', 'telefono', 'foto_perfil',
+            )
         }),
+        ('Rol y estado', {'fields': ('rol', 'estado', 'especialidad', 'tema')}),
+        ('Permisos', {
+            'fields': ('is_active', 'is_staff', 'is_superuser',
+                       'groups', 'user_permissions'),
+        }),
+        ('Fechas', {'fields': ('last_login', 'date_joined')}),
     )
 
-    # Agregamos tus campos personalizados al formulario de creación de usuario
-    add_fieldsets = UserAdmin.add_fieldsets + (
-        ('Información de la Barbería', {
-            'fields': ('telefono', 'rol', 'estado','especialidad', 'foto_perfil')
-        }),
-    )
+
+@admin.register(RegistroActividad)
+class RegistroActividadAdmin(admin.ModelAdmin):
+    list_display = ('usuario', 'tipo', 'descripcion', 'fecha')
+    list_filter = ('tipo', 'fecha')
+    search_fields = ('descripcion', 'usuario__username', 'usuario__email')
+
+
+@admin.register(Notificacion)
+class NotificacionAdmin(admin.ModelAdmin):
+    list_display = ('usuario', 'tipo', 'mensaje', 'leida', 'fecha')
+    list_filter = ('tipo', 'leida', 'fecha')
+    search_fields = ('mensaje', 'usuario__username', 'usuario__email')
