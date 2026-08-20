@@ -81,7 +81,7 @@ def crear_servicios(request):
     if request.method == 'POST':
         form = ServiciosForm(request.POST, request.FILES)
         if form.is_valid():
-            # Limpiamos lógica innecesaria y guardamos directamente
+            
             form.save()
             messages.success(request, "Servicio creado con éxito.")
             return redirect('listado-admin') 
@@ -166,23 +166,31 @@ def eliminar_servicios(request, pk):
     return render(request, 'servicios/eliminar_servicios.html', context)
 
 @login_required
+
+
 def crear_promocion(request):
+    #  Validación de permisos 
     if not (request.user.is_staff or getattr(request.user, 'rol', None) == 'admin'):
         messages.error(request, "Acceso denegado.")
         return redirect('listado-promocion')
 
+    # 2. Procesamiento cuando se envía el formulario (POST)
     if request.method == 'POST':
+        # pasar request.FILES para procesar la imagen
         form = PromocionForm(request.POST, request.FILES)
+        
         if form.is_valid():
-            # ERROR CORREGIDO: No uses "Promocion = ..." porque borras la clase del Modelo
-            nueva_promo = form.save() 
+            nueva_promo = form.save()  # Guarda los datos e imagen en la BD
             messages.success(request, "Promoción creada exitosamente.")
             return redirect('listado-promocion')
         else:
-            messages.error(request, "Error al crear la promoción.")
+            messages.error(request, "Error al crear la promoción. Por favor revisa los campos.")
+    
+    
     else:
         form = PromocionForm()
     
+    # 4. Renderizado del template
     return render(request, 'servicios/agregar_promocion.html', {
         'form': form,
         'titulo': 'Crear Nueva Promoción'

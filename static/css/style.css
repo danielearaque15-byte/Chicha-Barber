@@ -1,6 +1,6 @@
 
 /* ── COLORES ── */
-.color-champaña { background-color: #eee0cb !important; }
+.color-champaña { background-color:#f9e1c8!important; }
 .color-azul  { background-color: #22aed1 !important; }
 .color-azuloscuro   { background-color: #2b50aa !important; }
 .color-negro{ background-color: #170212!important; }
@@ -19,7 +19,7 @@
   border-radius: 10px;
   margin: 10px 15px;
   background: rgba(255, 255, 255, 0.05);
-  color: #eee0cb;
+  color: #f4f1ef ;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -34,7 +34,7 @@
 }
 
 body.theme-light .theme-switch-item {
-  background: #eee0cb;
+  background: #D4AF37;
   border-color: rgba(141, 129, 140, 0.3);
   color: #030301;
 }
@@ -1613,9 +1613,9 @@ body.theme-light .chat-input:focus {
 .templates-index-clientes__div-22 { width: 65px; height: 65px; border: 2px solid #eee0cb }
 .templates-index-clientes__i-23 { color: #eee0cb }
 .templates-index-clientes__h5-24 { color: black; font-family: quot;Arialquot;, sans-serif }
-.templates-index-clientes__div-25 { color: #eee0cb }
-.templates-index-clientes__p-26 { color: black; font-family: quot;Arialquot; sans-serif }
-.templates-index-clientes__h2-27 { font-family: quot;Arialquot; sans-serif }
+.templates-index-clientes__div-25 { color: #D4AF37 }
+.templates-index-clientes__p-26 { color: black; font-family: &quot;Arialquot;, sans-serif }
+.templates-index-clientes__h2-27 { font-family: &quot;Arialquot;, sans-serif }
 .templates-index-clientes__div-28 { max-height: 450px; min-height: 300px }
 .templates-index-clientes__iframe-29 { border: 0 }
 .templates-index-admin__div-1 { background: rgba(20, 24, 32, 0.85); backdrop-filter: blur(10px); }
