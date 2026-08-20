@@ -47,7 +47,7 @@ def inicio_admin(request):
     from usuarios.models import Usuario
     from servicios.models import Servicios
     from reservas.models import Reserva
-    from productos.models import Producto, Inventario
+    from productos.models import Producto, existencias
     from facturas.models import Factura
     from django.db.models import Sum
 
@@ -64,7 +64,7 @@ def inicio_admin(request):
     # Listas
     reservas_recientes = Reserva.objects.all().order_by('-id')[:5]
     facturas_recientes = Factura.objects.all().order_by('-fecha_emision')[:5]
-    productos_bajo_bitacora = Inventario.objects.filter(cantidad_actual__lt=15).select_related('codigo_producto')[:5]
+    productos_bajo_bitacora = existencias.objects.filter(cantidad_actual__lt=15).select_related('codigo_producto')[:5]
 
     context = {
         'nombre': request.user.first_name or request.user.username,

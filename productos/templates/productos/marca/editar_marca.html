@@ -1,0 +1,210 @@
+{% extends 'base-admin.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <!-- ==========================================================
+         ENCABEZADO
+    ========================================================== -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold mb-1">
+
+               
+
+            </h2>
+
+            <p class="text-muted mb-0">
+
+             
+
+            </p>
+
+        </div>
+
+
+        <a href="{% url 'lista_marcas' %}"
+           class="btn color-azul text-white fw-bold shadow-sm">
+
+            <i class="bi bi-arrow-left me-2"></i>
+
+            Volver
+
+        </a>
+
+    </div>
+
+
+    <!-- ==========================================================
+         MENSAJES
+    ========================================================== -->
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="alert alert-{{ message.tags|default:'info' }}
+                        alert-dismissible fade show shadow-sm"
+                 role="alert">
+
+                <i class="bi bi-info-circle me-2"></i>
+
+                {{ message }}
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert">
+                </button>
+
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+
+    <!-- ==========================================================
+         FORMULARIO
+    ========================================================== -->
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card shadow border-0">
+
+                <!-- HEADER -->
+
+                <div class="card-header
+                            thead-azul
+                            text-white
+                            py-3">
+
+                    <h5 class="mb-0 fw-bold">
+
+                        <i class="bi bi-tag me-2"></i>
+
+                        Información de la marca
+
+                    </h5>
+
+                </div>
+
+
+                <!-- BODY -->
+
+                <div class="card-body p-4">
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+
+                        <!-- ERRORES GENERALES -->
+
+                        {% if form.non_field_errors %}
+
+                            <div class="alert alert-danger">
+
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+
+                                {{ form.non_field_errors }}
+
+                            </div>
+
+                        {% endif %}
+
+
+                        <!-- CAMPOS -->
+
+                        <div class="row g-3">
+
+                            {% for field in form %}
+
+                                <div class="col-md-12">
+
+                                    <label for="{{ field.id_for_label }}"
+                                           class="form-label fw-bold">
+
+                                        {{ field.label }}
+
+                                    </label>
+
+
+                                    {{ field }}
+
+
+                                    {% if field.help_text %}
+
+                                        <div class="form-text">
+
+                                            {{ field.help_text }}
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                    {% for error in field.errors %}
+
+                                        <div class="text-danger small mt-1">
+
+                                            <i class="bi bi-exclamation-circle me-1"></i>
+
+                                            {{ error }}
+
+                                        </div>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+
+                        <!-- BOTONES -->
+
+                        <div class="d-flex justify-content-end
+                                    gap-2 mt-4 pt-3 border-top">
+
+                            <a href="{% url 'lista_marcas' %}"
+                               class="btn btn-outline-secondary">
+
+                                <i class="bi bi-x-circle me-1"></i>
+
+                                Cancelar
+
+                            </a>
+
+
+                            <button type="submit"
+                                    class="btn color-azul text-white fw-bold">
+
+                                <i class="bi bi-save me-1"></i>
+
+                                Guardar cambios
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

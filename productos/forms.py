@@ -1,7 +1,15 @@
 from django import forms
 
-from .models import Producto, Inventario, venta, detalleventa, Proveedor, Categoria, Adquisicion
-
+from .models import (
+    Producto,
+    existencias,
+    venta,
+    detalleventa,
+    Proveedor,
+    Categoria,
+    Adquisicion,
+    Marca,
+)
 
 
 # ==========================================================
@@ -18,29 +26,38 @@ class ProductoForm(forms.ModelForm):
             'nombre',
             'descripcion',
             'codigo_categoria',
+            'codigo_marca',
             'precio',
             'imagen',
-            'estado'
+            'estado',
         ]
 
         widgets = {
 
             'nombre': forms.TextInput(
                 attrs={
-                    'class': 'form-control'
+                    'class': 'form-control',
+                    'placeholder': 'Nombre del producto',
                 }
             ),
 
             'descripcion': forms.Textarea(
                 attrs={
                     'class': 'form-control',
-                    'rows': 3
+                    'rows': 3,
+                    'placeholder': 'Descripción del producto',
                 }
             ),
 
             'codigo_categoria': forms.Select(
                 attrs={
-                    'class': 'form-select'
+                    'class': 'form-select',
+                }
+            ),
+
+            'codigo_marca': forms.Select(
+                attrs={
+                    'class': 'form-select',
                 }
             ),
 
@@ -48,34 +65,45 @@ class ProductoForm(forms.ModelForm):
                 attrs={
                     'class': 'form-control',
                     'min': '0',
-                    'step': '0.01'
+                    'step': '0.01',
+                    'placeholder': 'Precio',
                 }
             ),
 
             'imagen': forms.ClearableFileInput(
                 attrs={
-                    'class': 'form-control'
+                    'class': 'form-control',
                 }
             ),
 
             'estado': forms.CheckboxInput(
                 attrs={
-                    'class': 'form-check-input'
+                    'class': 'form-check-input',
                 }
             ),
         }
 
+        labels = {
+            'nombre': 'Nombre del Producto',
+            'descripcion': 'Descripción',
+            'codigo_categoria': 'Categoría',
+            'codigo_marca': 'Marca',
+            'precio': 'Precio',
+            'imagen': 'Imagen',
+            'estado': 'Activo',
+        }
+
 
 # ==========================================================
-# FORMULARIO INVENTARIO
+# FORMULARIO existencias
 # Cantidad, stock mínimo, stock máximo y observaciones
 # ==========================================================
 
-class InventarioForm(forms.ModelForm):
+class existenciasForm(forms.ModelForm):
 
     class Meta:
 
-        model = Inventario
+        model = existencias
 
         fields = [
             'cantidad_actual',
@@ -169,7 +197,7 @@ class ventaForm(forms.ModelForm):
 
 # ==========================================================
 # FORMULARIO DETALLE VENTA
-# Validación de inventario
+# Validación de existencias
 # ==========================================================
 
 class detalleventaForm(forms.ModelForm):
@@ -360,3 +388,64 @@ class AdquisicionForm(forms.ModelForm):
                 }
             ),
         }
+        
+# ==========================================================
+# 🏷️ FORMULARIO MARCA
+# ==========================================================
+
+class MarcaForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Marca
+
+        fields = [
+            'nombre',
+            'descripcion',
+            'estado',
+        ]
+
+        widgets = {
+
+            'nombre': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Nombre de la marca',
+                }
+            ),
+
+            'descripcion': forms.Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Descripción de la marca',
+                    'rows': 3,
+                }
+            ),
+
+            'estado': forms.CheckboxInput(
+                attrs={
+                    'class': 'form-check-input',
+                }
+            ),
+        }
+
+    def clean_nombre(self):
+
+        nombre = self.cleaned_data.get(
+            'nombre'
+        )
+
+        if not nombre:
+            raise forms.ValidationError(
+                'El nombre de la marca es obligatorio.'
+            )
+
+        nombre = nombre.strip()
+
+        if len(nombre) < 2:
+            raise forms.ValidationError(
+                'El nombre debe tener al menos 2 caracteres.'
+            )
+
+        return nombre
+

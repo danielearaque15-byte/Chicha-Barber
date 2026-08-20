@@ -42,11 +42,11 @@ urlpatterns = [
     path('bitacora/', views.lista_bitacora, name='lista_bitacora'),
     path('bitacora/editar/<int:pk>/', views.editar_bitacora, name='editar_bitacora'),
 
-    path('inventario/',views.lista_inventario, name='lista_inventario'),
-    path('inventario/editar/<int:pk>/',views.editar_inventario,name='editar_inventario'),
-    path('movimientos-inventario/',views.lista_movimientos_inventario,name='lista_movimientos_inventario'),
-    path('movimientos-inventario/registrar/',views.registrar_movimiento_inventario,name='registrar_movimiento_inventario'),
-    path('movimientos-inventario/eliminar/<int:pk>/',views.eliminar_movimiento_inventario,name='eliminar_movimiento_inventario' ), 
+    path('existencias/',views.lista_existencias, name='lista_existencias'),
+    path('existencias/editar/<int:pk>/',views.editar_existencias,name='editar_existencias'),
+    path('movimientos-existencias/',views.lista_movimientos_existencias,name='lista_movimientos_existencias'),
+    path('movimientos-existencias/registrar/',views.registrar_movimiento_existencias,name='registrar_movimiento_existencias'),
+    path('movimientos-existencias/eliminar/<int:pk>/',views.eliminar_movimiento_existencias,name='eliminar_movimiento_existencias' ), 
 
 
     path('adquisiciones/',views.lista_adquisiciones,name='lista_adquisiciones'),
@@ -61,7 +61,15 @@ urlpatterns = [
     path('historial/', views.historial_ventas, name='historial_ventas'),
     path('historial/<int:pk>/', views.detalle_venta, name='detalle_venta'),
     path('historial/eliminar/<int:pk>/', views.eliminar_venta, name='eliminar_venta'),
-
     
+    
+  
+     # =========================
+     # 🟡 marcas
+     # =========================
+    path('marcas/', views.lista_marcas, name='lista_marcas'),
+    path('marca/crear/', views.crear_marca, name='crear_marca'),
+    path('marcas/editar/<int:id>/', views.editar_marca, name='editar_marca'),
+    path('marcas/eliminar/<int:id>/', views.eliminar_marca, name='eliminar_marca'),
 
-  ] 
+] 

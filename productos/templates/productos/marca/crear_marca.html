@@ -1,0 +1,140 @@
+﻿{% extends 'base-admin.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <!-- ==========================================================
+         ENCABEZADO
+    ========================================================== -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                
+            </h2>
+            <p class="text-muted mb-0">
+            
+            </p>
+        </div>
+
+        <a href="{% url 'lista_marcas' %}"
+           class="btn color-azul text-white fw-bold shadow-sm">
+            <i class="bi bi-arrow-left me-2"></i>
+            Volver
+        </a>
+
+    </div>
+
+    <!-- ==========================================================
+         FORMULARIO
+    ========================================================== -->
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card shadow border-0">
+
+                <!-- HEADER -->
+                <div class="card-header thead-azul text-white py-3">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Información de la nueva marca
+                    </h5>
+                </div>
+
+                <!-- BODY -->
+                <div class="card-body p-4">
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        <div class="row g-3">
+
+                            <!-- NOMBRE -->
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold">
+                                    Nombre de la Marca <span class="text-danger">*</span>
+                                </label>
+                                {{ form.nombre }}
+                                {% for error in form.nombre.errors %}
+                                    <div class="text-danger small mt-1">
+                                        <i class="bi bi-exclamation-circle me-1"></i>
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- DESCRIPCIÓN -->
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold">
+                                    Descripción
+                                </label>
+                                {{ form.descripcion }}
+                                {% for error in form.descripcion.errors %}
+                                    <div class="text-danger small mt-1">
+                                        <i class="bi bi-exclamation-circle me-1"></i>
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- ESTADO -->
+                            <div class="col-md-12">
+                                <div class="form-check form-switch mt-2">
+                                    {{ form.estado }}
+                                    <label class="form-check-label fw-semibold" for="{{ form.estado.id_for_label }}">
+                                        Marca Activa
+                                    </label>
+                                </div>
+                                {% for error in form.estado.errors %}
+                                    <div class="text-danger small mt-1">
+                                        <i class="bi bi-exclamation-circle me-1"></i>
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+
+                        <!-- BOTONES -->
+                        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+
+                            <a href="{% url 'lista_marcas' %}"
+                               class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-1"></i>
+                                Cancelar
+                            </a>
+
+                            <button type="submit"
+                                    class="btn color-azul text-white fw-bold">
+                                <i class="bi bi-save me-1"></i>
+                                Guardar Marca
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

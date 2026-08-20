@@ -1,8 +1,6 @@
-$(document).ready(function () {
-  // Busca el título dentro del h5 del card de este módulo
-  var nombreTabla = 
-    $("h5").first().text().trim() || "Gestión de existencias";
-    
+﻿$(document).ready(function () {
+  var nombreTabla =
+    $("h2").first().text().trim() || "Gestión de Marcas";
   var fechaHoy = new Date()
     .toLocaleDateString("es-ES", {
       day: "2-digit",
@@ -10,7 +8,6 @@ $(document).ready(function () {
       year: "numeric",
     })
     .replace(/\//g, "-");
-    
   var fechaConHora = new Date().toLocaleDateString("es-ES", {
     day: "2-digit",
     month: "2-digit",
@@ -19,8 +16,7 @@ $(document).ready(function () {
     minute: "2-digit",
   });
 
-  // Inicialización apuntando al ID correcto de existencias
-  $("#tablaexistencias").DataTable({
+  $("#tablamarcas").DataTable({
     language: {
       sProcessing: "Procesando...",
       sLengthMenu: "Mostrar _MENU_ registros",
@@ -41,8 +37,8 @@ $(document).ready(function () {
     responsive: true,
     pageLength: 10,
     lengthMenu: [
-      [ 10, 25, 50, -1],
-      [ 10, 25, 50, "Todos"],
+      [10, 25, 50, -1],
+      [10, 25, 50, "Todos"],
     ],
     dom:
       '<"row d-flex justify-content-between align-items-center mb-3"<"col-sm-12 col-md-4"l><"col-sm-12 col-md-4 d-flex justify-content-center"B><"col-sm-12 col-md-4 d-flex justify-content-end"f>>' +
@@ -83,7 +79,7 @@ $(document).ready(function () {
       },
     ],
     columnDefs: [
-      { orderable: false, targets: [-1] }, // Desactiva el ordenamiento únicamente en la columna de Acciones (la última)
+      { orderable: false, targets: [-1] },
     ],
   });
 });

@@ -1,12 +1,19 @@
 import os
+import sys
 import django
 import random
 import requests
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 from decimal import Decimal
 from datetime import date, time, timedelta
 
 from django.core.files.base import ContentFile
+
 
 
 # ==========================================================
@@ -42,14 +49,15 @@ from reservas.models import (
 
 from productos.models import (
     Producto,
-    Inventario,
+    existencias,
     Bitacora,
-    MovimientoInventario,
+    Movimientoexistencias,
     Adquisicion,
     venta,
     detalleventa,
     Categoria,
     Proveedor,
+    Marca,
     Promocion as ProductoPromocion,
     PromocionProducto,
 )
@@ -87,10 +95,10 @@ def limpiar_datos():
         venta.objects.all().delete()
 
         # ----------------------------------------------
-        # INVENTARIO
+        # existencias
         # ----------------------------------------------
 
-        MovimientoInventario.objects.all().delete()
+        Movimientoexistencias.objects.all().delete()
         Bitacora.objects.all().delete()
         Adquisicion.objects.all().delete()
 
@@ -101,11 +109,12 @@ def limpiar_datos():
         PromocionProducto.objects.all().delete()
         ProductoPromocion.objects.all().delete()
 
-        Inventario.objects.all().delete()
+        existencias.objects.all().delete()
         Producto.objects.all().delete()
 
         Categoria.objects.all().delete()
         Proveedor.objects.all().delete()
+        Marca.objects.all().delete()
 
         # ----------------------------------------------
         # SERVICIOS
@@ -724,12 +733,11 @@ def poblar_calificaciones_servicios():
         Servicios.objects.all()
     )
 
-    clientes = [
-        "Andrés Pérez",
-        "Marina Soler",
-        "Kevin Duarte",
-        "Lucía Rivas",
-    ]
+    clientes = list(
+        Usuario.objects.filter(
+            rol="cliente"
+        )
+    )
 
     comentarios = [
 
@@ -750,13 +758,19 @@ def poblar_calificaciones_servicios():
             random.randint(1, 3)
         ):
 
+            cliente_obj = random.choice(clientes) if clientes else None
+            nombre_str = (
+                cliente_obj.get_full_name()
+                or cliente_obj.username
+            ) if cliente_obj else "Cliente Anónimo"
+
             Calificacion.objects.create(
 
                 servicio=servicio,
 
-                cliente=random.choice(
-                    clientes
-                ),
+                cliente=cliente_obj,
+
+                cliente_nombre=nombre_str,
 
                 puntuacion=random.randint(
                     3,
@@ -773,14 +787,15 @@ def poblar_calificaciones_servicios():
     )
 
 
+
 # ==========================================================
-# 11. PRODUCTOS, INVENTARIO Y BITÁCORA
+# 11. PRODUCTOS, existencias Y BITÁCORA
 # ==========================================================
 
 def poblar_productos_y_bitacora():
 
     print("\n==========================================")
-    print("POBLANDO PRODUCTOS E INVENTARIO")
+    print("POBLANDO PRODUCTOS E existencias")
     print("==========================================")
 
     # ----------------------------------------------
@@ -826,6 +841,51 @@ def poblar_productos_y_bitacora():
         )
 
         categorias.append(cat)
+
+    # ----------------------------------------------
+    # MARCAS
+    # ----------------------------------------------
+
+    marcas_data = [
+        {
+            "nombre": "Clubman Pinaud",
+            "descripcion": "Marca clásica de barbería tradicional y lociones aftershave.",
+            "estado": True,
+        },
+        {
+            "nombre": "Suavecito Pomade",
+            "descripcion": "Famosa marca de pomadas, ceras y fijadores de alto rendimiento.",
+            "estado": True,
+        },
+        {
+            "nombre": "Wahl Professional",
+            "descripcion": "Líder mundial en máquinas de corte, navajas y accesorios profesionales.",
+            "estado": True,
+        },
+        {
+            "nombre": "Elegance",
+            "descripcion": "Productos profesionales para estilismo capilar, geles y cuidado facial.",
+            "estado": True,
+        },
+        {
+            "nombre": "Reuzel",
+            "descripcion": "Gama holandesa de pomadas, champús y tónicos capilares premium.",
+            "estado": True,
+        },
+        {
+            "nombre": "American Crew",
+            "descripcion": "Línea premium de cuidado personal y estilo masculino.",
+            "estado": True,
+        },
+    ]
+
+    marcas = []
+    for m_data in marcas_data:
+        m, _ = Marca.objects.get_or_create(
+            nombre=m_data["nombre"],
+            defaults=m_data
+        )
+        marcas.append(m)
 
     # ----------------------------------------------
     # PROVEEDORES
@@ -907,6 +967,12 @@ def poblar_productos_y_bitacora():
                         )
                     ),
 
+                    "codigo_marca": (
+                        random.choice(
+                            marcas
+                        )
+                    ),
+
                     "estado": True,
 
                     "precio": (
@@ -937,6 +1003,20 @@ def poblar_productos_y_bitacora():
                 ]
             )
 
+        if not producto.codigo_marca_id:
+
+            producto.codigo_marca = (
+                random.choice(
+                    marcas
+                )
+            )
+
+            producto.save(
+                update_fields=[
+                    "codigo_marca"
+                ]
+            )
+
         if not producto.precio:
 
             producto.precio = Decimal(
@@ -955,11 +1035,11 @@ def poblar_productos_y_bitacora():
             )
 
         # ------------------------------------------
-        # INVENTARIO
+        # existencias
         # ------------------------------------------
 
-        inventario, _ = (
-            Inventario.objects.get_or_create(
+        stock_obj, _ = (
+            existencias.objects.get_or_create(
 
                 codigo_producto=producto,
 
@@ -981,29 +1061,29 @@ def poblar_productos_y_bitacora():
                     ),
 
                     "observaciones": (
-                        "Inventario cargado "
+                        "existencias cargado "
                         "automáticamente."
                     ),
                 }
             )
         )
 
-        inventario.cantidad_actual = random.randint(
+        stock_obj.cantidad_actual = random.randint(
             15,
             60
         )
 
-        inventario.stock_min = random.randint(
+        stock_obj.stock_min = random.randint(
             5,
             10
         )
 
-        inventario.stock_max = random.randint(
+        stock_obj.stock_max = random.randint(
             50,
             100
         )
 
-        inventario.save(
+        stock_obj.save(
             update_fields=[
                 "cantidad_actual",
                 "stock_min",
@@ -1013,18 +1093,18 @@ def poblar_productos_y_bitacora():
         )
 
         # ------------------------------------------
-        # RELACIÓN PRODUCTO → INVENTARIO
+        # RELACIÓN PRODUCTO → existencias
         # ------------------------------------------
 
-        if not producto.codigo_inventario_id:
+        if not producto.codigo_existencias_id:
 
-            producto.codigo_inventario = (
-                inventario
+            producto.codigo_existencias = (
+                stock_obj
             )
 
             producto.save(
                 update_fields=[
-                    "codigo_inventario"
+                    "codigo_existencias"
                 ]
             )
 
@@ -1034,7 +1114,7 @@ def poblar_productos_y_bitacora():
 
         Bitacora.objects.create(
 
-            codigo_inventario=inventario,
+            codigo_existencias=stock_obj,
 
             codigo_producto=producto,
 
@@ -1047,7 +1127,7 @@ def poblar_productos_y_bitacora():
             valor_anterior="0",
 
             valor_actual=str(
-                inventario.cantidad_actual
+                stock_obj.cantidad_actual
             ),
 
             motivo="Carga inicial",
@@ -1444,18 +1524,18 @@ def poblar_ventas():
 
                 try:
 
-                    inventario = (
-                        candidato.inventario
+                    stock_candidato = (
+                        candidato.existencias
                     )
 
-                except Inventario.DoesNotExist:
+                except existencias.DoesNotExist:
 
                     continue
 
                 if (
-                    inventario
+                    stock_candidato
                     and
-                    inventario.cantidad_actual > 0
+                    stock_candidato.cantidad_actual > 0
                 ):
 
                     producto = candidato
@@ -1470,8 +1550,8 @@ def poblar_ventas():
 
                 break
 
-            inventario = (
-                producto.inventario
+            stock_prod = (
+                producto.existencias
             )
 
             # ------------------------------------------
@@ -1480,7 +1560,7 @@ def poblar_ventas():
 
             cantidad_maxima = min(
                 3,
-                inventario.cantidad_actual
+                stock_prod.cantidad_actual
             )
 
             cantidad = random.randint(
@@ -1659,7 +1739,9 @@ def poblar_calificaciones():
 
             servicio=servicio,
 
-            cliente=(
+            cliente=cliente_usuario,
+
+            cliente_nombre=(
                 cliente_usuario.get_full_name()
                 or cliente_usuario.username
             ),

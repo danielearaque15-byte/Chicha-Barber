@@ -169,10 +169,25 @@
                    class="list-group-item list-group-item-action bg-dark border-0 ps-4 {% if request.resolver_match.url_name == 'lista_categorias' or request.resolver_match.url_name == 'crear_categoria' or request.resolver_match.url_name == 'editar_categoria' or request.resolver_match.url_name == 'eliminar_categoria' %}fw-bold{% else %}text-white-50{% endif %}"
                    style="{% if request.resolver_match.url_name == 'lista_categorias' or request.resolver_match.url_name == 'crear_categoria' or request.resolver_match.url_name == 'editar_categoria' or request.resolver_match.url_name == 'eliminar_categoria' %}color:#22aed1;{% endif %}">
 
-                    <i class="bi bi-tags me-2"></i>
+                    <i class="bi bi-grid me-2"></i>
                     Categorías
 
                 </a>
+
+
+                <!-- ========================= -->
+                <!-- MARCAS -->
+                <!-- ========================= -->
+
+                <a href="{% url 'lista_marcas' %}"
+                   class="list-group-item list-group-item-action bg-dark border-0 ps-4 {% if request.resolver_match.url_name == 'lista_marcas' or request.resolver_match.url_name == 'crear_marca' or request.resolver_match.url_name == 'editar_marca' or request.resolver_match.url_name == 'eliminar_marca' %}fw-bold{% else %}text-white-50{% endif %}"
+                   style="{% if request.resolver_match.url_name == 'lista_marcas' or request.resolver_match.url_name == 'crear_marca' or request.resolver_match.url_name == 'editar_marca' or request.resolver_match.url_name == 'eliminar_marca' %}color:#22aed1;{% endif %}">
+
+                    <i class="bi bi-tags me-2"></i>
+                    Marcas
+
+                </a>
+
 
 
                 <!-- ========================= -->
@@ -190,23 +205,23 @@
 
 
                 <!-- ========================= -->
-                <!-- INVENTARIO -->
+                <!-- existencias -->
                 <!-- ========================= -->
 
-                <a href="{% url 'lista_inventario' %}"
-                   class="list-group-item list-group-item-action bg-dark border-0 ps-4 {% if request.resolver_match.url_name == 'lista_inventario' or request.resolver_match.url_name == 'editar_inventario' %}fw-bold{% else %}text-white-50{% endif %}"
-                   style="{% if request.resolver_match.url_name == 'lista_inventario' or request.resolver_match.url_name == 'editar_inventario' %}color:#22aed1;{% endif %}">
+                <a href="{% url 'lista_existencias' %}"
+                   class="list-group-item list-group-item-action bg-dark border-0 ps-4 {% if request.resolver_match.url_name == 'lista_existencias' or request.resolver_match.url_name == 'editar_existencias' %}fw-bold{% else %}text-white-50{% endif %}"
+                   style="{% if request.resolver_match.url_name == 'lista_existencias' or request.resolver_match.url_name == 'editar_existencias' %}color:#22aed1;{% endif %}">
 
                     <i class="bi bi-boxes me-2"></i>
-                    Inventario
+                    existencias
 
                 </a>
 
-                <a href="{% url 'lista_movimientos_inventario' %}"
-                   class="list-group-item list-group-item-action bg-dark border-0 ps-4 {% if request.resolver_match.url_name == 'lista_movimientos_inventario' or request.resolver_match.url_name == 'registrar_movimiento_inventario' or request.resolver_match.url_name == 'eliminar_movimiento_inventario' %}fw-bold{% else %}text-white-50{% endif %}"
-                   style="{% if request.resolver_match.url_name == 'lista_movimientos_inventario' or request.resolver_match.url_name == 'registrar_movimiento_inventario' or request.resolver_match.url_name == 'eliminar_movimiento_inventario' %}color:#22aed1;{% endif %}">
+                <a href="{% url 'lista_movimientos_existencias' %}"
+                   class="list-group-item list-group-item-action bg-dark border-0 ps-4 {% if request.resolver_match.url_name == 'lista_movimientos_existencias' or request.resolver_match.url_name == 'registrar_movimiento_existencias' or request.resolver_match.url_name == 'eliminar_movimiento_existencias' %}fw-bold{% else %}text-white-50{% endif %}"
+                   style="{% if request.resolver_match.url_name == 'lista_movimientos_existencias' or request.resolver_match.url_name == 'registrar_movimiento_existencias' or request.resolver_match.url_name == 'eliminar_movimiento_existencias' %}color:#22aed1;{% endif %}">
                     <i class="bi bi-arrow-left-right me-2"></i>
-                    Movimiento de Inventario
+                    Movimiento de existencias
                 </a>
 
                 <a href="{% url 'lista_bitacora' %}"
