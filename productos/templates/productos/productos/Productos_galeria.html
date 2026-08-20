@@ -1,0 +1,971 @@
+{% extends "base-clientes.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- ==========================================================
+     MENSAJES
+========================================================== -->
+
+{% if messages %}
+
+    <div class="container mt-3">
+
+        {% for message in messages %}
+
+            <div
+                class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                role="alert"
+            >
+
+                {{ message }}
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Cerrar"
+                ></button>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+{% endif %}
+
+
+<!-- ==========================================================
+     CONTENEDOR PRINCIPAL
+========================================================== -->
+
+<div class="container-fluid py-5 min-vh-100">
+
+    <div class="container">
+
+
+        <!-- ==================================================
+             TITULO
+        =================================================== -->
+
+        <div class="text-center mb-5">
+
+            <h1 class="display-4 fw-bold text-uppercase text-white mb-4">
+
+                Productos de Cuidado Personal
+
+            </h1>
+
+            <hr class="w-25 mx-auto opacity-50">
+
+        </div>
+
+
+        <!-- ==================================================
+             BUSCADOR
+        =================================================== -->
+
+        <div class="row justify-content-center mb-5">
+
+            <div class="col-12 col-md-8 col-lg-6">
+
+                <div class="input-group input-group-lg shadow-sm">
+
+                    <span class="input-group-text">
+
+                        <i class="bi bi-search"></i>
+
+                    </span>
+
+                    <input
+                        id="buscador-productos"
+                        type="search"
+                        class="form-control"
+                        placeholder="Buscar producto..."
+                        aria-label="Buscar productos"
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+                <!-- ==================================================
+                     RESULTADOS
+                ================================================== -->
+
+                <div
+                    id="resultados-busqueda"
+                    class="list-group shadow mt-2 d-none"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             LISTADO DE PRODUCTOS
+        =================================================== -->
+
+        <div
+            class="row g-4 justify-content-center"
+            id="lista-productos"
+        >
+
+
+            {% for producto in productos %}
+
+
+                <!-- ==================================================
+                     PRODUCTO
+                ================================================== -->
+
+                <div
+                    class="col-12 col-md-6 col-lg-4 d-flex justify-content-center product-card-item"
+                    data-product-card
+                    data-id="{{ producto.codigo_producto }}"
+                >
+
+
+                    <div
+                        class="card h-100 shadow-lg border-0 rounded-4 overflow-hidden w-100"
+                    >
+
+
+                        <!-- ==================================================
+                             IMAGEN
+                        ================================================== -->
+
+                        <img
+                            src="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% static 'img/Aceite.jpg' %}{% endif %}"
+                            class="card-img-top img-fluid"
+                            style="height: 260px; object-fit: cover;"
+                            loading="lazy"
+                            alt="{{ producto.nombre }}"
+                        >
+
+
+                        <!-- ==================================================
+                             INFORMACION
+                        ================================================== -->
+
+                        <div
+                            class="card-body d-flex flex-column text-center p-4"
+                        >
+
+
+                            <!-- NOMBRE -->
+
+                            <h4
+                                class="fw-bold mb-2 producto-nombre"
+                            >
+
+                                {{ producto.nombre }}
+
+                            </h4>
+
+
+                            <!-- CATEGORIA -->
+
+                            {% if producto.codigo_categoria %}
+
+                                <div class="mb-3">
+
+                                    <span
+                                        class="badge bg-primary producto-categoria"
+                                    >
+
+                                        {{ producto.codigo_categoria.nombre }}
+
+                                    </span>
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <!-- DESCRIPCION -->
+
+                            <p
+                                class="text-body-secondary text-start flex-grow-1 producto-descripcion"
+                            >
+
+                                {{ producto.descripcion|truncatechars:80 }}
+
+                            </p>
+
+
+                            <!-- ==================================================
+                                 PRECIO DE VENTA
+                            ================================================== -->
+
+                            <div class="mb-3">
+
+                                <small class="text-body-secondary d-block">
+
+                                    Precio de venta
+
+                                </small>
+
+                                <h3
+                                    class="fw-bold mb-0 text-success producto-precio"
+                                >
+
+                                    ${{ producto.precio_venta_actual|floatformat:0 }}
+
+                                </h3>
+
+                            </div>
+
+
+                            <!-- ==================================================
+                                 BOTON CARRITO
+                            ================================================== -->
+
+                            <button
+                                type="button"
+                                class="btn btn-primary rounded-pill w-100 fw-bold"
+                                onclick="agregarCarrito(
+                                    event,
+                                    {{ producto.codigo_producto }},
+                                    '{{ producto.nombre|escapejs }}',
+                                    {{ producto.precio_venta_actual|floatformat:0 }}
+                                )"
+                            >
+
+                                <i class="bi bi-cart-plus me-2"></i>
+
+                                AGREGAR AL CARRITO
+
+                            </button>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            {% empty %}
+
+
+                <!-- ==================================================
+                     NO HAY PRODUCTOS
+                ================================================== -->
+
+                <div class="col-12 col-md-8">
+
+                    <div
+                        class="card shadow rounded-4 text-center p-5"
+                    >
+
+                        <i
+                            class="bi bi-basket display-1 text-secondary"
+                        ></i>
+
+                        <h3 class="fw-bold mt-3">
+
+                            No hay productos disponibles
+
+                        </h3>
+
+                        <p class="text-body-secondary">
+
+                            Actualmente no tenemos productos disponibles.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+            {% endfor %}
+
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     JAVASCRIPT
+========================================================== -->
+
+<script>
+
+
+/* ==========================================================
+   BUSCADOR
+========================================================== */
+
+function filtrarProductos() {
+
+    const input =
+        document.getElementById(
+            "buscador-productos"
+        );
+
+    const resultados =
+        document.getElementById(
+            "resultados-busqueda"
+        );
+
+    if (!input || !resultados) {
+
+        return;
+
+    }
+
+
+    const texto =
+        input.value
+            .trim()
+            .toLowerCase();
+
+
+    const productos =
+        document.querySelectorAll(
+            "[data-product-card]"
+        );
+
+
+    /* ======================================================
+       LIMPIAR RESULTADOS
+    ====================================================== */
+
+    resultados.innerHTML = "";
+
+
+    /* ======================================================
+       BUSCADOR VACIO
+    ====================================================== */
+
+    if (texto === "") {
+
+        productos.forEach(
+            card => {
+
+                card.classList.remove("d-none");
+
+            }
+        );
+
+        resultados.classList.add("d-none");
+
+        return;
+
+    }
+
+
+    let encontrados = 0;
+
+
+    /* ======================================================
+       RECORRER PRODUCTOS
+    ====================================================== */
+
+    productos.forEach(
+        card => {
+
+
+            const nombre =
+                card.querySelector(
+                    ".producto-nombre"
+                )?.textContent
+                .trim() || "";
+
+
+            const descripcion =
+                card.querySelector(
+                    ".producto-descripcion"
+                )?.textContent
+                .trim() || "";
+
+
+            const categoria =
+                card.querySelector(
+                    ".producto-categoria"
+                )?.textContent
+                .trim() || "";
+
+
+            const imagen =
+                card.querySelector(
+                    "img"
+                )?.src || "";
+
+
+            const precio =
+                card.querySelector(
+                    ".producto-precio"
+                )?.textContent
+                .trim() || "";
+
+
+            /* ==================================================
+               COMPROBAR COINCIDENCIA
+            ================================================== */
+
+            const coincide =
+
+                nombre
+                    .toLowerCase()
+                    .includes(texto)
+
+                ||
+
+                descripcion
+                    .toLowerCase()
+                    .includes(texto)
+
+                ||
+
+                categoria
+                    .toLowerCase()
+                    .includes(texto);
+
+
+            /* ==================================================
+               SI COINCIDE
+            ================================================== */
+
+            if (coincide) {
+
+                card.classList.remove("d-none");
+
+                encontrados++;
+
+
+                /* ==================================================
+                   CREAR SUGERENCIA BOOTSTRAP
+                ================================================== */
+
+                const resultado =
+                    document.createElement("button");
+
+
+                resultado.type = "button";
+
+
+                resultado.className =
+                    "list-group-item list-group-item-action";
+
+
+                resultado.innerHTML = `
+
+                    <div class="d-flex align-items-center gap-3">
+
+                        <img
+                            src="${imagen}"
+                            alt="${nombre}"
+                            class="rounded"
+                            width="55"
+                            height="55"
+                            style="object-fit: cover;"
+                        >
+
+                        <div class="flex-grow-1 text-start">
+
+                            <div class="fw-bold">
+
+                                ${nombre}
+
+                            </div>
+
+                            ${
+                                categoria
+                                ?
+                                `
+                                <small class="text-body-secondary">
+
+                                    ${categoria}
+
+                                </small>
+                                `
+                                :
+                                ""
+                            }
+
+                            <div class="small text-success fw-bold">
+
+                                ${precio}
+
+                            </div>
+
+                        </div>
+
+                        <i class="bi bi-arrow-right text-secondary"></i>
+
+                    </div>
+
+                `;
+
+
+                /* ==================================================
+                   SELECCIONAR PRODUCTO
+                ================================================== */
+
+                resultado.addEventListener(
+                    "click",
+                    function() {
+
+
+                        /* ======================================
+                           PONER NOMBRE EN BUSCADOR
+                        ======================================= */
+
+                        input.value =
+                            nombre;
+
+
+                        /* ======================================
+                           OCULTAR TODOS
+                        ======================================= */
+
+                        productos.forEach(
+                            producto => {
+
+                                producto.classList.add(
+                                    "d-none"
+                                );
+
+                            }
+                        );
+
+
+                        /* ======================================
+                           MOSTRAR SELECCIONADO
+                        ======================================= */
+
+                        card.classList.remove(
+                            "d-none"
+                        );
+
+
+                        /* ======================================
+                           OCULTAR SUGERENCIAS
+                        ======================================= */
+
+                        resultados.classList.add(
+                            "d-none"
+                        );
+
+
+                        /* ======================================
+                           SCROLL
+                        ======================================= */
+
+                        setTimeout(
+                            function() {
+
+                                card.scrollIntoView({
+
+                                    behavior: "smooth",
+
+                                    block: "center"
+
+                                });
+
+                            },
+                            50
+                        );
+
+
+                        /* ======================================
+                           RESALTAR
+                        ======================================= */
+
+                        card.classList.add(
+                            "border",
+                            "border-primary",
+                            "border-3"
+                        );
+
+
+                        setTimeout(
+                            function() {
+
+                                card.classList.remove(
+                                    "border",
+                                    "border-primary",
+                                    "border-3"
+                                );
+
+                            },
+                            1200
+                        );
+
+                    }
+                );
+
+
+                resultados.appendChild(
+                    resultado
+                );
+
+            }
+
+            else {
+
+                card.classList.add(
+                    "d-none"
+                );
+
+            }
+
+        }
+    );
+
+
+    /* ======================================================
+       NO HAY RESULTADOS
+    ====================================================== */
+
+    if (encontrados === 0) {
+
+        resultados.innerHTML = `
+
+            <div class="list-group-item text-center py-4">
+
+                <i class="bi bi-search fs-3 text-secondary"></i>
+
+                <div class="text-body-secondary mt-2">
+
+                    No encontramos productos
+
+                </div>
+
+            </div>
+
+        `;
+
+    }
+
+
+    /* ======================================================
+       MOSTRAR RESULTADOS
+    ====================================================== */
+
+    resultados.classList.remove(
+        "d-none"
+    );
+
+}
+
+
+/* ==========================================================
+   CERRAR RESULTADOS AL HACER CLICK AFUERA
+========================================================== */
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        const buscador =
+            document.getElementById(
+                "buscador-productos"
+            );
+
+        const resultados =
+            document.getElementById(
+                "resultados-busqueda"
+            );
+
+
+        if (
+            buscador &&
+            resultados &&
+            !buscador.contains(event.target) &&
+            !resultados.contains(event.target)
+        ) {
+
+            resultados.classList.add(
+                "d-none"
+            );
+
+        }
+
+    }
+);
+
+
+/* ==========================================================
+   CERRAR CON ESC
+========================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            const resultados =
+                document.getElementById(
+                    "resultados-busqueda"
+                );
+
+
+            if (resultados) {
+
+                resultados.classList.add(
+                    "d-none"
+                );
+
+            }
+
+        }
+
+    }
+);
+
+
+/* ==========================================================
+   DOM READY
+========================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+
+        /* ==============================================
+           CONTADOR CARRITO
+        =============================================== */
+
+        actualizarContador();
+
+
+        /* ==============================================
+           BUSCADOR
+        =============================================== */
+
+        const input =
+            document.getElementById(
+                "buscador-productos"
+            );
+
+
+        if (input) {
+
+            input.addEventListener(
+                "input",
+                filtrarProductos
+            );
+
+        }
+
+    }
+);
+
+
+/* ==========================================================
+   AGREGAR AL CARRITO
+========================================================== */
+
+function agregarCarrito(
+    event,
+    id,
+    nombre,
+    precio
+) {
+
+
+    let carrito =
+        JSON.parse(
+            localStorage.getItem(
+                "carrito"
+            )
+        ) || [];
+
+
+    /* ======================================================
+       BUSCAR PRODUCTO EXISTENTE
+    ====================================================== */
+
+    let productoExistente =
+        carrito.find(
+            p => p.id === id
+        );
+
+
+    /* ======================================================
+       AUMENTAR CANTIDAD
+    ====================================================== */
+
+    if (productoExistente) {
+
+        productoExistente.cantidad++;
+
+    }
+
+
+    /* ======================================================
+       AGREGAR PRODUCTO
+    ====================================================== */
+
+    else {
+
+        carrito.push({
+
+            id: id,
+
+            nombre: nombre,
+
+            precio: precio,
+
+            cantidad: 1
+
+        });
+
+    }
+
+
+    /* ======================================================
+       GUARDAR
+    ====================================================== */
+
+    localStorage.setItem(
+        "carrito",
+        JSON.stringify(carrito)
+    );
+
+
+    /* ======================================================
+       ACTUALIZAR CONTADOR
+    ====================================================== */
+
+    actualizarContador();
+
+
+    /* ======================================================
+       BOTON
+    ====================================================== */
+
+    const btn =
+        event.target.closest(
+            "button"
+        );
+
+
+    if (!btn) {
+
+        return;
+
+    }
+
+
+    const contenidoOriginal =
+        btn.innerHTML;
+
+
+    btn.innerHTML =
+        "<i class='bi bi-check-circle me-2'></i>AGREGADO";
+
+
+    btn.classList.remove(
+        "btn-primary"
+    );
+
+
+    btn.classList.add(
+        "btn-success"
+    );
+
+
+    setTimeout(
+        function() {
+
+
+            btn.innerHTML =
+                contenidoOriginal;
+
+
+            btn.classList.remove(
+                "btn-success"
+            );
+
+
+            btn.classList.add(
+                "btn-primary"
+            );
+
+
+        },
+        1000
+    );
+
+}
+
+
+/* ==========================================================
+   ACTUALIZAR CONTADOR
+========================================================== */
+
+function actualizarContador() {
+
+
+    let carrito =
+        JSON.parse(
+            localStorage.getItem(
+                "carrito"
+            )
+        ) || [];
+
+
+    let total =
+        carrito.reduce(
+            (acc, producto) => {
+
+                return acc +
+                    producto.cantidad;
+
+            },
+            0
+        );
+
+
+    const contador =
+        document.getElementById(
+            "contador"
+        );
+
+
+    if (!contador) {
+
+        return;
+
+    }
+
+
+    if (total > 0) {
+
+        contador.textContent =
+            total;
+
+        contador.classList.remove(
+            "d-none"
+        );
+
+    }
+
+    else {
+
+        contador.classList.add(
+            "d-none"
+        );
+
+    }
+
+}
+
+</script>
+
+{% endblock content %}

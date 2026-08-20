@@ -104,7 +104,7 @@
 
                         <td class="fw-bold">
 
-                            {{ proveedor.id }}
+                            {{ proveedor.codigo }}
 
                         </td>
 
@@ -149,7 +149,7 @@
                         <td class="text-center">
 
 
-                            <a href="{% url 'editar_proveedor' proveedor.id %}"
+                            <a href="{% url 'editar_proveedor' proveedor.codigo %}"
                                class="btn btn-sm btn-outline-primary">
 
 
@@ -161,7 +161,7 @@
 
 
 
-                            <a href="{% url 'eliminar_proveedor' proveedor.id %}"
+                            <a href="{% url 'eliminar_proveedor' proveedor.codigo %}"
                                class="btn btn-sm btn-outline-danger"
                                onclick="return confirm('¿Deseas eliminar este proveedor?');">
 
