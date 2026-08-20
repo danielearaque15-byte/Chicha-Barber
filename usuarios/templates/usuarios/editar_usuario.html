@@ -22,10 +22,32 @@
                 </div>
             </div>
 
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
             <form method="post">
                 {% csrf_token %}
 
                 <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-dark">Tipo de documento</label>
+                        {{ form.tipo_documento }}
+                        {% if form.tipo_documento.errors %}
+                            <div class="text-danger small mt-1">{{ form.tipo_documento.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-dark">Rol</label>
+                        {{ form.rol }}
+                        {% if form.rol.errors %}
+                            <div class="text-danger small mt-1">{{ form.rol.errors.0 }}</div>
+                        {% endif %}
+                    </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-semibold text-dark">Nombre</label>

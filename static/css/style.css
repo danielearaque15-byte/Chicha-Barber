@@ -1,6 +1,5 @@
-
 /* ── COLORES ── */
-.color-champaña { background-color:#f9e1c8!important; }
+.color-champaña { background-color: #C9A25C !important; }
 .color-azul  { background-color: #22aed1 !important; }
 .color-azuloscuro   { background-color: #2b50aa !important; }
 .color-negro{ background-color: #170212!important; }
@@ -19,7 +18,7 @@
   border-radius: 10px;
   margin: 10px 15px;
   background: rgba(255, 255, 255, 0.05);
-  color: #f4f1ef ;
+  color: #C9A25C;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -34,7 +33,7 @@
 }
 
 body.theme-light .theme-switch-item {
-  background: #D4AF37;
+  background: #C9A25C;
   border-color: rgba(141, 129, 140, 0.3);
   color: #030301;
 }
@@ -161,7 +160,7 @@ header a { transition: .3s; }
   --bg-card-dark: rgba(20, 20, 20, 0.75);       
   --bg-input-dark: rgba(255, 255, 255, 0.04);  
   --bg-input-hover: rgba(255, 255, 255, 0.08); 
-  --color-champaña: #eee0cb;                    
+  --color-champaña: #C9A25C;                    
   --accent-azul: #22aed1;                       
   --accent-oscuro: #2b50aa;                     
   --text-muted: #b0a8b0;                        
@@ -170,7 +169,7 @@ header a { transition: .3s; }
 
 /* ── modo claro adaptativo para el flujo de reservas ── */
 body.theme-light .booking-wrap {
-  --bg-card-dark: #eee0cb;                       /* Fondo champaña de tu paleta */
+  --bg-card-dark: #C9A25C;                       /* Fondo champaña de tu paleta */
   --bg-input-dark: #ffffff;                      /* Cajas internas blancas limpias */
   --bg-input-hover: rgba(34, 174, 209, 0.08); 
   --color-champaña: #030301;                    /* Los títulos pasan a negro */
@@ -429,6 +428,10 @@ select.cb-input {
     appearance: none;
 }
 
+.cb-input option {
+    color: #212529;
+    background-color: #fff;
+}
 /* =========================
    OJO CONTRASEÑA
 ========================= */
@@ -632,7 +635,7 @@ body.theme-dark .dt-paging .pagination .page-item.disabled .page-link,
 body.theme-dark .dataTables_paginate .pagination .page-item.disabled .page-link,
 .dt-paging .pagination .page-item.disabled .page-link,
 .dataTables_paginate .pagination .page-item.disabled .page-link {
-  background-color: #eee0cb !important;
+  background-color: #C9A25C !important;
   color: #22aed1 !important;
   border-color: rgba(255, 255, 255, 0.05) !important;
   opacity: 0.6;
@@ -1547,7 +1550,7 @@ body.theme-light .chat-input:focus {
 .private-perfil__div-24 { background: #f0a500 }
 .private-perfil__button-25 { background: #f0a500 }
 .private-perfil__div-26 { width: 480px }
-.private-perfil__div-27 { background: #eee0cb }
+.private-perfil__div-27 { background: #C9A25C }
 .private-perfil__i-28 { font-size: 3rem }
 .private-perfil__div-29 { width: 800px }
 .private-perfil__i-32 { font-size: 3rem }
@@ -1610,12 +1613,12 @@ body.theme-light .chat-input:focus {
 .templates-index-clientes__button-19 { z-index: 3; width: 10% }
 .templates-index-clientes__span-20 { transition: all 0.3s ease }
 .templates-index-clientes__h2-21 { color: white; font-family: quot;Arialquot;, sans-serif }
-.templates-index-clientes__div-22 { width: 65px; height: 65px; border: 2px solid #eee0cb }
-.templates-index-clientes__i-23 { color: #eee0cb }
+.templates-index-clientes__div-22 { width: 65px; height: 65px; border: 2px solid #C9A25C }
+.templates-index-clientes__i-23 { color: #C9A25C }
 .templates-index-clientes__h5-24 { color: black; font-family: quot;Arialquot;, sans-serif }
-.templates-index-clientes__div-25 { color: #D4AF37 }
-.templates-index-clientes__p-26 { color: black; font-family: &quot;Arialquot;, sans-serif }
-.templates-index-clientes__h2-27 { font-family: &quot;Arialquot;, sans-serif }
+.templates-index-clientes__div-25 { color: #C9A25C }
+.templates-index-clientes__p-26 { color: black; font-family: quot;Arialquot; sans-serif }
+.templates-index-clientes__h2-27 { font-family: quot;Arialquot; sans-serif }
 .templates-index-clientes__div-28 { max-height: 450px; min-height: 300px }
 .templates-index-clientes__iframe-29 { border: 0 }
 .templates-index-admin__div-1 { background: rgba(20, 24, 32, 0.85); backdrop-filter: blur(10px); }
@@ -1648,7 +1651,7 @@ body.theme-light .chat-input:focus {
 .templates-base-clientes__div-2 { height: 300px; overflow-y: auto; }
 .templates-base-clientes__button-3 { bottom: 20px; right: 20px; z-index: 9998; border-radius: 50%; width: 60px; height: 60px; border: none; }
 .templates-base-clientes__div-4 { background-color:#2b50aa; color:white; max-width:80%; }
-.templates-base-clientes__div-5 { background-color:#eee0cb; color:black; max-width:80%; font-weight:bold; }
+.templates-base-clientes__div-5 { background-color:#C9A25C; color:black; max-width:80%; font-weight:bold; }
 .soporte-ayuda-home__p-1 { max-width: 600px; }
 .soporte-ayuda-home__div-2 { top: 2rem; }
 .servicios-servicios__div-1 { width: 18rem; }
@@ -1883,19 +1886,3 @@ body.theme-light .chat-input:focus {
   color: #22aed1 !important;
   border-color: rgba(34, 174, 209, 0.3) !important;
 }
-
-
-
-#servicios animacion al apasar el cursor 
-
-.servicios-servicios__div-1 {
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-
-.servicios-servicios__div-1:hover {
-    transform: translateY(-10px);
-}
-
-
-    
-  

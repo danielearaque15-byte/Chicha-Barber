@@ -10,7 +10,9 @@ from usuarios.models import Usuario, Notificacion
 # ==========================================================
 class Categoria(models.Model):
 
-    codigo = models.AutoField(primary_key=True)
+    codigo = models.AutoField(
+        primary_key=True
+    )
 
     nombre = models.CharField(
         max_length=100,
@@ -37,7 +39,9 @@ class Categoria(models.Model):
 # ==========================================================
 class Proveedor(models.Model):
 
-    codigo = models.AutoField(primary_key=True)
+    codigo = models.AutoField(
+        primary_key=True
+    )
 
     nombre = models.CharField(
         max_length=150,
@@ -73,6 +77,9 @@ class Proveedor(models.Model):
         verbose_name_plural = "Proveedores"
 
 
+# ==========================================================
+# 3. PRODUCTO
+# ==========================================================
 class Producto(models.Model):
 
     codigo_producto = models.AutoField(
@@ -115,10 +122,25 @@ class Producto(models.Model):
         verbose_name="Activo"
     )
 
+    # ------------------------------------------------------
+    # IMPORTANTE:
+    # Este campo se conserva para no romper datos existentes.
+    # El precio de venta principal ahora se obtiene de
+    # la última Adquisicion.
+    # ------------------------------------------------------
+    precio = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        verbose_name="Precio"
+    )
+
     codigo_categoria = models.ForeignKey(
         Categoria,
         on_delete=models.PROTECT,
         related_name="productos",
+        null=True,
+        blank=True,
         verbose_name="Categoría"
     )
 
@@ -127,7 +149,10 @@ class Producto(models.Model):
         super().save(*args, **kwargs)
 
         if not self.codigo:
-            self.codigo = f"PROD-{self.codigo_producto:05d}"
+
+            self.codigo = (
+                f"PROD-{self.codigo_producto:05d}"
+            )
 
             super().save(
                 update_fields=["codigo"]
@@ -137,34 +162,77 @@ class Producto(models.Model):
     def stock_actual(self):
 
         if self.codigo_inventario:
+
             return self.codigo_inventario.cantidad_actual
 
         try:
+
             return self.inventario.cantidad_actual
+
         except Inventario.DoesNotExist:
+
             return 0
+
+    @property
+    def precio_venta_actual(self):
+
+        adquisicion = (
+            self.adquisiciones
+            .order_by("-fecha", "-codigo")
+            .first()
+        )
+
+        if adquisicion:
+
+            return adquisicion.precio_venta
+
+        return 0
+
+    @property
+    def precio_compra_actual(self):
+
+        adquisicion = (
+            self.adquisiciones
+            .order_by("-fecha", "-codigo")
+            .first()
+        )
+
+        if adquisicion:
+
+            return adquisicion.precio_compra
+
+        return 0
 
     @classmethod
     def total_productos(cls):
+
         return cls.objects.count()
 
     @classmethod
     def total_activos(cls):
+
         return cls.objects.filter(
             estado=True
         ).count()
 
     @classmethod
     def total_inactivos(cls):
+
         return cls.objects.filter(
             estado=False
         ).count()
 
     def __str__(self):
-        return f"{self.codigo} - {self.nombre}"
+
+        return (
+            f"{self.codigo} - "
+            f"{self.nombre}"
+        )
 
 
-
+# ==========================================================
+# 4. INVENTARIO
+# ==========================================================
 class Inventario(models.Model):
 
     codigo = models.AutoField(
@@ -209,13 +277,20 @@ class Inventario(models.Model):
     def __str__(self):
 
         if self.codigo_producto:
+
             return (
                 f"{self.codigo_producto.nombre} - "
                 f"Stock: {self.cantidad_actual}"
             )
 
-        return f"Inventario #{self.codigo}"
+        return (
+            f"Inventario #{self.codigo}"
+        )
 
+
+# ==========================================================
+# 5. BITÁCORA
+# ==========================================================
 class Bitacora(models.Model):
 
     codigo = models.AutoField(
@@ -226,6 +301,8 @@ class Bitacora(models.Model):
         Inventario,
         on_delete=models.CASCADE,
         related_name="bitacoras",
+        null=True,
+        blank=True,
         verbose_name="Inventario"
     )
 
@@ -238,25 +315,38 @@ class Bitacora(models.Model):
         verbose_name="Usuario"
     )
 
+    # Antes tenía un OneToOneField llamado 'producto' en el modelo viejo.
+    # Ahora es una FK normal en el nuevo esquema de auditoría.
+    # Nullable temporalmente porque no hay forma de mapear los registros
+    # viejos (que ya no se van a conservar) a este nuevo significado.
     codigo_producto = models.ForeignKey(
         Producto,
         on_delete=models.CASCADE,
         related_name="bitacoras",
+        null=True,
+        blank=True,
         verbose_name="Producto"
     )
 
     fecha = models.DateField(
         auto_now_add=True,
+        null=True,
+        blank=True,
         verbose_name="Fecha"
     )
 
     hora = models.TimeField(
         auto_now_add=True,
+        null=True,
+        blank=True,
         verbose_name="Hora"
     )
 
+    # También nullable temporalmente por la misma razón.
     tipo_cambio = models.CharField(
         max_length=50,
+        blank=True,
+        default='',
         verbose_name="Tipo de Cambio"
     )
 
@@ -295,11 +385,16 @@ class Bitacora(models.Model):
     )
 
     def __str__(self):
+
         return (
             f"Bitácora #{self.codigo} - "
-            f"{self.codigo_producto.nombre}"
+            f"{self.codigo_producto.nombre if self.codigo_producto else 'Sin producto'}"
         )
 
+
+# ==========================================================
+# 6. MOVIMIENTO DE INVENTARIO
+# ==========================================================
 class MovimientoInventario(models.Model):
 
     codigo = models.AutoField(
@@ -335,15 +430,23 @@ class MovimientoInventario(models.Model):
 
     observacion = models.CharField(
         max_length=200,
+        null=True,
+        blank=True,
         verbose_name="Observación"
     )
 
     def __str__(self):
+
         return (
             f"{self.codigo_producto.codigo} - "
-            f"{self.tipo} {self.cantidad}"
+            f"{self.tipo} "
+            f"{self.cantidad}"
         )
 
+
+# ==========================================================
+# 7. ADQUISICIÓN
+# ==========================================================
 class Adquisicion(models.Model):
 
     codigo = models.AutoField(
@@ -368,10 +471,22 @@ class Adquisicion(models.Model):
         verbose_name="Cantidad"
     )
 
+    cantidad_venta = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Cantidad de Venta"
+    )
+
     precio_compra = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         verbose_name="Precio de Compra"
+    )
+
+    precio_venta = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        verbose_name="Precio de Venta"
     )
 
     total = models.DecimalField(
@@ -386,6 +501,7 @@ class Adquisicion(models.Model):
     )
 
     def __str__(self):
+
         return (
             f"Adquisición #{self.codigo} - "
             f"{self.codigo_producto.nombre}"
@@ -396,17 +512,24 @@ class Adquisicion(models.Model):
 # 8. CREAR INVENTARIO AUTOMÁTICAMENTE
 # ==========================================================
 @receiver(post_save, sender=Producto)
-def crear_inventario(sender, instance, created, **kwargs):
+def crear_inventario(
+    sender,
+    instance,
+    created,
+    **kwargs
+):
 
     if created:
 
-        inventario, creado = Inventario.objects.get_or_create(
-            codigo_producto=instance,
-            defaults={
-                "cantidad_actual": 0,
-                "stock_min": 0,
-                "stock_max": 0,
-            }
+        inventario, creado = (
+            Inventario.objects.get_or_create(
+                codigo_producto=instance,
+                defaults={
+                    "cantidad_actual": 0,
+                    "stock_min": 0,
+                    "stock_max": 0,
+                }
+            )
         )
 
         if not instance.codigo_inventario_id:
@@ -417,6 +540,10 @@ def crear_inventario(sender, instance, created, **kwargs):
                 codigo_inventario=inventario
             )
 
+
+# ==========================================================
+# 9. PROMOCIÓN
+# ==========================================================
 class Promocion(models.Model):
 
     codigo = models.AutoField(
@@ -461,9 +588,13 @@ class Promocion(models.Model):
     )
 
     def __str__(self):
+
         return self.nombre
 
 
+# ==========================================================
+# 10. PROMOCIÓN PRODUCTO
+# ==========================================================
 class PromocionProducto(models.Model):
 
     codigo = models.AutoField(
@@ -484,6 +615,13 @@ class PromocionProducto(models.Model):
         verbose_name="Producto"
     )
 
+    precio = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        verbose_name="Precio"
+    )
+
     estado = models.BooleanField(
         default=True,
         verbose_name="Estado"
@@ -492,17 +630,21 @@ class PromocionProducto(models.Model):
     valor_con_descuento = models.DecimalField(
         max_digits=10,
         decimal_places=2,
+        default=0,
         verbose_name="Valor con Descuento"
     )
 
     def __str__(self):
+
         return (
             f"{self.codigo_producto.nombre} - "
             f"{self.codigo_promocion.nombre}"
         )
 
 
-
+# ==========================================================
+# 11. VENTA
+# ==========================================================
 class venta(models.Model):
 
     METODO_PAGO_CHOICES = [
@@ -617,6 +759,9 @@ class venta(models.Model):
         )
 
 
+# ==========================================================
+# 12. DETALLE DE VENTA
+# ==========================================================
 class detalleventa(models.Model):
 
     codigo_detalle = models.AutoField(
@@ -676,24 +821,74 @@ class detalleventa(models.Model):
 
     def save(self, *args, **kwargs):
 
-        inventario = self.codigo_producto.inventario
+        # --------------------------------------------------
+        # BUSCAR INVENTARIO
+        # --------------------------------------------------
+        try:
 
+            inventario = self.codigo_producto.inventario
+
+        except Inventario.DoesNotExist:
+
+            raise ValueError(
+                f"El producto "
+                f"'{self.codigo_producto.nombre}' "
+                f"no tiene inventario."
+            )
+
+        # --------------------------------------------------
+        # BUSCAR ÚLTIMA ADQUISICIÓN
+        # --------------------------------------------------
+        adquisicion = (
+            Adquisicion.objects
+            .filter(
+                codigo_producto=self.codigo_producto
+            )
+            .order_by(
+                "-fecha",
+                "-codigo"
+            )
+            .first()
+        )
+
+        # --------------------------------------------------
+        # OBTENER PRECIO DE VENTA
+        # --------------------------------------------------
+        if adquisicion:
+
+            precio_venta = (
+                adquisicion.precio_venta
+            )
+
+        else:
+
+            precio_venta = 0
+
+        # --------------------------------------------------
+        # CALCULAR SUBTOTAL
+        # --------------------------------------------------
         subtotal = (
             self.cantidad *
-            getattr(inventario, "precio_venta", 0)
+            precio_venta
         )
 
         subtotal -= self.valor_descuento
 
         if subtotal < 0:
+
             subtotal = 0
 
         self.subtotal = subtotal
 
-        # Validar stock cuando se crea
+        # --------------------------------------------------
+        # VALIDAR STOCK AL CREAR
+        # --------------------------------------------------
         if not self.pk:
 
-            if self.cantidad > inventario.cantidad_actual:
+            if (
+                self.cantidad >
+                inventario.cantidad_actual
+            ):
 
                 raise ValueError(
                     f"Stock insuficiente para "
@@ -702,22 +897,31 @@ class detalleventa(models.Model):
                     f"{inventario.cantidad_actual}"
                 )
 
+        # --------------------------------------------------
+        # GUARDAR DETALLE
+        # --------------------------------------------------
         super().save(*args, **kwargs)
 
-        # Crear movimiento
+        # --------------------------------------------------
+        # CREAR MOVIMIENTO DE SALIDA
+        # --------------------------------------------------
         if not self.codigo_movimiento_producto:
 
-            movimiento = MovimientoInventario.objects.create(
-                codigo_producto=self.codigo_producto,
-                tipo="salida",
-                cantidad=self.cantidad,
-                observacion=(
-                    f"Venta Online #"
-                    f"{self.codigo_venta.codigo_venta}"
+            movimiento = (
+                MovimientoInventario.objects.create(
+                    codigo_producto=self.codigo_producto,
+                    tipo="salida",
+                    cantidad=self.cantidad,
+                    observacion=(
+                        f"Venta Online #"
+                        f"{self.codigo_venta.codigo_venta}"
+                    )
                 )
             )
 
-            self.codigo_movimiento_producto = movimiento
+            self.codigo_movimiento_producto = (
+                movimiento
+            )
 
             super().save(
                 update_fields=[
@@ -725,8 +929,12 @@ class detalleventa(models.Model):
                 ]
             )
 
-            # Descontar inventario
-            inventario.cantidad_actual -= self.cantidad
+            # ----------------------------------------------
+            # DESCONTAR INVENTARIO
+            # ----------------------------------------------
+            inventario.cantidad_actual -= (
+                self.cantidad
+            )
 
             inventario.save(
                 update_fields=[
@@ -805,11 +1013,12 @@ def notificar_venta(
 ):
 
     if not created:
+
         return
 
-    # ------------------------------------------
-    # Notificación al cliente
-    # ------------------------------------------
+    # ------------------------------------------------------
+    # NOTIFICACIÓN AL CLIENTE
+    # ------------------------------------------------------
     if instance.codigo_usuario:
 
         Notificacion.objects.create(
@@ -822,9 +1031,9 @@ def notificar_venta(
             url="/perfil/"
         )
 
-    # ------------------------------------------
-    # Notificación a administradores
-    # ------------------------------------------
+    # ------------------------------------------------------
+    # NOTIFICACIÓN A ADMINISTRADORES
+    # ------------------------------------------------------
     admins = Usuario.objects.filter(
         rol="admin"
     )

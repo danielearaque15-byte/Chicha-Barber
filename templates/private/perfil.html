@@ -18,12 +18,12 @@
               class="rounded-circle flex-shrink-0 shadow-sm"
               width="95"
               height="95"
-              style="object-fit: cover; border: 3px solid {% if user.rol.tipo_rol == 'admin' %}#00b4d8{% elif user.rol.tipo_rol == 'barbero' %}#f0a500{% else %}#007ca9{% endif %}"
+              style="object-fit: cover; border: 3px solid {% if user.rol == 'admin' %}#00b4d8{% elif user.rol == 'barbero' %}#f0a500{% else %}#007ca9{% endif %}"
             />
             {% else %}
             <div
               class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
-              style="width: 95px; height: 95px; background: {% if user.rol.tipo_rol == 'admin' %}#00b4d8{% elif user.rol.tipo_rol == 'barbero' %}#f0a500{% else %}#007ca9{% endif %}"
+              style="width: 95px; height: 95px; background: {% if user.rol == 'admin' %}#00b4d8{% elif user.rol == 'barbero' %}#f0a500{% else %}#007ca9{% endif %}"
             >
               <i class="bi bi-person-fill text-white private-perfil__i-5"></i>
             </div>
@@ -35,16 +35,16 @@
               </h3>
               <span
                 class="badge rounded-pill px-3 py-2 text-uppercase tracking-wider fw-bold fs-7 shadow-sm"
-                style="background: {% if user.rol.tipo_rol == 'admin' %}#00b4d8{% elif user.rol.tipo_rol == 'barbero' %}#f0a500{% else %}#007ca9{% endif %}; color: #fff;"
+                style="background: {% if user.rol == 'admin' %}#00b4d8{% elif user.rol == 'barbero' %}#f0a500{% else %}#007ca9{% endif %}; color: #fff;"
               >
-                {% if user.rol.tipo_rol == 'admin' %}
+                {% if user.rol == 'admin' %}
                   <i class="bi bi-shield-fill me-1"></i>
-                {% elif user.rol.tipo_rol == 'barbero' %}
+                {% elif user.rol == 'barbero' %}
                   <i class="bi bi-scissors me-1"></i>
                 {% else %}
                   <i class="bi bi-person me-1"></i>
                 {% endif %}
-                {{ user.rol.tipo_rol|default:"Cliente" }}
+                {{ user.get_rol_display }}
               </span>
             </div>
           </div>
@@ -69,9 +69,9 @@
             <div class="col-6">
               <div class="pb-2 border-bottom border-light-subtle h-100">
                 <small class="text-muted d-block mb-1 text-uppercase tracking-wider private-perfil__small-9">
-                  <i class="bi bi-credit-card me-1 text-secondary"></i>N° Documento
+                  <i class="bi bi-credit-card me-1 text-secondary"></i>Tipo y N° Documento
                 </small>
-                <span class="fs-5 fw-semibold text-dark font-monospace">{{ user.username }}</span>
+                <span class="fs-5 fw-semibold text-dark font-monospace">{{ user.tipo_documento }} {{ user.username }}</span>
               </div>
             </div>
             <div class="col-6">
@@ -80,6 +80,24 @@
                   <i class="bi bi-telephone me-1 text-secondary"></i>Teléfono
                 </small>
                 <span class="fs-5 fw-semibold text-dark">{{ user.telefono|default:"—" }}</span>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="pb-2 border-bottom border-light-subtle h-100">
+                <small class="text-muted d-block mb-1 text-uppercase tracking-wider">
+                  <i class="bi bi-toggle-on me-1 text-secondary"></i>Estado
+                </small>
+                <span class="fs-5 fw-semibold {% if user.estado %}text-success{% else %}text-danger{% endif %}">
+                  {% if user.estado %}Activo{% else %}Inactivo{% endif %}
+                </span>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="pb-2 border-bottom border-light-subtle h-100">
+                <small class="text-muted d-block mb-1 text-uppercase tracking-wider">
+                  <i class="bi bi-calendar-plus me-1 text-secondary"></i>Cuenta creada
+                </small>
+                <span class="fs-5 fw-semibold text-dark">{{ user.date_joined|date:"d/m/Y" }}</span>
               </div>
             </div>
             <div class="col-12">
@@ -97,7 +115,7 @@
       <div class="row g-3 mb-4">
         <div class="col-4">
           <button type="button" class="btn btn-light w-100 py-3 rounded-4 d-flex flex-column align-items-center gap-2 shadow-sm transition-all border border-0 private-perfil__button-12" data-bs-toggle="offcanvas" data-bs-target="#offcanvasEditar">
-            <i class="bi bi-pencil-square fs-4" style="color: {% if user.rol.tipo_rol == 'admin' %}#00b4d8{% elif user.rol.tipo_rol == 'barbero' %}#f0a500{% else %}#007ca9{% endif %}"></i>
+            <i class="bi bi-pencil-square fs-4" style="color: {% if user.rol == 'admin' %}#00b4d8{% elif user.rol == 'barbero' %}#f0a500{% else %}#007ca9{% endif %}"></i>
             <span class="small fw-bold">Editar perfil</span>
           </button>
         </div>
@@ -110,14 +128,14 @@
         </div>
         
         <div class="col-4">
-          {% if user.rol.tipo_rol == 'admin' %}
+          {% if user.rol == 'admin' %}
           <button type="button" class="btn btn-light w-100 py-3 rounded-4 d-flex flex-column align-items-center gap-2 shadow-sm transition-all border border-0 private-perfil__button-16" data-bs-toggle="offcanvas" data-bs-target="#offcanvasHistorial">
             <i class="bi bi-clock-history fs-4 private-perfil__i-17"></i>
             <span class="small fw-bold">Historial</span>
           </button>
           {% else %}
           <button type="button" class="btn btn-light w-100 py-3 rounded-4 d-flex flex-column align-items-center gap-2 shadow-sm transition-all border border-0 private-perfil__button-18" data-bs-toggle="offcanvas" data-bs-target="#offcanvasHistorial">
-            <i class="bi bi-clock-history fs-4" style="color: {% if user.rol.tipo_rol == 'barbero' %}#f0a500{% else %}#198754{% endif %}"></i>
+            <i class="bi bi-clock-history fs-4" style="color: {% if user.rol == 'barbero' %}#f0a500{% else %}#198754{% endif %}"></i>
             <span class="small fw-bold">Historial</span>
           </button>
           {% endif %}
@@ -129,7 +147,7 @@
 </div>
 
 <div class="offcanvas offcanvas-end border-0 shadow private-perfil__div-20" tabindex="-1" id="offcanvasEditar">
-  <div class="offcanvas-header text-white" style="background: {% if user.rol.tipo_rol == 'admin' %}#00b4d8{% elif user.rol.tipo_rol == 'barbero' %}#f0a500{% else %}#007ca9{% endif %}">
+  <div class="offcanvas-header text-white" style="background: {% if user.rol == 'admin' %}#00b4d8{% elif user.rol == 'barbero' %}#f0a500{% else %}#007ca9{% endif %}">
     <h5 class="offcanvas-title fw-bold">
       <i class="bi bi-pencil-square me-2"></i>Editar perfil
     </h5>
@@ -138,6 +156,10 @@
   <div class="offcanvas-body p-4">
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
+      <div class="mb-3">
+        <label class="form-label small fw-bold text-muted text-uppercase tracking-wider">Tipo de documento</label>
+        {{ form.tipo_documento }}
+      </div>
       <div class="mb-3">
         <label class="form-label small fw-bold text-muted text-uppercase tracking-wider">Nombre(s)</label>
         {{ form.first_name }}
@@ -162,7 +184,7 @@
         type="submit"
         name="editar_perfil"
         class="btn w-100 text-white py-3 rounded-3 fw-bold shadow-sm"
-        style="background: {% if user.rol.tipo_rol == 'admin' %}#00b4d8{% elif user.rol.tipo_rol == 'barbero' %}#f0a500{% else %}#007ca9{% endif %}"
+        style="background: {% if user.rol == 'admin' %}#00b4d8{% elif user.rol == 'barbero' %}#f0a500{% else %}#007ca9{% endif %}"
       >
         <i class="bi bi-save me-2"></i>Guardar cambios
       </button>
@@ -199,7 +221,7 @@
   </div>
 </div>
 
-{% if user.rol.tipo_rol == "admin" %}
+{% if user.rol == "admin" %}
 <div class="offcanvas offcanvas-end private-perfil__div-26" tabindex="-1" id="offcanvasHistorial">
   <div class="offcanvas-header text-white private-perfil__div-27">
     <h5 class="offcanvas-title text-dark">
@@ -234,7 +256,7 @@
 {% else %}
 <!-- OFFCANVAS: Historial (clientes y barberos) -->
 <div class="offcanvas offcanvas-end border-0 shadow private-perfil__div-29" tabindex="-1" id="offcanvasHistorial">
-  <div class="offcanvas-header text-white" style="background: {% if user.rol.tipo_rol == 'barbero' %}#f0a500{% else %}#198754{% endif %}">
+  <div class="offcanvas-header text-white" style="background: {% if user.rol == 'barbero' %}#f0a500{% else %}#198754{% endif %}">
     <h5 class="offcanvas-title fw-bold">
       <i class="bi bi-clock-history me-2"></i>Mi Historial
     </h5>
@@ -245,7 +267,7 @@
       <li class="nav-item">
         <button class="nav-link active fw-bold" data-bs-toggle="tab" data-bs-target="#tabReservas">
           <i class="bi bi-calendar-check me-1"></i>Reservas
-          <span class="badge rounded-pill ms-1" style="background: {% if user.rol.tipo_rol == 'barbero' %}#f0a500{% else %}#198754{% endif %}">{{ reservas.count }}</span>
+          <span class="badge rounded-pill ms-1" style="background: {% if user.rol == 'barbero' %}#f0a500{% else %}#198754{% endif %}">{{ reservas.count }}</span>
         </button>
       </li>
       <li class="nav-item">

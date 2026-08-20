@@ -79,10 +79,10 @@
 
             <li class="px-3 py-2 border-bottom border-secondary border-opacity-25 mb-2 rounded-top-4 d-flex flex-column partials-header__li-2">
               <span class="text-white-50 fw-bold text-uppercase partials-header__span-3">Tu Cuenta</span>
-              <span class="small fw-semibold text-white">{{ user.rol.tipo_rol|default:"Cliente" }}</span>
+              <span class="small fw-semibold text-white">{{ user.get_rol_display }}</span>
             </li>
 
-           {% if user.rol.tipo_rol == 'admin' or user.rol.tipo_rol == 'barbero' %}
+           {% if user.rol == 'admin' or user.rol == 'barbero' %}
             <li>
               <a class="dropdown-item py-2 fw-bold partials-header__a-4" href="{% url 'inicio_admin' %}">
                 <i class="bi bi-speedometer2 me-2"></i>
