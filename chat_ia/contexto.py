@@ -14,7 +14,7 @@ Información del sistema:
 - Los administradores gestionan categorías.
 - Los administradores gestionan servicios.
 - Los administradores gestionan citas.
-- Los administradores administran el inventario.
+- Los administradores administran el existencias.
 - El sistema genera facturas.
 - El sistema permite consultar productos disponibles.
 

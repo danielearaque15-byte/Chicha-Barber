@@ -12,7 +12,7 @@
             
         </h2>
 
-        <a href="{% url 'registrar_movimiento_inventario' %}"
+        <a href="{% url 'registrar_movimiento_existencias' %}"
            class="btn color-azul text-white fw-bold shadow-sm">
 
             <i class="bi bi-plus-circle me-1"></i>
@@ -290,7 +290,7 @@
                         <!-- ACCIÓN -->
                         <td class="text-center">
 
-                            <a href="{% url 'eliminar_movimiento_inventario' movimiento.pk %}"
+                            <a href="{% url 'eliminar_movimiento_existencias' movimiento.pk %}"
                                class="btn btn-sm btn-outline-danger"
                                onclick="return confirm('¿Seguro que deseas eliminar este movimiento?');">
 
@@ -313,7 +313,7 @@
 
                             <br>
 
-                            No hay movimientos de inventario registrados.
+                            No hay movimientos de existencias registrados.
 
                         </td>
 

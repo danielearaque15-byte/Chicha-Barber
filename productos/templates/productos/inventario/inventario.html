@@ -16,9 +16,9 @@
         </div>
 
         <div class="d-flex gap-2">
-            <a href="{% url 'lista_movimientos_inventario' %}" class="btn color-azul text-white fw-bold shadow-sm">
+            <a href="{% url 'lista_movimientos_existencias' %}" class="btn color-azul text-white fw-bold shadow-sm">
                 <i class="bi bi-arrow-left-right me-2"></i>
-                Movimiento de inventario
+                Movimiento de existencias
             </a>
         </div>
 
@@ -51,7 +51,7 @@
                     </div>
 
                     <h2 class="fw-bold mb-0 text-primary">
-                        {{ total_inventario|default:"0" }}
+                        {{ total_existencias|default:"0" }}
                     </h2>
 
                 </div>
@@ -136,7 +136,7 @@
 
             <div class="table-responsive">
 
-                <table id="tablaInventario"
+                <table id="tablaexistencias"
                        class="table table-hover align-middle">
 
                     <thead class="thead-azul">
@@ -182,13 +182,13 @@
 
                     <tbody>
 
-                    {% for inventario in inventarios %}
+                    {% for existencias in existenciass %}
 
                     <tr>
 
                         <!-- CÓDIGO -->
                         <td class="fw-bold">
-                            #{{ inventario.codigo_producto.codigo_producto }}
+                            #{{ existencias.codigo_producto.codigo_producto }}
                         </td>
 
 
@@ -197,9 +197,9 @@
 
                             <div class="d-flex align-items-center">
 
-                                {% if inventario.codigo_producto.imagen %}
+                                {% if existencias.codigo_producto.imagen %}
 
-                                    <img src="{{ inventario.codigo_producto.imagen.url }}"
+                                    <img src="{{ existencias.codigo_producto.imagen.url }}"
                                          class="rounded me-3"
                                          style="width:55px;height:55px;object-fit:cover;">
 
@@ -220,11 +220,11 @@
                                 <div>
 
                                     <h6 class="mb-0 fw-bold">
-                                        {{ inventario.codigo_producto.nombre }}
+                                        {{ existencias.codigo_producto.nombre }}
                                     </h6>
 
                                     <small class="text-muted">
-                                        {{ inventario.codigo_producto.codigo_categoria.nombre|default:"Sin categoría" }}
+                                        {{ existencias.codigo_producto.codigo_categoria.nombre|default:"Sin categoría" }}
                                     </small>
 
                                 </div>
@@ -236,30 +236,30 @@
 
                         <!-- CATEGORÍA -->
                         <td>
-                            {{ inventario.codigo_producto.codigo_categoria.nombre|default:"Sin categoría" }}
+                            {{ existencias.codigo_producto.codigo_categoria.nombre|default:"Sin categoría" }}
                         </td>
 
 
                         <!-- STOCK -->
                         <td>
 
-                            {% if inventario.cantidad_actual <= 5 %}
+                            {% if existencias.cantidad_actual <= 5 %}
 
                                 <span class="badge bg-danger">
 
                                     <i class="bi bi-x-circle"></i>
 
-                                    {{ inventario.cantidad_actual }}
+                                    {{ existencias.cantidad_actual }}
 
                                 </span>
 
-                            {% elif inventario.cantidad_actual <= 10 %}
+                            {% elif existencias.cantidad_actual <= 10 %}
 
                                 <span class="badge bg-warning text-dark">
 
                                     <i class="bi bi-exclamation-circle"></i>
 
-                                    {{ inventario.cantidad_actual }}
+                                    {{ existencias.cantidad_actual }}
 
                                 </span>
 
@@ -269,7 +269,7 @@
 
                                     <i class="bi bi-check-circle"></i>
 
-                                    {{ inventario.cantidad_actual }}
+                                    {{ existencias.cantidad_actual }}
 
                                 </span>
 
@@ -281,7 +281,7 @@
                         <!-- STOCK MÍNIMO -->
                         <td class="fw-semibold text-muted">
 
-                            {{ inventario.stock_min }}
+                            {{ existencias.stock_min }}
 
                         </td>
 
@@ -289,7 +289,7 @@
                         <!-- STOCK MÁXIMO -->
                         <td class="fw-semibold">
 
-                            {{ inventario.stock_max }}
+                            {{ existencias.stock_max }}
 
                         </td>
 
@@ -297,7 +297,7 @@
                         <!-- ESTADO -->
                         <td class="text-center">
 
-                            {% if inventario.codigo_producto.estado %}
+                            {% if existencias.codigo_producto.estado %}
 
                                 <span class="badge bg-success">
 
@@ -323,7 +323,7 @@
                         <!-- ACCIÓN -->
                         <td class="text-center">
 
-                            <a href="{% url 'editar_inventario' inventario.pk %}"
+                            <a href="{% url 'editar_existencias' existencias.pk %}"
                                class="btn btn-sm btn-outline-primary">
 
                                 <i class="bi bi-pencil"></i>
@@ -347,7 +347,7 @@
 
                             <br>
 
-                            No hay registros de inventario.
+                            No hay registros de existencias.
 
                         </td>
 
@@ -379,6 +379,6 @@
 
 <script src="{% static 'js/datatables.js' %}"></script>
 
-<script src="{% static 'js/tconf/tconf-tablaInventario.js' %}"></script>
+<script src="{% static 'js/tconf/tconf-tablaexistencias.js' %}"></script>
 
 {% endblock scripts %}

@@ -14,7 +14,7 @@
         <div>
 
             <h2 class="fw-bold mb-1">
-                Editar Inventario
+                Editar existencias
             </h2>
 
             <p class="text-muted mb-0">
@@ -25,7 +25,7 @@
 
 
         <a
-            href="{% url 'lista_inventario' %}"
+            href="{% url 'lista_existencias' %}"
             class="btn btn-outline-secondary"
         >
 
@@ -54,11 +54,11 @@
                      IMAGEN
                 ================================================== -->
 
-                {% if inventario.codigo_producto.imagen %}
+                {% if existencias.codigo_producto.imagen %}
 
                     <img
-                        src="{{ inventario.codigo_producto.imagen.url }}"
-                        alt="{{ inventario.codigo_producto.nombre }}"
+                        src="{{ existencias.codigo_producto.imagen.url }}"
+                        alt="{{ existencias.codigo_producto.nombre }}"
                         class="rounded me-3"
                         style="
                             width:70px;
@@ -95,7 +95,7 @@
 
                     <h5 class="fw-bold mb-1">
 
-                        {{ inventario.codigo_producto.nombre }}
+                        {{ existencias.codigo_producto.nombre }}
 
                     </h5>
 
@@ -106,7 +106,7 @@
 
                         <strong>
 
-                            #{{ inventario.codigo_producto.codigo_producto }}
+                            #{{ existencias.codigo_producto.codigo_producto }}
 
                         </strong>
 
@@ -117,7 +117,7 @@
 
                         Categoría:
 
-                        {{ inventario.codigo_producto.codigo_categoria.nombre|default:"Sin categoría" }}
+                        {{ existencias.codigo_producto.codigo_categoria.nombre|default:"Sin categoría" }}
 
                     </p>
 
@@ -132,7 +132,7 @@
 
 
     <!-- =====================================================
-         INFORMACIÓN DEL INVENTARIO
+         INFORMACIÓN DEL existencias
     ====================================================== -->
 
     <div class="card shadow border-0">
@@ -291,7 +291,7 @@
 
 
                     <a
-                        href="{% url 'lista_inventario' %}"
+                        href="{% url 'lista_existencias' %}"
                         class="btn btn-outline-secondary"
                     >
 

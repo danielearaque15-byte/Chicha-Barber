@@ -1,5 +1,5 @@
 $(document).ready(function () {
-  var nombreTabla = "Movimientos de inventario";
+  var nombreTabla = "Movimientos de existencias";
 
   var fechaHoy = new Date()
     .toLocaleDateString("es-ES", {

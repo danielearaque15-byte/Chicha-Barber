@@ -80,12 +80,12 @@ erDiagram
         boolean mostrar_en_inicio
     }
 
-    %% ================= MÓDULO: PRODUCTOS E INVENTARIO =================
+    %% ================= MÓDULO: PRODUCTOS E existencias =================
     CATEGORIA ||--o{ PRODUCTO : "Clasifica"
     PROVEEDOR ||--o{ bitacora : "Suministra"
 
     PRODUCTO ||--|| bitacora : "Tiene"
-    PRODUCTO ||--o{ MOVIMIENTO_INVENTARIO : "Genera"
+    PRODUCTO ||--o{ MOVIMIENTO_existencias : "Genera"
     PRODUCTO ||--o{ DETALLE_venta : "Se incluye en"
 
     CATEGORIA {
@@ -121,7 +121,7 @@ erDiagram
         decimal precio_venta
     }
 
-    MOVIMIENTO_INVENTARIO {
+    MOVIMIENTO_existencias {
         int id PK
         int producto_id FK
         string tipo
