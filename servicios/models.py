@@ -105,3 +105,28 @@ class Calificacion(models.Model):
     def __str__(self):
         nombre = self.cliente.get_full_name() if self.cliente else self.cliente_nombre
         return f"{nombre} - {self.servicio.nombre} ({self.puntuacion} estrellas)"
+    
+    
+    
+    class promocionservicio(models.Model):
+        promocion = models.ForeignKey(
+            Promocion,
+            on_delete=models.CASCADE,
+            related_name='promocion_servicios',
+            verbose_name='Promoción'
+        )
+        servicio = models.ForeignKey(
+            Servicios,
+            on_delete=models.CASCADE,
+            related_name='servicio_promociones',
+            verbose_name='Servicio'
+        )
+        
+        nombre = models.CharField(max_length=150, verbose_name='Nombre')
+        porcentaje_descuento = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='Porcentaje de descuento')
+        
+            
+
+        class Meta:
+            verbose_name = 'Promoción-Servicio'
+            verbose_name_plural = 'Promociones-Servicios'

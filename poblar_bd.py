@@ -1928,7 +1928,7 @@ if __name__ == "__main__":
 
     poblar_reservas()
 
-    poblar_calificaciones_servicios()
+    
 
     # ----------------------------------------------
     # PRODUCTOS
