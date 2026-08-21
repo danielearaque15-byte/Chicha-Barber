@@ -13,7 +13,7 @@
     </div>
 
     <div class="table-responsive">
-        <table class="table table-dark table-hover align-middle border-secondary">
+        <table class="table table-dark table-hover align-middle border-secondary 4 ">
             <thead>
                 <tr>
                     <th scope="col">Cliente</th>
@@ -27,7 +27,8 @@
             <tbody>
                 {% for testimonio in testimonios %}
                 <tr>
-                    <td><i class="bi bi-person-circle me-2 text-warning "></i>{{ testimonio.cliente }}</td>
+                    
+                    <td><i class="bi bi-person-circle me-2 text-warning  "></i>{{ testimonio.cliente }}</td>
                     <td><span class="badge bg-secondary">{{ testimonio.servicio.nombre }}</span></td>
                     <td class="text-truncate configuraciones-testimonios__td-1" title="{{ testimonio.comentario }}">
                         "{{ testimonio.comentario }}"

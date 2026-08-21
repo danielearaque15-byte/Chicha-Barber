@@ -1,4 +1,4 @@
-{% extends "base-clientes.html" %}
+﻿{% extends "base-clientes.html" %}
 {% load static %}
 
 {% block content %}
@@ -14,7 +14,7 @@
         {% for message in messages %}
 
             <div
-                class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show shadow-sm"
                 role="alert"
             >
 
@@ -51,13 +51,16 @@
 
         <div class="text-center mb-5">
 
-            <h1 class="display-4 fw-bold text-uppercase text-white mb-4">
-
+            <h1 class="display-4 fw-bold text-uppercase text-white mb-3">
+                <i class="bi bi-shop me-2" style="color: #22aed1;"></i>
                 Productos de Cuidado Personal
-
             </h1>
 
-            <hr class="w-25 mx-auto opacity-50">
+            <p class="text-white-50 fs-5 mb-3">
+                Descubre nuestra selección exclusiva de productos y marcas profesionales para barbería.
+            </p>
+
+            <hr class="w-25 mx-auto" style="border-top: 3px solid #22aed1; opacity: 1; border-radius: 2px;">
 
         </div>
 
@@ -70,9 +73,9 @@
 
             <div class="col-12 col-md-8 col-lg-6">
 
-                <div class="input-group input-group-lg shadow-sm">
+                <div class="input-group input-group-lg shadow rounded-pill overflow-hidden border" style="border-color: rgba(34, 174, 209, 0.4) !important;">
 
-                    <span class="input-group-text">
+                    <span class="input-group-text color-azul text-white border-0 px-4">
 
                         <i class="bi bi-search"></i>
 
@@ -81,10 +84,11 @@
                     <input
                         id="buscador-productos"
                         type="search"
-                        class="form-control"
-                        placeholder="Buscar producto..."
+                        class="form-control border-0 px-3"
+                        placeholder="Buscar por producto, marca o categoría..."
                         aria-label="Buscar productos"
                         autocomplete="off"
+                        style="box-shadow: none;"
                     >
 
                 </div>
@@ -100,6 +104,55 @@
                 ></div>
 
             </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             FILTROS POR CATEGORÍA Y MARCA
+        =================================================== -->
+
+        <div class="d-flex flex-column align-items-center mb-5 gap-3">
+
+            <!-- FILTRO CATEGORÍAS -->
+            <div class="d-flex flex-wrap justify-content-center gap-2">
+
+                <a href="{% url 'productos_galeria' %}{% if marca_seleccionada %}?marca={{ marca_seleccionada }}{% endif %}"
+                   class="btn btn-sm rounded-pill px-3 py-2 {% if not categoria_seleccionada %}color-azul text-white fw-bold shadow border-0{% else %}btn-outline-light border-opacity-50 text-white{% endif %}">
+                    <i class="bi bi-grid-fill me-1"></i>Todas las categorías
+                </a>
+
+                {% for cat in categorias %}
+                    <a href="{% url 'productos_galeria' %}?categoria={{ cat.codigo }}{% if marca_seleccionada %}&marca={{ marca_seleccionada }}{% endif %}"
+                       class="btn btn-sm rounded-pill px-3 py-2 {% if categoria_seleccionada == cat.codigo %}color-azul text-white fw-bold shadow border-0{% else %}btn-outline-light border-opacity-50 text-white{% endif %}">
+                        {{ cat.nombre }}
+                    </a>
+                {% endfor %}
+
+            </div>
+
+            <!-- FILTRO MARCAS -->
+            {% if marcas %}
+            <div class="d-flex flex-wrap justify-content-center align-items-center gap-2">
+
+                <span class="text-light opacity-75 small me-1">
+                    <i class="bi bi-tag-fill me-1" style="color: #22aed1;"></i>Marcas:
+                </span>
+
+                <a href="{% url 'productos_galeria' %}{% if categoria_seleccionada %}?categoria={{ categoria_seleccionada }}{% endif %}"
+                   class="btn btn-sm rounded-pill px-3 py-1 {% if not marca_seleccionada %}color-azul text-white fw-bold shadow border-0{% else %}btn-outline-light border-opacity-50 text-white{% endif %}">
+                    Todas las marcas
+                </a>
+
+                {% for m in marcas %}
+                    <a href="{% url 'productos_galeria' %}?marca={{ m.codigo }}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}"
+                       class="btn btn-sm rounded-pill px-3 py-1 {% if marca_seleccionada == m.codigo %}color-azul text-white fw-bold shadow border-0{% else %}btn-outline-light border-opacity-50 text-white{% endif %}">
+                        {{ m.nombre }}
+                    </a>
+                {% endfor %}
+
+            </div>
+            {% endif %}
 
         </div>
 
@@ -130,6 +183,7 @@
 
                     <div
                         class="card h-100 shadow-lg border-0 rounded-4 overflow-hidden w-100"
+                        style="border: 1px solid rgba(34, 174, 209, 0.25) !important;"
                     >
 
 
@@ -137,13 +191,23 @@
                              IMAGEN
                         ================================================== -->
 
-                        <img
-                            src="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% static 'img/Aceite.jpg' %}{% endif %}"
-                            class="card-img-top img-fluid"
-                            style="height: 260px; object-fit: cover;"
-                            loading="lazy"
-                            alt="{{ producto.nombre }}"
-                        >
+                        <div class="position-relative overflow-hidden" style="height: 260px;">
+
+                            <img
+                                src="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% static 'img/Aceite.jpg' %}{% endif %}"
+                                class="card-img-top w-100 h-100"
+                                style="object-fit: cover;"
+                                loading="lazy"
+                                alt="{{ producto.nombre }}"
+                            >
+
+                            {% if producto.codigo_marca %}
+                                <span class="position-absolute top-0 end-0 m-3 badge color-azul text-white shadow">
+                                    <i class="bi bi-tag-fill me-1"></i>{{ producto.codigo_marca.nombre }}
+                                </span>
+                            {% endif %}
+
+                        </div>
 
 
                         <!-- ==================================================
@@ -166,23 +230,36 @@
                             </h4>
 
 
-                            <!-- CATEGORIA -->
+                            <!-- CATEGORIA Y MARCA -->
 
-                            {% if producto.codigo_categoria %}
+                            <div class="d-flex justify-content-center gap-2 flex-wrap mb-3">
 
-                                <div class="mb-3">
+                                {% if producto.codigo_categoria %}
 
                                     <span
-                                        class="badge bg-primary producto-categoria"
+                                        class="badge color-azul text-white producto-categoria shadow-sm"
                                     >
 
-                                        {{ producto.codigo_categoria.nombre }}
+                                        <i class="bi bi-grid me-1"></i>{{ producto.codigo_categoria.nombre }}
 
                                     </span>
 
-                                </div>
+                                {% endif %}
 
-                            {% endif %}
+                                {% if producto.codigo_marca %}
+
+                                    <span
+                                        class="badge producto-marca"
+                                        style="background-color: rgba(34, 174, 209, 0.15); border: 1px solid #22aed1; color: #22aed1 !important;"
+                                    >
+
+                                        <i class="bi bi-tag-fill me-1"></i>{{ producto.codigo_marca.nombre }}
+
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
 
 
                             <!-- DESCRIPCION -->
@@ -209,7 +286,8 @@
                                 </small>
 
                                 <h3
-                                    class="fw-bold mb-0 text-success producto-precio"
+                                    class="fw-bold mb-0 producto-precio"
+                                    style="color: #22aed1;"
                                 >
 
                                     ${{ producto.precio_venta_actual|floatformat:0 }}
@@ -225,7 +303,7 @@
 
                             <button
                                 type="button"
-                                class="btn btn-primary rounded-pill w-100 fw-bold"
+                                class="btn color-azul text-white rounded-pill w-100 fw-bold shadow-sm py-2"
                                 onclick="agregarCarrito(
                                     event,
                                     {{ producto.codigo_producto }},
@@ -262,7 +340,8 @@
                     >
 
                         <i
-                            class="bi bi-basket display-1 text-secondary"
+                            class="bi bi-basket display-1"
+                            style="color: #22aed1;"
                         ></i>
 
                         <h3 class="fw-bold mt-3">
@@ -395,6 +474,13 @@ function filtrarProductos() {
                 .trim() || "";
 
 
+            const marca =
+                card.querySelector(
+                    ".producto-marca"
+                )?.textContent
+                .trim() || "";
+
+
             const imagen =
                 card.querySelector(
                     "img"
@@ -427,6 +513,12 @@ function filtrarProductos() {
                 ||
 
                 categoria
+                    .toLowerCase()
+                    .includes(texto)
+
+                ||
+
+                marca
                     .toLowerCase()
                     .includes(texto);
 
@@ -478,21 +570,39 @@ function filtrarProductos() {
 
                             </div>
 
-                            ${
-                                categoria
-                                ?
-                                `
-                                <small class="text-body-secondary">
+                            <div class="d-flex gap-1 flex-wrap my-1">
 
-                                    ${categoria}
+                                ${
+                                    categoria
+                                    ?
+                                    `
+                                    <span class="badge color-azul text-white small">
 
-                                </small>
-                                `
-                                :
-                                ""
-                            }
+                                        ${categoria}
 
-                            <div class="small text-success fw-bold">
+                                    </span>
+                                    `
+                                    :
+                                    ""
+                                }
+
+                                ${
+                                    marca
+                                    ?
+                                    `
+                                    <span class="badge small" style="background-color: rgba(34, 174, 209, 0.2); border: 1px solid #22aed1; color: #22aed1 !important;">
+
+                                        ${marca}
+
+                                    </span>
+                                    `
+                                    :
+                                    ""
+                                }
+
+                            </div>
+
+                            <div class="small fw-bold" style="color: #22aed1;">
 
                                 ${precio}
 
@@ -581,24 +691,18 @@ function filtrarProductos() {
                            RESALTAR
                         ======================================= */
 
-                        card.classList.add(
-                            "border",
-                            "border-primary",
-                            "border-3"
-                        );
+                        card.style.outline = "3px solid #22aed1";
+                        card.style.boxShadow = "0 0 25px rgba(34, 174, 209, 0.5)";
 
 
                         setTimeout(
                             function() {
 
-                                card.classList.remove(
-                                    "border",
-                                    "border-primary",
-                                    "border-3"
-                                );
+                                card.style.outline = "";
+                                card.style.boxShadow = "";
 
                             },
-                            1200
+                            1500
                         );
 
                     }
@@ -633,11 +737,11 @@ function filtrarProductos() {
 
             <div class="list-group-item text-center py-4">
 
-                <i class="bi bi-search fs-3 text-secondary"></i>
+                <i class="bi bi-search fs-3" style="color: #22aed1;"></i>
 
                 <div class="text-body-secondary mt-2">
 
-                    No encontramos productos
+                    No encontramos productos que coincidan con tu búsqueda
 
                 </div>
 
@@ -821,7 +925,9 @@ function agregarCarrito(
 
             precio: precio,
 
-            cantidad: 1
+            cantidad: 1,
+
+            tipo: "producto"
 
         });
 
@@ -871,7 +977,7 @@ function agregarCarrito(
 
 
     btn.classList.remove(
-        "btn-primary"
+        "color-azul"
     );
 
 
@@ -894,7 +1000,7 @@ function agregarCarrito(
 
 
             btn.classList.add(
-                "btn-primary"
+                "color-azul"
             );
 
 

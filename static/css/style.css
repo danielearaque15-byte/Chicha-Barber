@@ -1614,7 +1614,7 @@ body.theme-light .chat-input:focus {
 .templates-index-clientes__h5-24 { color: black; font-family: quot;Arialquot;, sans-serif }
 .templates-index-clientes__div-25 { color: #22AED1 }
 .templates-index-clientes__p-26 { color: black; font-family: quot;Arialquot; sans-serif }
-.templates-index-clientes__h2-27 { font-family: quot;Arialquot; sans-serif }
+.templates-index-clientes__h2-27 { font-family: quot Arialquo  sans-serif }
 .templates-index-clientes__div-28 { max-height: 450px; min-height: 300px }
 .templates-index-clientes__iframe-29 { border: 0 }
 .templates-index-admin__div-1 { background: rgba(20, 24, 32, 0.85); backdrop-filter: blur(10px); }

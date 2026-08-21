@@ -13,15 +13,25 @@ from .models import (
     venta,
     Producto,
     detalleventa,
-    Inventario,
-    MovimientoInventario,
+    existencias,
+    Movimientoexistencias,
     Adquisicion,
     DatosTransferencia,
     Categoria,
     Proveedor,
     Bitacora,
+    Marca,
 )
-from .forms import ventaForm, detalleventaForm, ProductoForm, InventarioForm, CategoriaForm, ProveedorForm, AdquisicionForm
+from .forms import (
+    ventaForm,
+    detalleventaForm,
+    ProductoForm,
+    existenciasForm,
+    CategoriaForm,
+    ProveedorForm,
+    AdquisicionForm,
+    MarcaForm,
+)
 from core.utils import enviar_correo_venta
 from facturas.models import Factura, DetalleFactura
 from reservas.models import Reserva
@@ -40,17 +50,21 @@ def productos_galeria(request):
 
     buscar = request.GET.get('buscar', '').strip()
     categoria_id = request.GET.get('categoria', '').strip()
+    marca_id = request.GET.get('marca', '').strip()
 
     productos = Producto.objects.filter(
         estado=True
     ).select_related(
-        'codigo_categoria'
+        'codigo_categoria',
+        'codigo_marca'
     )
 
     if buscar:
         productos = productos.filter(
             Q(nombre__icontains=buscar) |
-            Q(descripcion__icontains=buscar)
+            Q(descripcion__icontains=buscar) |
+            Q(codigo_categoria__nombre__icontains=buscar) |
+            Q(codigo_marca__nombre__icontains=buscar)
         )
 
     if categoria_id and categoria_id.isdigit():
@@ -58,10 +72,19 @@ def productos_galeria(request):
             codigo_categoria_id=int(categoria_id)
         )
 
+    if marca_id and marca_id.isdigit():
+        productos = productos.filter(
+            codigo_marca_id=int(marca_id)
+        )
+
     context = {
         'titulo': 'Galería de Productos',
         'productos': productos,
         'categorias': Categoria.objects.all().order_by('nombre'),
+        'marcas': Marca.objects.filter(estado=True).order_by('nombre'),
+        'categoria_seleccionada': int(categoria_id) if categoria_id and categoria_id.isdigit() else None,
+        'marca_seleccionada': int(marca_id) if marca_id and marca_id.isdigit() else None,
+        'buscar': buscar,
     }
 
     return render(
@@ -69,6 +92,7 @@ def productos_galeria(request):
         'productos/productos/Productos_galeria.html',
         context
     )
+
 
 
 # ==========================================================
@@ -274,18 +298,18 @@ def procesar_pago_cliente(request):
                     )
 
                 # --------------------------------------
-                # INVENTARIO
+                # existencias
                 # --------------------------------------
 
-                inventario = get_object_or_404(
-                    Inventario,
+                existencias = get_object_or_404(
+                    existencias,
                     codigo_producto=producto
                 )
 
-                if inventario.cantidad_actual < cantidad:
+                if existencias.cantidad_actual < cantidad:
 
                     raise ValueError(
-                        f"No hay suficiente inventario "
+                        f"No hay suficiente existencias "
                         f"para {producto.nombre}."
                     )
 
@@ -302,7 +326,7 @@ def procesar_pago_cliente(request):
                 if precio_venta is None:
 
                     try:
-                        precio_venta = producto.inventario.precio_venta
+                        precio_venta = producto.existencias.precio_venta
                     except Exception:
 
                         raise ValueError(
@@ -332,21 +356,21 @@ def procesar_pago_cliente(request):
                 )
 
                 # --------------------------------------
-                # DESCONTAR INVENTARIO
+                # DESCONTAR existencias
                 # --------------------------------------
 
-                inventario.cantidad_actual -= cantidad
-                inventario.save(
+                existencias.cantidad_actual -= cantidad
+                existencias.save(
                     update_fields=[
                         'cantidad_actual'
                     ]
                 )
 
                 # --------------------------------------
-                # MOVIMIENTO DE INVENTARIO
+                # MOVIMIENTO DE existencias
                 # --------------------------------------
 
-                MovimientoInventario.objects.create(
+                Movimientoexistencias.objects.create(
                     producto=producto,
                     tipo='salida',
                     cantidad=cantidad,
@@ -470,7 +494,7 @@ def procesar_pago_cliente(request):
 
 def lista_productos_admin(request):
 
-    productos = Producto.objects.all()
+    productos = Producto.objects.select_related('codigo_categoria', 'codigo_marca').all()
 
     context = {
         'titulo': 'Lista de Productos',
@@ -628,75 +652,75 @@ def editar_bitacora(request, pk):
     messages.info(
         request,
         "La edición manual de bitácora está deshabilitada. "
-        "Los cambios se registran automáticamente al modificar inventario."
+        "Los cambios se registran automáticamente al modificar existencias."
     )
 
     return redirect('lista_bitacora')
 
 
 # ==========================================================
-# 📦 INVENTARIO
+# 📦 existencias
 # ==========================================================
 
-def lista_inventario(request):
+def lista_existencias(request):
 
-    inventarios = Inventario.objects.select_related(
+    existenciass = existencias.objects.select_related(
         'codigo_producto'
     )
 
-    inventario_total = inventarios.aggregate(
+    existencias_total = existenciass.aggregate(
         total=Sum('cantidad_actual')
     )['total'] or 0
 
-    inventario_critico = inventarios.filter(
+    existencias_critico = existenciass.filter(
         cantidad_actual__lte=5
     ).count()
 
-    inventario_bajo = inventarios.filter(
+    existencias_bajo = existenciass.filter(
         cantidad_actual__gt=5,
         cantidad_actual__lte=10
     ).count()
 
-    inventario_optimo = inventarios.filter(
+    existencias_optimo = existenciass.filter(
         cantidad_actual__gt=10
     ).count()
 
-    stock_total = inventario_total
-    stock_bajo = inventarios.filter(
+    stock_total = existencias_total
+    stock_bajo = existenciass.filter(
         cantidad_actual__lte=10
     ).count()
 
     context = {
-        'titulo': 'Inventario',
-        'inventarios': inventarios,
-        'total_inventario': inventario_total,
+        'titulo': 'existencias',
+        'existenciass': existenciass,
+        'total_existencias': existencias_total,
         'stock_total': stock_total,
         'stock_bajo': stock_bajo,
-        'inventario_total': inventario_total,
-        'inventario_critico': inventario_critico,
-        'inventario_bajo': inventario_bajo,
-        'inventario_optimo': inventario_optimo,
+        'existencias_total': existencias_total,
+        'existencias_critico': existencias_critico,
+        'existencias_bajo': existencias_bajo,
+        'existencias_optimo': existencias_optimo,
     }
 
     return render(
         request,
-        'productos/inventario/inventario.html',
+        'productos/existencias/existencias.html',
         context
     )
 
 
-def editar_inventario(request, pk):
+def editar_existencias(request, pk):
 
-    inventario = get_object_or_404(
-        Inventario,
+    existencias = get_object_or_404(
+        existencias,
         pk=pk
     )
 
     if request.method == 'POST':
 
-        form = InventarioForm(
+        form = existenciasForm(
             request.POST,
-            instance=inventario
+            instance=existencias
         )
 
         if form.is_valid():
@@ -705,44 +729,44 @@ def editar_inventario(request, pk):
 
             messages.success(
                 request,
-                "Inventario actualizado correctamente."
+                "existencias actualizado correctamente."
             )
 
             return redirect(
-                'lista_inventario'
+                'lista_existencias'
             )
 
     else:
 
-        form = InventarioForm(
-            instance=inventario
+        form = existenciasForm(
+            instance=existencias
         )
 
     return render(
         request,
-        'productos/inventario/editar_inventario.html',
+        'productos/existencias/editar_existencias.html',
         {
-            'titulo': 'Editar Inventario',
+            'titulo': 'Editar existencias',
             'form': form,
-            'inventario': inventario
+            'existencias': existencias
         }
     )
 
 
 # ==========================================================
-# 🔄 MOVIMIENTOS DE INVENTARIO
+# 🔄 MOVIMIENTOS DE existencias
 # ==========================================================
 
-def lista_movimientos_inventario(request):
+def lista_movimientos_existencias(request):
 
     movimientos = (
-        MovimientoInventario.objects
+        Movimientoexistencias.objects
         .select_related('codigo_producto')
         .order_by('-fecha')
     )
 
     context = {
-        'titulo': 'Movimientos de Inventario',
+        'titulo': 'Movimientos de existencias',
         'movimientos': movimientos,
         'total_movimientos': movimientos.count(),
         'total_entradas': movimientos.filter(tipo='entrada').count(),
@@ -751,12 +775,12 @@ def lista_movimientos_inventario(request):
 
     return render(
         request,
-        'productos/inventario/movimiento_inventario.html',
+        'productos/existencias/movimiento_existencias.html',
         context
     )
 
 
-def registrar_movimiento_inventario(request):
+def registrar_movimiento_existencias(request):
 
     if request.method == 'POST':
 
@@ -785,7 +809,7 @@ def registrar_movimiento_inventario(request):
             )
 
             return redirect(
-                'registrar_movimiento_inventario'
+                'registrar_movimiento_existencias'
             )
 
         motivo = request.POST.get(
@@ -801,7 +825,7 @@ def registrar_movimiento_inventario(request):
             )
 
             return redirect(
-                'registrar_movimiento_inventario'
+                'registrar_movimiento_existencias'
             )
 
         if tipo not in [
@@ -815,7 +839,7 @@ def registrar_movimiento_inventario(request):
             )
 
             return redirect(
-                'registrar_movimiento_inventario'
+                'registrar_movimiento_existencias'
             )
 
         producto = get_object_or_404(
@@ -825,8 +849,8 @@ def registrar_movimiento_inventario(request):
 
         with transaction.atomic():
 
-            inventario, creado = (
-                Inventario.objects.get_or_create(
+            existencias, creado = (
+                existencias.objects.get_or_create(
                     codigo_producto=producto,
                     defaults={
                         'cantidad_actual': 0
@@ -836,29 +860,29 @@ def registrar_movimiento_inventario(request):
 
             if tipo == 'entrada':
 
-                inventario.cantidad_actual += cantidad
+                existencias.cantidad_actual += cantidad
 
             else:
 
                 if (
                     cantidad >
-                    inventario.cantidad_actual
+                    existencias.cantidad_actual
                 ):
 
                     messages.error(
                         request,
-                        "No hay suficiente inventario."
+                        "No hay suficiente existencias."
                     )
 
                     return redirect(
-                        'registrar_movimiento_inventario'
+                        'registrar_movimiento_existencias'
                     )
 
-                inventario.cantidad_actual -= cantidad
+                existencias.cantidad_actual -= cantidad
 
-            inventario.save()
+            existencias.save()
 
-            MovimientoInventario.objects.create(
+            Movimientoexistencias.objects.create(
                 codigo_producto=producto,
                 tipo=tipo,
                 cantidad=cantidad,
@@ -871,7 +895,7 @@ def registrar_movimiento_inventario(request):
         )
 
         return redirect(
-            'lista_movimientos_inventario'
+            'lista_movimientos_existencias'
         )
 
     productos = Producto.objects.filter(
@@ -880,7 +904,7 @@ def registrar_movimiento_inventario(request):
 
     return render(
         request,
-        'productos/inventario/movimiento_inventario_registar.html',
+        'productos/existencias/movimiento_existencias_registar.html',
         {
             'productos': productos,
             'titulo': 'Registrar Movimiento'
@@ -888,10 +912,10 @@ def registrar_movimiento_inventario(request):
     )
 
 
-def eliminar_movimiento_inventario(request, pk):
+def eliminar_movimiento_existencias(request, pk):
 
     movimiento = get_object_or_404(
-        MovimientoInventario,
+        Movimientoexistencias,
         pk=pk
     )
 
@@ -899,40 +923,40 @@ def eliminar_movimiento_inventario(request, pk):
 
         with transaction.atomic():
 
-            inventario = get_object_or_404(
-                Inventario,
+            existencias = get_object_or_404(
+                existencias,
                 codigo_producto=movimiento.codigo_producto
             )
 
             if movimiento.tipo == 'entrada':
 
                 if (
-                    inventario.cantidad_actual
+                    existencias.cantidad_actual
                     < movimiento.cantidad
                 ):
 
                     messages.error(
                         request,
                         "No se puede eliminar este "
-                        "movimiento porque el inventario "
+                        "movimiento porque el existencias "
                         "actual es insuficiente."
                     )
 
                     return redirect(
-                        'lista_movimientos_inventario'
+                        'lista_movimientos_existencias'
                     )
 
-                inventario.cantidad_actual -= (
+                existencias.cantidad_actual -= (
                     movimiento.cantidad
                 )
 
             elif movimiento.tipo == 'salida':
 
-                inventario.cantidad_actual += (
+                existencias.cantidad_actual += (
                     movimiento.cantidad
                 )
 
-            inventario.save()
+            existencias.save()
 
             movimiento.delete()
 
@@ -942,7 +966,7 @@ def eliminar_movimiento_inventario(request, pk):
         )
 
     return redirect(
-        'lista_movimientos_inventario'
+        'lista_movimientos_existencias'
     )
 
 
@@ -1088,8 +1112,8 @@ def registrar_adquisicion(request):
                 producto.precio = cantidad_venta
                 producto.save(update_fields=['precio'])
 
-            inventario, creado = (
-                Inventario.objects.get_or_create(
+            existencias, creado = (
+                existencias.objects.get_or_create(
                     codigo_producto=producto,
                     defaults={
                         'cantidad_actual': 0,
@@ -1099,10 +1123,10 @@ def registrar_adquisicion(request):
                 )
             )
 
-            inventario.cantidad_actual += cantidad
-            inventario.save(update_fields=['cantidad_actual'])
+            existencias.cantidad_actual += cantidad
+            existencias.save(update_fields=['cantidad_actual'])
 
-            MovimientoInventario.objects.create(
+            Movimientoexistencias.objects.create(
                 codigo_producto=producto,
                 tipo='entrada',
                 cantidad=cantidad,
@@ -1219,15 +1243,15 @@ def editar_adquisicion(request, pk):
 
         with transaction.atomic():
 
-            inventario = get_object_or_404(
-                Inventario,
+            existencias = get_object_or_404(
+                existencias,
                 codigo_producto=
                 adquisicion_obj.codigo_producto
             )
 
             if diferencia > 0:
 
-                inventario.cantidad_actual += (
+                existencias.cantidad_actual += (
                     diferencia
                 )
 
@@ -1238,13 +1262,13 @@ def editar_adquisicion(request, pk):
                 )
 
                 if (
-                    inventario.cantidad_actual
+                    existencias.cantidad_actual
                     < cantidad_a_restar
                 ):
 
                     messages.error(
                         request,
-                        "No hay suficiente inventario "
+                        "No hay suficiente existencias "
                         "para reducir esta adquisición."
                     )
 
@@ -1253,11 +1277,11 @@ def editar_adquisicion(request, pk):
                         pk=pk
                     )
 
-                inventario.cantidad_actual -= (
+                existencias.cantidad_actual -= (
                     cantidad_a_restar
                 )
 
-            inventario.save()
+            existencias.save()
 
             adquisicion_obj.cantidad = (
                 nueva_cantidad
@@ -1315,21 +1339,21 @@ def eliminar_adquisicion(request, pk):
 
         with transaction.atomic():
 
-            inventario = get_object_or_404(
-                Inventario,
+            existencias = get_object_or_404(
+                existencias,
                 codigo_producto=
                 adquisicion_obj.codigo_producto
             )
 
             if (
-                inventario.cantidad_actual
+                existencias.cantidad_actual
                 < adquisicion_obj.cantidad
             ):
 
                 messages.error(
                     request,
                     "No se puede eliminar la adquisición "
-                    "porque el inventario actual es menor "
+                    "porque el existencias actual es menor "
                     "que la cantidad adquirida."
                 )
 
@@ -1337,13 +1361,13 @@ def eliminar_adquisicion(request, pk):
                     'lista_adquisiciones'
                 )
 
-            inventario.cantidad_actual -= (
+            existencias.cantidad_actual -= (
                 adquisicion_obj.cantidad
             )
 
-            inventario.save()
+            existencias.save()
 
-            MovimientoInventario.objects.create(
+            Movimientoexistencias.objects.create(
                 producto=
                 adquisicion_obj.codigo_producto,
                 tipo='salida',
@@ -1855,3 +1879,153 @@ def eliminar_proveedor(request, id):
     return redirect(
         'lista_proveedores'
     )
+    
+
+
+# ==========================================================
+# 🏷️ MARCAS
+# ==========================================================
+
+def lista_marcas(request):
+
+    marcas = (
+        Marca.objects
+        .all()
+        .prefetch_related('productos')
+        .order_by('nombre')
+    )
+
+    total_marcas = Marca.objects.count()
+    marcas_activas = Marca.objects.filter(estado=True).count()
+    marcas_inactivas = Marca.objects.filter(estado=False).count()
+
+    return render(
+        request,
+        'productos/marca/marca.html',
+        {
+            'titulo': 'Marcas',
+            'marcas': marcas,
+            'total_marcas': total_marcas,
+            'marcas_activas': marcas_activas,
+            'marcas_inactivas': marcas_inactivas,
+        }
+    )
+
+
+# ==========================================================
+# ➕ CREAR MARCA
+# ==========================================================
+
+def crear_marca(request):
+
+    if request.method == 'POST':
+
+        form = MarcaForm(
+            request.POST
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                "Marca creada correctamente."
+            )
+
+            return redirect(
+                'lista_marcas'
+            )
+
+    else:
+
+        form = MarcaForm()
+
+    return render(
+        request,
+        'productos/marca/crear_marca.html',
+        {
+            'titulo': 'Crear Marca',
+            'form': form,
+        }
+    )
+
+
+# ==========================================================
+# ✏️ EDITAR MARCA
+# ==========================================================
+
+def editar_marca(request, id):
+
+    marca = get_object_or_404(
+        Marca,
+        codigo=id
+    )
+
+    if request.method == 'POST':
+
+        form = MarcaForm(
+            request.POST,
+            instance=marca
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                "Marca actualizada correctamente."
+            )
+
+            return redirect(
+                'lista_marcas'
+            )
+
+    else:
+
+        form = MarcaForm(
+            instance=marca
+        )
+
+    return render(
+        request,
+        'productos/marca/editar_marca.html',
+        {
+            'titulo': 'Editar Marca',
+            'form': form,
+            'marca': marca,
+        }
+    )
+
+
+def eliminar_marca(request, id):
+
+    marca = get_object_or_404(
+        Marca,
+        codigo=id
+    )
+
+    if request.method == 'POST':
+
+        marca.delete()
+
+        messages.success(
+            request,
+            "Marca eliminada correctamente."
+        )
+
+        return redirect(
+            'lista_marcas'
+        )
+
+    return render(
+        request,
+        'productos/marca/eliminar_marca.html',
+        {
+            'titulo': 'Eliminar Marca',
+            'marca': marca,
+        }
+    )
+
+

@@ -433,23 +433,14 @@
 
     </div>
 
-
-    <!-- ALERTAS DE INVENTARIO -->
+    <!-- Alertas de bitacora e existencias -->
     <div class="col-lg-4">
 
       <div class="card border-0 rounded-4 h-100 shadow-sm templates-index-admin__div-15">
 
         <!-- CABECERA -->
         <div class="card-header bg-transparent border-bottom border-secondary p-4">
-
-          <h5 class="fw-bold mb-0 text-white">
-
-            <i class="bi bi-exclamation-triangle me-2 text-warning"></i>
-
-            Alertas de Inventario
-
-          </h5>
-
+          <h5 class="fw-bold mb-0 text-white"><i class="bi bi-exclamation-triangle me-2 text-warning"></i>Alertas de existencias</h5>
         </div>
 
 
@@ -495,19 +486,8 @@
                   </div>
 
                   <div class="text-end">
-
-                    <span class="badge bg-danger rounded-pill fw-bold templates-index-admin__span-19">
-
-                      {{ bitacora.cantidad_actual }} unids.
-
-                    </span>
-
-                    <div class="text-white-50 templates-index-admin__div-20">
-
-                      Inventario Crítico
-
-                    </div>
-
+                    <span class="badge bg-danger rounded-pill fw-bold templates-index-admin__span-19">{{ bitacora.cantidad_actual }} unids.</span>
+                    <div class="text-white-50 templates-index-admin__div-20">existencias Crítico</div>
                   </div>
 
                 </div>
@@ -516,14 +496,8 @@
 
 
               <div class="text-center mt-2">
-
-                <a href="{% url 'lista_bitacora' %}"
-                   class="btn btn-sm btn-outline-warning w-100 rounded-pill py-2 fw-semibold">
-
-                  <i class="bi bi-plus-circle me-1"></i>
-
-                  Reabastecer Inventario
-
+                <a href="{% url 'lista_bitacora' %}" class="btn btn-sm btn-outline-warning w-100 rounded-pill py-2 fw-semibold">
+                  <i class="bi bi-plus-circle me-1"></i>Reabastecer existencias
                 </a>
 
               </div>
@@ -541,20 +515,8 @@
                   <i class="bi bi-shield-check fs-1"></i>
 
                 </div>
-
-                <h6 class="fw-semibold text-white mb-1">
-
-                  Inventario Seguro
-
-                </h6>
-
-                <p class="text-muted small mb-0 px-3">
-
-                  Todos los productos cuentan con niveles de bitacora
-                  adecuados (mayor a 15 unidades).
-
-                </p>
-
+                <h6 class="fw-semibold text-white mb-1">existencias Seguro</h6>
+                <p class="text-muted small mb-0 px-3">Todos los productos cuentan con niveles de bitacora adecuados (mayor a 15 unidades).</p>
               </div>
 
             {% endif %}

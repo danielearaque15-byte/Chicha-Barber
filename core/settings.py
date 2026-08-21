@@ -126,7 +126,7 @@ DATABASES = {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
         },
     }
-    }
+}
 
 
 
