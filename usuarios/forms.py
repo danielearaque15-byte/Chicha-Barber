@@ -2,20 +2,22 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
+
 from .models import Usuario, RolUsuario, TipoDocumento
 from core.validators import validar_password_fuerte
+
 
 # ==========================================
 # VALIDADORES REUTILIZABLES
 # ==========================================
 
-# Permite letras (con tildes y ñ) y un único espacio intermedio
+# Permite letras con tildes y ñ y un único espacio entre palabras
 validador_nombre = RegexValidator(
     regex=r'^[A-Za-zÁÉÍÓÚÜáéíóúüÑñ]+(?:\s[A-Za-zÁÉÍÓÚÜáéíóúüÑñ]+)*$',
     message='Este campo solo puede contener letras, sin números, símbolos ni espacios dobles.'
 )
 
-# Solo dígitos sin ningún tipo de espacios
+# Solo dígitos sin espacios
 validador_solo_numeros = RegexValidator(
     regex=r'^\d+$',
     message='Solo se permiten números, sin espacios ni letras.'
@@ -23,10 +25,11 @@ validador_solo_numeros = RegexValidator(
 
 
 # ==========================================
-# FORMULARIOS DE AUTENTICACIÓN Y REGISTRO
+# FORMULARIO DE REGISTRO
 # ==========================================
 
 class RegistroForm(UserCreationForm):
+
     username = forms.CharField(
         max_length=20,
         min_length=6,
@@ -44,21 +47,25 @@ class RegistroForm(UserCreationForm):
         max_length=150,
         validators=[validador_nombre],
         help_text="Solo letras, sin números ni símbolos.",
-        widget=forms.TextInput(attrs={'class': 'form-control'})
+        widget=forms.TextInput(attrs={
+            'class': 'form-control'
+        })
     )
 
     last_name = forms.CharField(
         max_length=150,
         validators=[validador_nombre],
         help_text="Solo letras, sin números ni símbolos.",
-        widget=forms.TextInput(attrs={'class': 'form-control'})
+        widget=forms.TextInput(attrs={
+            'class': 'form-control'
+        })
     )
 
     telefono = forms.CharField(
         max_length=15,
         min_length=7,
         validators=[validador_solo_numeros],
-        help_text="10 dígitos. Solo números, sin espacios.",
+        help_text="Solo números, sin espacios.",
         widget=forms.TextInput(attrs={
             'class': 'form-control',
             'pattern': r'^\d+$'
@@ -67,7 +74,9 @@ class RegistroForm(UserCreationForm):
 
     email = forms.EmailField(
         help_text="Correo válido y no registrado antes. Ej: nombre@dominio.com",
-        widget=forms.EmailInput(attrs={'class': 'form-control'})
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control'
+        })
     )
 
     tipo_documento = forms.ChoiceField(
@@ -75,7 +84,11 @@ class RegistroForm(UserCreationForm):
         label="Tipo de documento",
         widget=forms.Select(attrs={
             'class': 'form-select cb-input w-100',
-            'style': 'background-color: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.2);'
+            'style': (
+                'background-color: rgba(255,255,255,0.08); '
+                'color: #fff; '
+                'border: 1px solid rgba(255,255,255,0.2);'
+            )
         })
     )
 
@@ -94,69 +107,139 @@ class RegistroForm(UserCreationForm):
 
     def clean_email(self):
         email = self.cleaned_data.get('email', '').strip().lower()
+
         if Usuario.objects.filter(email__iexact=email).exists():
-            raise ValidationError("Ya existe una cuenta registrada con este correo electrónico.")
+            raise ValidationError(
+                "Ya existe una cuenta registrada con este correo electrónico."
+            )
+
         return email
 
     def clean_username(self):
         username = self.cleaned_data.get('username', '').strip()
+
         if Usuario.objects.filter(username=username).exists():
-            raise ValidationError("Ya existe una cuenta registrada con este número de documento.")
+            raise ValidationError(
+                "Ya existe una cuenta registrada con este número de documento."
+            )
+
         return username
 
     def clean_password1(self):
         password1 = self.cleaned_data.get('password1')
+
         if password1:
             validar_password_fuerte(password1)
+
         return password1
 
 
+# ==========================================
+# FORMULARIO DE LOGIN
+# ==========================================
+
 class CustomLoginForm(AuthenticationForm):
+
     username = forms.EmailField(
         label="Correo electrónico",
         widget=forms.EmailInput(attrs={
             'class': 'form-control',
             'placeholder': 'correo@ejemplo.com',
-            # Forzar en tiempo real la eliminación de espacios y paso a minúsculas
-            'oninput': "this.value = this.value.toLowerCase().replace(/\s/g, '')"
+            'oninput': "this.value = this.value.toLowerCase().replace(/\\s/g, '')"
         })
     )
 
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'class': 'form-control'})
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control'
+        })
     )
 
     def clean_username(self):
         username = self.cleaned_data.get('username', '')
-        # Se remueven espacios y se pasa a minúsculas para asegurar coincidencia exacta
         return username.strip().lower()
 
 
 # ==========================================
-# FORMULARIOS ADMINISTRATIVOS Y DE PERFIL
+# FORMULARIO PARA CREAR USUARIOS DESDE ADMIN
 # ==========================================
 
 class CrearUsuarioAdminForm(UserCreationForm):
+
+    # ------------------------------------------
+    # IDENTIFICACIÓN
+    # ------------------------------------------
+
     username = forms.CharField(
         max_length=20,
         min_length=6,
         label="Número de Documento",
         validators=[validador_solo_numeros],
-        widget=forms.TextInput(attrs={'class': 'form-control', 'pattern': r'^\d+$'})
+        help_text="Entre 6 y 20 dígitos. Solo números.",
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'pattern': r'^\d+$',
+            'title': 'Solo se permiten números.'
+        })
     )
+
+    email = forms.EmailField(
+        label="Correo Electrónico",
+        help_text="Este será el correo utilizado para iniciar sesión.",
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'correo@ejemplo.com'
+        })
+    )
+
+    tipo_documento = forms.ChoiceField(
+        choices=TipoDocumento.choices,
+        label="Tipo de documento",
+        widget=forms.Select(attrs={
+            'class': 'form-select'
+        })
+    )
+
+    # ------------------------------------------
+    # INFORMACIÓN PERSONAL
+    # ------------------------------------------
 
     first_name = forms.CharField(
         max_length=150,
-        label="Nombre",
+        label="Primer nombre",
         validators=[validador_nombre],
-        widget=forms.TextInput(attrs={'class': 'form-control'})
+        widget=forms.TextInput(attrs={
+            'class': 'form-control'
+        })
+    )
+
+    segundo_nombre = forms.CharField(
+        max_length=150,
+        required=False,
+        label="Segundo nombre",
+        validators=[validador_nombre],
+        widget=forms.TextInput(attrs={
+            'class': 'form-control'
+        })
     )
 
     last_name = forms.CharField(
         max_length=150,
-        label="Apellido",
+        label="Primer apellido",
         validators=[validador_nombre],
-        widget=forms.TextInput(attrs={'class': 'form-control'})
+        widget=forms.TextInput(attrs={
+            'class': 'form-control'
+        })
+    )
+
+    segundo_apellido = forms.CharField(
+        max_length=150,
+        required=False,
+        label="Segundo apellido",
+        validators=[validador_nombre],
+        widget=forms.TextInput(attrs={
+            'class': 'form-control'
+        })
     )
 
     telefono = forms.CharField(
@@ -164,76 +247,193 @@ class CrearUsuarioAdminForm(UserCreationForm):
         min_length=7,
         label="Teléfono",
         validators=[validador_solo_numeros],
-        widget=forms.TextInput(attrs={'class': 'form-control', 'pattern': r'^\d+$'})
+        help_text="Solo números.",
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'pattern': r'^\d+$'
+        })
     )
 
-    email = forms.EmailField(
-        label="Correo Electrónico",
-        widget=forms.EmailInput(attrs={'class': 'form-control'})
+    foto_perfil = forms.ImageField(
+        required=False,
+        label="Foto de perfil",
+        widget=forms.ClearableFileInput(attrs={
+            'class': 'form-control'
+        })
     )
+
+    # ------------------------------------------
+    # ROL Y CONFIGURACIÓN
+    # ------------------------------------------
 
     rol = forms.ChoiceField(
         choices=RolUsuario.choices,
         label="Rol",
-        widget=forms.Select(attrs={'class': 'form-select'})
+        widget=forms.Select(attrs={
+            'class': 'form-select'
+        })
+    )
+
+    estado = forms.BooleanField(
+        required=False,
+        initial=True,
+        label="Usuario activo",
+        widget=forms.CheckboxInput(attrs={
+            'class': 'form-check-input'
+        })
     )
 
     is_staff = forms.BooleanField(
         required=False,
-        label="Acceso al panel admin",
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+        label="Acceso al panel administrativo",
+        widget=forms.CheckboxInput(attrs={
+            'class': 'form-check-input'
+        })
     )
+
+    especialidad = forms.CharField(
+        max_length=100,
+        required=False,
+        label="Especialidad",
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Ej. Barbería clásica'
+        })
+    )
+
+    tema = forms.ChoiceField(
+        choices=[
+            ('light', 'Claro'),
+            ('dark', 'Oscuro'),
+        ],
+        initial='dark',
+        label="Tema",
+        widget=forms.Select(attrs={
+            'class': 'form-select'
+        })
+    )
+
+    # ------------------------------------------
+    # CONTRASEÑA
+    # ------------------------------------------
 
     password1 = forms.CharField(
         label="Contraseña",
-        widget=forms.PasswordInput(attrs={'class': 'form-control'})
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control'
+        })
     )
 
     password2 = forms.CharField(
         label="Confirmar Contraseña",
-        widget=forms.PasswordInput(attrs={'class': 'form-control'})
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control'
+        })
     )
 
     class Meta:
         model = Usuario
+
         fields = (
-            'username', 'first_name', 'last_name',
-            'email', 'telefono', 'rol', 'is_staff',
-            'password1', 'password2'
+            'username',
+            'email',
+            'tipo_documento',
+            'first_name',
+            'segundo_nombre',
+            'last_name',
+            'segundo_apellido',
+            'telefono',
+            'foto_perfil',
+            'rol',
+            'estado',
+            'is_staff',
+            'especialidad',
+            'tema',
+            'password1',
+            'password2',
         )
+
+    # ------------------------------------------
+    # VALIDAR CORREO
+    # ------------------------------------------
 
     def clean_email(self):
         email = self.cleaned_data.get('email', '').strip().lower()
+
         if Usuario.objects.filter(email__iexact=email).exists():
-            raise ValidationError("Ya existe una cuenta registrada con este correo electrónico.")
+            raise ValidationError(
+                "Ya existe una cuenta registrada con este correo electrónico."
+            )
+
         return email
+
+    # ------------------------------------------
+    # VALIDAR DOCUMENTO
+    # ------------------------------------------
 
     def clean_username(self):
         username = self.cleaned_data.get('username', '').strip()
+
         if Usuario.objects.filter(username=username).exists():
-            raise ValidationError("Ya existe una cuenta registrada con este número de documento.")
+            raise ValidationError(
+                "Ya existe una cuenta registrada con este número de documento."
+            )
+
         return username
+
+    # ------------------------------------------
+    # VALIDAR CONTRASEÑA
+    # ------------------------------------------
 
     def clean_password1(self):
         password1 = self.cleaned_data.get('password1')
+
         if password1:
             validar_password_fuerte(password1)
+
         return password1
 
+    # ------------------------------------------
+    # GUARDAR USUARIO
+    # ------------------------------------------
+
+    def save(self, commit=True):
+        usuario = super().save(commit=False)
+
+        usuario.email = self.cleaned_data['email'].strip().lower()
+
+        # Mantener sincronizado el estado del sistema
+        # con el estado de autenticación de Django.
+        usuario.is_active = self.cleaned_data.get('estado', True)
+
+        if commit:
+            usuario.save()
+
+        return usuario
+
+
+# ==========================================
+# FORMULARIO PARA EDITAR USUARIO
+# ==========================================
 
 class EditarUsuarioForm(forms.ModelForm):
+
     first_name = forms.CharField(
         max_length=150,
         label="Nombre",
         validators=[validador_nombre],
-        widget=forms.TextInput(attrs={'class': 'form-control'})
+        widget=forms.TextInput(attrs={
+            'class': 'form-control'
+        })
     )
 
     last_name = forms.CharField(
         max_length=150,
         label="Apellido",
         validators=[validador_nombre],
-        widget=forms.TextInput(attrs={'class': 'form-control'})
+        widget=forms.TextInput(attrs={
+            'class': 'form-control'
+        })
     )
 
     telefono = forms.CharField(
@@ -241,92 +441,160 @@ class EditarUsuarioForm(forms.ModelForm):
         min_length=7,
         label="Teléfono",
         validators=[validador_solo_numeros],
-        widget=forms.TextInput(attrs={'class': 'form-control', 'pattern': r'^\d+$'})
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'pattern': r'^\d+$'
+        })
     )
 
     email = forms.EmailField(
         label="Correo Electrónico",
-        widget=forms.EmailInput(attrs={'class': 'form-control'})
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control'
+        })
     )
 
     is_staff = forms.BooleanField(
         required=False,
         label="Acceso al panel admin",
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+        widget=forms.CheckboxInput(attrs={
+            'class': 'form-check-input'
+        })
     )
 
     estado = forms.BooleanField(
         required=False,
         label="Usuario activo",
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+        widget=forms.CheckboxInput(attrs={
+            'class': 'form-check-input'
+        })
     )
 
     tipo_documento = forms.ChoiceField(
         choices=TipoDocumento.choices,
         label="Tipo de documento",
-        widget=forms.Select(attrs={'class': 'form-select'})
+        widget=forms.Select(attrs={
+            'class': 'form-select'
+        })
     )
 
     rol = forms.ChoiceField(
         choices=RolUsuario.choices,
         label="Rol",
-        widget=forms.Select(attrs={'class': 'form-select'})
+        widget=forms.Select(attrs={
+            'class': 'form-select'
+        })
     )
 
     class Meta:
         model = Usuario
-        fields = ('tipo_documento', 'first_name', 'last_name', 'email', 'telefono', 'rol', 'is_staff', 'estado')
+
+        fields = (
+            'tipo_documento',
+            'first_name',
+            'last_name',
+            'email',
+            'telefono',
+            'rol',
+            'is_staff',
+            'estado'
+        )
 
     def clean_email(self):
         email = self.cleaned_data.get('email', '').strip().lower()
+
         qs = Usuario.objects.filter(email__iexact=email)
+
         if self.instance and self.instance.pk:
             qs = qs.exclude(pk=self.instance.pk)
+
         if qs.exists():
-            raise ValidationError("Ya existe otra cuenta registrada con este correo electrónico.")
+            raise ValidationError(
+                "Ya existe otra cuenta registrada con este correo electrónico."
+            )
+
         return email
-    
+
+
+# ==========================================
+# FORMULARIO PARA EDITAR PERFIL
+# ==========================================
+
 class EditarPerfilForm(forms.ModelForm):
+
     first_name = forms.CharField(
         max_length=150,
         validators=[validador_nombre],
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre(s)'})
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Nombre(s)'
+        })
     )
 
     last_name = forms.CharField(
         max_length=150,
         validators=[validador_nombre],
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Apellido(s)'})
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Apellido(s)'
+        })
     )
 
     telefono = forms.CharField(
         max_length=15,
         min_length=7,
         validators=[validador_solo_numeros],
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Teléfono', 'pattern': r'^\d+$'})
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Teléfono',
+            'pattern': r'^\d+$'
+        })
     )
 
     tipo_documento = forms.ChoiceField(
         choices=TipoDocumento.choices,
         label="Tipo de documento",
-        widget=forms.Select(attrs={'class': 'form-select'})
+        widget=forms.Select(attrs={
+            'class': 'form-select'
+        })
     )
 
     class Meta:
         model = Usuario
-        fields = ['tipo_documento', 'first_name', 'last_name', 'telefono', 'email', 'foto_perfil']
+
+        fields = [
+            'tipo_documento',
+            'first_name',
+            'last_name',
+            'telefono',
+            'email',
+            'foto_perfil'
+        ]
+
         widgets = {
-            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Correo electrónico'}),
-            'foto_perfil': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Correo electrónico'
+            }),
+
+            'foto_perfil': forms.ClearableFileInput(attrs={
+                'class': 'form-control'
+            }),
         }
 
     def clean_email(self):
         email = self.cleaned_data.get('email', '').strip().lower()
+
         qs = Usuario.objects.filter(email__iexact=email)
+
         if self.instance and self.instance.pk:
             qs = qs.exclude(pk=self.instance.pk)
+
         if qs.exists():
-            raise ValidationError("Ya existe otra cuenta registrada con este correo electrónico.")
+            raise ValidationError(
+                "Ya existe otra cuenta registrada con este correo electrónico."
+            )
+
         return email
 
 
@@ -335,18 +603,22 @@ class EditarPerfilForm(forms.ModelForm):
 # ==========================================
 
 class RecuperarPasswordForm(forms.Form):
+
     email = forms.EmailField(
         label="Correo electrónico",
         widget=forms.EmailInput(attrs={
             'class': 'form-control',
             'placeholder': 'Escribe tu correo registrado',
-            'oninput': "this.value = this.value.toLowerCase().replace(/\s/g, '')"
+            'oninput': "this.value = this.value.toLowerCase().replace(/\\s/g, '')"
         })
     )
 
     def clean_email(self):
         email = self.cleaned_data.get('email', '').strip().lower()
-        # Validación estricta: Si no se encuentra en la Base de Datos, detiene el proceso.
+
         if not Usuario.objects.filter(email__iexact=email).exists():
-            raise ValidationError("No existe ninguna cuenta registrada con este correo electrónico.")
+            raise ValidationError(
+                "No existe ninguna cuenta registrada con este correo electrónico."
+            )
+
         return email

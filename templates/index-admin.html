@@ -1,294 +1,794 @@
 {% extends "base-admin.html" %}
 {% load static %}
+
 {% block content %}
+
 <div class="container-fluid px-4 py-4 text-white">
- 
-  <!-- BIENVENIDA -->
+
+  <!-- =====================================================
+       BIENVENIDA
+       ===================================================== -->
   <div class="row mb-4">
     <div class="col-12">
-      <div class="p-4 rounded-4 shadow-sm border border-secondary templates-index-admin__div-1">
+
+      <div class="p-4 rounded-4 shadow-sm border border-secondary templates-index-admin__div-1 text-white">
+
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+
+          <!-- TEXTO DE BIENVENIDA -->
           <div>
-            <span class="text- text-uppercase fw-bold fs-7 templates-index-admin__span-2">Panel de Administración</span>
-            <h1 class="h2 fw-bold text-white mb-1">¡Bienvenido, {{ nombre }}!</h1>
-            <p class="text-light mb-0 opacity-75">Aquí tienes el resumen general de las actividades y estadísticas de hoy.</p>
+
+            <span class="text-uppercase fw-bold fs-7 templates-index-admin__span-2">
+              Panel de Administración
+            </span>
+
+            <h1 class="h2 fw-bold text-white mb-1">
+              ¡Bienvenido, {{ nombre }}!
+            </h1>
+
+            <p class="text-light mb-0 opacity-75">
+              Aquí tienes el resumen general de las actividades y estadísticas de hoy.
+            </p>
+
           </div>
+
+          <!-- BOTONES -->
           <div class="d-flex gap-2">
-            <a href="{% url 'ver_agenda' %}" class="btn btn-outline-light rounded-pill px-3 py-2 fw-semibold">
-              <i class="bi bi-calendar-event me-2 text-warning"></i>Ver Agenda
+
+            <a href="{% url 'ver_agenda' %}"
+               class="btn btn-outline-light rounded-pill px-3 py-2 fw-semibold">
+
+              <i class="bi bi-calendar-event me-2 text-warning"></i>
+              Ver Agenda
+
             </a>
-            <a href="{% url 'servicios' %}" class="btn color-azul rounded-pill px-3 py-2 text-white fw-bold border-0">
-              <i class="bi bi-plus-circle me-2"></i>Nueva Reserva
+
+            <a href="{% url 'servicios' %}"
+               class="btn color-azul rounded-pill px-3 py-2 text-white fw-bold border-0">
+
+              <i class="bi bi-plus-circle me-2"></i>
+              Nueva Reserva
+
             </a>
+
           </div>
+
         </div>
+
       </div>
+
     </div>
-  <!-- TARJETAS DE ESTADÍSTICAS -->
+  </div>
+
+
+  <!-- =====================================================
+       TARJETAS DE ESTADÍSTICAS
+       ===================================================== -->
   <div class="row g-4 mb-4">
-    <!-- Ingresos -->
+
+    <!-- INGRESOS -->
     <div class="col-xl-3 col-md-6">
+
       <div class="card color-champaña text-dark border-0 h-100 shadow-sm">
+
         <div class="card-body d-flex flex-row align-items-center flex-nowrap py-3">
-          <!-- Icono a la izquierda -->
-          <div class="bg-success bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3 templates-index-admin__div-3">
+
+          <!-- ICONO -->
+          <div class="bg-success bg-opacity-25 rounded-circle
+                      d-flex align-items-center justify-content-center
+                      flex-shrink-0 me-3 templates-index-admin__div-3">
+
             <i class="bi bi-currency-dollar fs-3 text-success"></i>
+
           </div>
-          <!-- Letras y número a la derecha en horizontal -->
+
+          <!-- INFORMACIÓN -->
           <div class="d-flex align-items-center flex-nowrap">
-            <span class="text-dark fw-bold me-2 text-nowrap">Ingresos -</span>
-            <h3 class="fw-bold mb-0 text-success text-nowrap">${{ total_ingresos|floatformat:2 }}</h3>
+
+            <span class="text-dark fw-bold me-2 text-nowrap">
+              Ingresos -
+            </span>
+
+            <h3 class="fw-bold mb-0 text-success text-nowrap">
+              ${{ total_ingresos|floatformat:2 }}
+            </h3>
+
           </div>
+
         </div>
+
       </div>
+
     </div>
 
-    <!-- Reservas Activas -->
+
+    <!-- RESERVAS -->
     <div class="col-xl-3 col-md-6">
+
       <div class="card color-champaña text-dark border-0 h-100 shadow-sm">
+
         <div class="card-body d-flex flex-row align-items-center flex-nowrap py-3">
-          <!-- Icono a la izquierda -->
-          <div class="bg-primary bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3 templates-index-admin__div-4">
+
+          <!-- ICONO -->
+          <div class="bg-primary bg-opacity-25 rounded-circle
+                      d-flex align-items-center justify-content-center
+                      flex-shrink-0 me-3 templates-index-admin__div-4">
+
             <i class="bi bi-calendar-check fs-3 text-primary"></i>
+
           </div>
-          <!-- Letras y número a la derecha en horizontal -->
+
+          <!-- INFORMACIÓN -->
           <div class="d-flex align-items-center flex-nowrap">
-            <span class="text-dark fw-bold me-2 text-nowrap">Reservas -</span>
-            <h3 class="fw-bold mb-0 text-primary text-nowrap">{{ total_reservas }}</h3>
+
+            <span class="text-dark fw-bold me-2 text-nowrap">
+              Reservas -
+            </span>
+
+            <h3 class="fw-bold mb-0 text-primary text-nowrap">
+              {{ total_reservas }}
+            </h3>
+
             {% if reservas_pendientes %}
+
               <span class="badge bg-warning text-dark ms-2 text-nowrap templates-index-admin__span-5">
                 {{ reservas_pendientes }} pend.
               </span>
+
             {% endif %}
+
           </div>
+
         </div>
+
       </div>
+
     </div>
 
-    <!-- Clientes Totales -->
+
+    <!-- CLIENTES -->
     <div class="col-xl-3 col-md-6">
+
       <div class="card color-champaña text-dark border-0 h-100 shadow-sm">
+
         <div class="card-body d-flex flex-row align-items-center flex-nowrap py-3">
-          <!-- Icono a la izquierda -->
-          <div class="bg-info bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3 templates-index-admin__div-6">
+
+          <!-- ICONO -->
+          <div class="bg-info bg-opacity-25 rounded-circle
+                      d-flex align-items-center justify-content-center
+                      flex-shrink-0 me-3 templates-index-admin__div-6">
+
             <i class="bi bi-people fs-3 text-info"></i>
+
           </div>
-          <!-- Letras y número a la derecha en horizontal -->
+
+          <!-- INFORMACIÓN -->
           <div class="d-flex align-items-center flex-nowrap">
-            <span class="text-dark fw-bold me-2 text-nowrap">Clientes -</span>
-            <h3 class="fw-bold mb-0 text-info text-nowrap">{{ total_clientes }}</h3>
+
+            <span class="text-dark fw-bold me-2 text-nowrap">
+              Clientes -
+            </span>
+
+            <h3 class="fw-bold mb-0 text-info text-nowrap">
+              {{ total_clientes }}
+            </h3>
+
           </div>
+
         </div>
+
       </div>
+
     </div>
 
-    <!-- Tipos de Producto -->
+
+    <!-- PRODUCTOS -->
     <div class="col-xl-3 col-md-6">
+
       <div class="card color-champaña text-dark border-0 h-100 shadow-sm">
+
         <div class="card-body d-flex flex-row align-items-center flex-nowrap py-3">
-          <!-- Icono a la izquierda -->
-          <div class="bg-warning bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3 templates-index-admin__div-7">
+
+          <!-- ICONO -->
+          <div class="bg-warning bg-opacity-25 rounded-circle
+                      d-flex align-items-center justify-content-center
+                      flex-shrink-0 me-3 templates-index-admin__div-7">
+
             <i class="bi bi-box-seam fs-3 text-warning"></i>
+
           </div>
-          <!-- Letras y número a la derecha en horizontal -->
+
+          <!-- INFORMACIÓN -->
           <div class="d-flex align-items-center flex-nowrap">
-            <span class="text-dark fw-bold me-2 text-nowrap">Productos -</span>
-            <h3 class="fw-bold mb-0 text-warning text-nowrap">{{ total_productos }}</h3>
+
+            <span class="text-dark fw-bold me-2 text-nowrap">
+              Productos -
+            </span>
+
+            <h3 class="fw-bold mb-0 text-warning text-nowrap">
+              {{ total_productos }}
+            </h3>
+
           </div>
+
         </div>
+
       </div>
+
     </div>
+
   </div>
 
-  <!-- SECCIÓN INTERMEDIA: TABLAS Y ALERTAS -->
+
+  <!-- =====================================================
+       RESERVAS Y ALERTAS
+       ===================================================== -->
   <div class="row g-4 mb-4">
-    
-    <!-- Reservas Recientes -->
+
+    <!-- RESERVAS RECIENTES -->
     <div class="col-lg-8">
+
       <div class="card border-0 rounded-4 h-100 shadow-sm color-blanco templates-index-admin__div-8">
-        <div class="card-header bg-transparent border-bottom border-secondary p-4 d-flex justify-content-between align-items-center">
-          <h5 class="fw-bold mb-0 text-black"><i class="bi bi-clock-history me-2 text-black"></i>Reservas Recientes</h5>
-          <a href="{% url 'ver_agenda' %}" class="btn btn-sm rounded-pill px-3 templates-index-admin__a-9">Ver todas</a>
+
+        <!-- CABECERA -->
+        <div class="card-header bg-transparent border-bottom border-secondary p-4
+                    d-flex justify-content-between align-items-center">
+
+          <h5 class="fw-bold mb-0 text-black">
+
+            <i class="bi bi-clock-history me-2 text-black"></i>
+
+            Reservas Recientes
+
+          </h5>
+
+          <a href="{% url 'ver_agenda' %}"
+             class="btn btn-sm rounded-pill px-3 templates-index-admin__a-9">
+
+            Ver todas
+
+          </a>
+
         </div>
+
+
+        <!-- TABLA -->
         <div class="card-body p-0">
+
           <div class="table-responsive">
-            <table class="table table-hover table-dark table-borderless align-middle mb-0 templates-index-admin__table-10">
+
+            <table class="table table-hover table-dark table-borderless
+                          align-middle mb-0 templates-index-admin__table-10">
+
               <thead>
+
                 <tr class="text-muted border-bottom border-secondary templates-index-admin__tr-11">
-                  <th class="ps-4 py-3">Cliente</th>
-                  <th class="py-3">Servicio</th>
-                  <th class="py-3">Fecha y Hora</th>
-                  <th class="py-3">Estado</th>
-                  <th class="py-3 text-end pe-4">Acción</th>
+
+                  <th class="ps-4 py-3">
+                    Cliente
+                  </th>
+
+                  <th class="py-3">
+                    Servicio
+                  </th>
+
+                  <th class="py-3">
+                    Fecha y Hora
+                  </th>
+
+                  <th class="py-3">
+                    Estado
+                  </th>
+
+                  <th class="py-3 text-end pe-4">
+                    Acción
+                  </th>
+
                 </tr>
+
               </thead>
+
+
               <tbody>
+
                 {% if reservas_recientes %}
+
                   {% for reserva in reservas_recientes %}
+
                     <tr class="border-bottom border-secondary border-opacity-25">
+
+                      <!-- CLIENTE -->
                       <td class="ps-4 py-3">
+
                         <div class="d-flex align-items-center gap-2">
-                          <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center text-white fw-bold templates-index-admin__div-12">
+
+                          <div class="bg-secondary rounded-circle
+                                      d-flex align-items-center justify-content-center
+                                      text-white fw-bold templates-index-admin__div-12">
+
                             {{ reserva.nombre_cliente|default:reserva.cliente.first_name|slice:":2"|upper }}
+
                           </div>
+
                           <div>
-                            <div class="fw-semibold text-white">{{ reserva.nombre_cliente|default:reserva.cliente.get_full_name|default:reserva.cliente.username }}</div>
-                            <small class="text-white-50 templates-index-admin__small-13">{{ reserva.telefono_cliente|default:reserva.cliente.telefono|default:"Sin teléfono" }}</small>
+
+                            <div class="fw-semibold text-white">
+
+                              {{ reserva.nombre_cliente|default:reserva.cliente.get_full_name|default:reserva.cliente.username }}
+
+                            </div>
+
+                            <small class="text-white-50 templates-index-admin__small-13">
+
+                              {{ reserva.telefono_cliente|default:reserva.cliente.telefono|default:"Sin teléfono" }}
+
+                            </small>
+
                           </div>
+
                         </div>
+
                       </td>
+
+
+                      <!-- SERVICIO -->
                       <td class="py-3">
+
                         <span class="badge bg-secondary py-2 px-3 rounded-pill fw-semibold templates-index-admin__span-14">
+
                           {{ reserva.servicio.nombre }}
+
                         </span>
+
                       </td>
+
+
+                      <!-- FECHA -->
                       <td class="py-3">
-                        <div class="text-white">{{ reserva.fecha_reserva|date:"d M Y, h:i A"|default:"Sin asignar" }}</div>
+
+                        <div class="text-white">
+
+                          {{ reserva.fecha_reserva|date:"d M Y, h:i A"|default:"Sin asignar" }}
+
+                        </div>
+
                       </td>
+
+
+                      <!-- ESTADO -->
                       <td class="py-3">
+
                         {% if reserva.estado == 'confirmada' %}
-                          <span class="badge bg-success rounded-pill px-2.5 py-1.5"><i class="bi bi-check-circle me-1"></i>Confirmada</span>
+
+                          <span class="badge bg-success rounded-pill px-2.5 py-1.5">
+
+                            <i class="bi bi-check-circle me-1"></i>
+                            Confirmada
+
+                          </span>
+
                         {% elif reserva.estado == 'reservada' %}
-                          <span class="badge bg-warning text-dark rounded-pill px-2.5 py-1.5"><i class="bi bi-clock me-1"></i>Reservada</span>
+
+                          <span class="badge bg-warning text-dark rounded-pill px-2.5 py-1.5">
+
+                            <i class="bi bi-clock me-1"></i>
+                            Reservada
+
+                          </span>
+
                         {% else %}
-                          <span class="badge bg-danger rounded-pill px-2.5 py-1.5"><i class="bi bi-x-circle me-1"></i>Cancelada</span>
+
+                          <span class="badge bg-danger rounded-pill px-2.5 py-1.5">
+
+                            <i class="bi bi-x-circle me-1"></i>
+                            Cancelada
+
+                          </span>
+
                         {% endif %}
+
                       </td>
+
+
+                      <!-- ACCIÓN -->
                       <td class="py-3 text-end pe-4">
-                        <a href="{% url 'ver_agenda' %}" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1">Detalle</a>
+
+                        <a href="{% url 'ver_agenda' %}"
+                           class="btn btn-sm btn-outline-light rounded-pill px-3 py-1">
+
+                          Detalle
+
+                        </a>
+
                       </td>
+
                     </tr>
+
                   {% endfor %}
+
                 {% else %}
+
                   <tr>
-                    <td colspan="5" class="text-center py-4 text-muted">No hay reservas recientes registradas.</td>
+
+                    <td colspan="5"
+                        class="text-center py-4 text-muted">
+
+                      No hay reservas recientes registradas.
+
+                    </td>
+
                   </tr>
+
                 {% endif %}
+
               </tbody>
+
             </table>
+
           </div>
+
         </div>
+
       </div>
+
     </div>
 
-    <!-- Alertas de bitacora e Inventario -->
+
+    <!-- ALERTAS DE INVENTARIO -->
     <div class="col-lg-4">
+
       <div class="card border-0 rounded-4 h-100 shadow-sm templates-index-admin__div-15">
+
+        <!-- CABECERA -->
         <div class="card-header bg-transparent border-bottom border-secondary p-4">
-          <h5 class="fw-bold mb-0 text-white"><i class="bi bi-exclamation-triangle me-2 text-warning"></i>Alertas de Inventario</h5>
+
+          <h5 class="fw-bold mb-0 text-white">
+
+            <i class="bi bi-exclamation-triangle me-2 text-warning"></i>
+
+            Alertas de Inventario
+
+          </h5>
+
         </div>
+
+
+        <!-- CONTENIDO -->
         <div class="card-body p-4">
+
           <div class="d-flex flex-column gap-3">
+
             {% if productos_bajo_bitacora %}
+
               {% for bitacora in productos_bajo_bitacora %}
-                <div class="d-flex align-items-center justify-content-between p-3 rounded-3 templates-index-admin__div-16">
+
+                <div class="d-flex align-items-center justify-content-between
+                            p-3 rounded-3 templates-index-admin__div-16">
+
                   <div class="d-flex align-items-center gap-3">
-                    <div class="bg-warning bg-opacity-25 text-warning rounded-3 p-2 d-flex align-items-center justify-content-center templates-index-admin__div-17">
+
+                    <div class="bg-warning bg-opacity-25 text-warning
+                                rounded-3 p-2 d-flex align-items-center
+                                justify-content-center templates-index-admin__div-17">
+
                       <i class="bi bi-box-seam fs-5"></i>
+
                     </div>
+
                     <div>
-                      <div class="fw-semibold text-white">{{ bitacora.codigo_producto.nombre }}</div>
-                      <small class="text-white-50 templates-index-admin__small-18">Categoría: {{ bitacora.codigo_producto.codigo_categoria.nombre|default:"General" }}</small>
+
+                      <div class="fw-semibold text-white">
+
+                        {{ bitacora.codigo_producto.nombre }}
+
+                      </div>
+
+                      <small class="text-white-50 templates-index-admin__small-18">
+
+                        Categoría:
+                        {{ bitacora.codigo_producto.codigo_categoria.nombre|default:"General" }}
+
+                      </small>
+
                     </div>
+
                   </div>
+
                   <div class="text-end">
-                    <span class="badge bg-danger rounded-pill fw-bold templates-index-admin__span-19">{{ bitacora.cantidad_actual }} unids.</span>
-                    <div class="text-white-50 templates-index-admin__div-20">Inventario Crítico</div>
+
+                    <span class="badge bg-danger rounded-pill fw-bold templates-index-admin__span-19">
+
+                      {{ bitacora.cantidad_actual }} unids.
+
+                    </span>
+
+                    <div class="text-white-50 templates-index-admin__div-20">
+
+                      Inventario Crítico
+
+                    </div>
+
                   </div>
+
                 </div>
+
               {% endfor %}
+
+
               <div class="text-center mt-2">
-                <a href="{% url 'lista_bitacora' %}" class="btn btn-sm btn-outline-warning w-100 rounded-pill py-2 fw-semibold">
-                  <i class="bi bi-plus-circle me-1"></i>Reabastecer Inventario
+
+                <a href="{% url 'lista_bitacora' %}"
+                   class="btn btn-sm btn-outline-warning w-100 rounded-pill py-2 fw-semibold">
+
+                  <i class="bi bi-plus-circle me-1"></i>
+
+                  Reabastecer Inventario
+
                 </a>
+
               </div>
+
+
             {% else %}
+
               <div class="text-center py-5">
-                <div class="bg-success bg-opacity-10 text-success rounded-circle p-3 d-inline-flex align-items-center justify-content-center mb-3 templates-index-admin__div-21">
+
+                <div class="bg-success bg-opacity-10 text-success
+                            rounded-circle p-3 d-inline-flex
+                            align-items-center justify-content-center mb-3
+                            templates-index-admin__div-21">
+
                   <i class="bi bi-shield-check fs-1"></i>
+
                 </div>
-                <h6 class="fw-semibold text-white mb-1">Inventario Seguro</h6>
-                <p class="text-muted small mb-0 px-3">Todos los productos cuentan con niveles de bitacora adecuados (mayor a 15 unidades).</p>
+
+                <h6 class="fw-semibold text-white mb-1">
+
+                  Inventario Seguro
+
+                </h6>
+
+                <p class="text-muted small mb-0 px-3">
+
+                  Todos los productos cuentan con niveles de bitacora
+                  adecuados (mayor a 15 unidades).
+
+                </p>
+
               </div>
+
             {% endif %}
+
           </div>
+
         </div>
+
       </div>
+
     </div>
+
   </div>
 
-  <!-- SECCIÓN DE FACTURAS RECIENTES -->
+
+  <!-- =====================================================
+       COMPROBANTES Y VENTAS RECIENTES
+       ===================================================== -->
   <div class="row">
+
     <div class="col-12">
+
       <div class="card border-0 rounded-4 shadow-sm color-blanco templates-index-admin__div-22">
-        <div class="card-header bg-transparent border-bottom border-secondary p-4 d-flex justify-content-between align-items-center">
-          <h5 class="fw-bold mb-0 text-black"><i class="bi bi-receipt me-2 text-warning"></i> Comprobantes y Ventas Recientes</h5>
-          <a href="{% url 'factura_adm' %}" class="btn btn-sm rounded-pill px-3 templates-index-admin__a-23">Ver todas</a>
+
+        <!-- CABECERA -->
+        <div class="card-header bg-transparent border-bottom border-secondary p-4
+                    d-flex justify-content-between align-items-center">
+
+          <h5 class="fw-bold mb-0 text-black">
+
+            <i class="bi bi-receipt me-2 text-warning"></i>
+
+            Comprobantes y Ventas Recientes
+
+          </h5>
+
+          <a href="{% url 'factura_adm' %}"
+             class="btn btn-sm rounded-pill px-3 templates-index-admin__a-23">
+
+            Ver todas
+
+          </a>
+
         </div>
+
+
+        <!-- TABLA -->
         <div class="card-body p-0">
+
           <div class="table-responsive">
-            <table class="table table-hover table-dark table-borderless align-middle mb-0 templates-index-admin__table-24">
+
+            <table class="table table-hover table-dark table-borderless
+                          align-middle mb-0 templates-index-admin__table-24">
+
               <thead>
+
                 <tr class="text-muted border-bottom border-secondary templates-index-admin__tr-25">
-                  <th class="ps-4 py-3">N° Factura</th>
-                  <th class="py-3">Cliente</th>
-                  <th class="py-3">Fecha Emisión</th>
-                  <th class="py-3">Método Pago</th>
-                  <th class="py-3">Monto Total</th>
-                  <th class="py-3">Estado</th>
-                  <th class="py-3 text-end pe-4">Acción</th>
+
+                  <th class="ps-4 py-3">
+                    N° Factura
+                  </th>
+
+                  <th class="py-3">
+                    Cliente
+                  </th>
+
+                  <th class="py-3">
+                    Fecha Emisión
+                  </th>
+
+                  <th class="py-3">
+                    Método Pago
+                  </th>
+
+                  <th class="py-3">
+                    Monto Total
+                  </th>
+
+                  <th class="py-3">
+                    Estado
+                  </th>
+
+                  <th class="py-3 text-end pe-4">
+                    Acción
+                  </th>
+
                 </tr>
+
               </thead>
+
+
               <tbody>
+
                 {% if facturas_recientes %}
+
                   {% for factura in facturas_recientes %}
+
                     <tr class="border-bottom border-secondary border-opacity-25">
+
+                      <!-- FACTURA -->
                       <td class="ps-4 py-3 fw-bold text-warning">
+
                         #{{ factura.id }}
+
                       </td>
+
+
+                      <!-- CLIENTE -->
                       <td class="py-3">
+
                         <div class="fw-semibold text-white">
+
                           {{ factura.nombre_cliente|default:factura.cliente.get_full_name|default:factura.cliente.username|default:"General" }}
+
                         </div>
-                        <small class="text-white-50 templates-index-admin__small-26">{{ factura.correo_cliente|default:factura.cliente.email|default:"Sin correo" }}</small>
+
+                        <small class="text-white-50 templates-index-admin__small-26">
+
+                          {{ factura.correo_cliente|default:factura.cliente.email|default:"Sin correo" }}
+
+                        </small>
+
                       </td>
+
+
+                      <!-- FECHA -->
                       <td class="py-3">
+
                         {{ factura.fecha_emision|date:"d M Y, h:i A" }}
+
                       </td>
+
+
+                      <!-- MÉTODO DE PAGO -->
                       <td class="py-3">
-                        <span class="text-uppercase small fw-bold px-2 py-1 bg-secondary bg-opacity-25 text-white rounded">
+
+                        <span class="text-uppercase small fw-bold px-2 py-1
+                                     bg-secondary bg-opacity-25 text-white rounded">
+
                           {{ factura.get_metodo_pago_display|default:factura.metodo_pago }}
+
                         </span>
+
                       </td>
+
+
+                      <!-- TOTAL -->
                       <td class="py-3 fw-bold text-success">
+
                         ${{ factura.total_pagado|floatformat:2 }}
+
                       </td>
+
+
+                      <!-- ESTADO -->
                       <td class="py-3">
+
                         {% if factura.estado == 'pagada' %}
-                          <span class="badge bg-success rounded-pill px-2.5 py-1.5"><i class="bi bi-check-circle me-1"></i>Pagada</span>
+
+                          <span class="badge bg-success rounded-pill px-2.5 py-1.5">
+
+                            <i class="bi bi-check-circle me-1"></i>
+                            Pagada
+
+                          </span>
+
                         {% elif factura.estado == 'pendiente' %}
-                          <span class="badge bg-warning text-dark rounded-pill px-2.5 py-1.5"><i class="bi bi-hourglass-split me-1"></i>Pendiente</span>
+
+                          <span class="badge bg-warning text-dark rounded-pill px-2.5 py-1.5">
+
+                            <i class="bi bi-hourglass-split me-1"></i>
+                            Pendiente
+
+                          </span>
+
                         {% else %}
-                          <span class="badge bg-danger rounded-pill px-2.5 py-1.5"><i class="bi bi-x-circle me-1"></i>Cancelada</span>
+
+                          <span class="badge bg-danger rounded-pill px-2.5 py-1.5">
+
+                            <i class="bi bi-x-circle me-1"></i>
+                            Cancelada
+
+                          </span>
+
                         {% endif %}
+
                       </td>
+
+
+                      <!-- ACCIÓN -->
                       <td class="py-3 text-end pe-4">
-                        <a href="{% url 'factura_adm' %}" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1">Ver detalles</a>
+
+                        <a href="{% url 'factura_adm' %}"
+                           class="btn btn-sm btn-outline-light rounded-pill px-3 py-1">
+
+                          Ver detalles
+
+                        </a>
+
                       </td>
+
                     </tr>
+
                   {% endfor %}
+
                 {% else %}
+
                   <tr>
-                    <td colspan="7" class="text-center py-4 text-muted">No hay transacciones registradas.</td>
+
+                    <td colspan="7"
+                        class="text-center py-4 text-muted">
+
+                      No hay transacciones registradas.
+
+                    </td>
+
                   </tr>
+
                 {% endif %}
+
               </tbody>
+
             </table>
+
           </div>
+
         </div>
+
       </div>
+
     </div>
+
   </div>
 
 </div>
+
 {% endblock %}
