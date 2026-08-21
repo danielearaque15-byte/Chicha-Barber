@@ -31,13 +31,13 @@
       </div>
 
       <!-- Tarjeta Flotante Glassmorphism -->
-      <div class="col-lg-5 offset-lg-1 d-flex justify-content-end mt-4 mt-lg-0">
-        <div class="card border-0 rounded-4 shadow-lg p-4 text-white w-100 templates-index-clientes__div-6" 
+      <div class="col-lg-5 offset-lg-1 d-flex justify-content-end mt-4 mt-lg-0 ">
+        <div class="card border-0 rounded-4 shadow-lg p-4 text-white w-100 templates-index-clientes__div-6 servicios-servicios__div-1"" 
              style="background: rgba(20, 20, 20, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.12) !important;">
           
           <div class="d-flex align-items-center gap-3 mb-3 fs-6">
-            <div class="rounded-circle d-flex align-items-center justify-content-center p-2 templates-index-clientes__div-7" 
-                 style="width: 44px; height: 44px; background-color: rgba(43, 80, 170, 0.18); color: #2b50aa;">
+            <div class="rounded-circle d-flex align-items-center justify-content-center p-2 templates-index-clientes__div-7 servicios-servicios__div-1" " 
+                 style="width: 44px; height: 44px; background-color: rgba(43, 80, 170, 0.18); color: #2b50aa; ">
               <i class="bi bi-geo-alt-fill fs-5"></i>
             </div>
             <div>
@@ -47,7 +47,7 @@
           </div>
 
           <div class="d-flex align-items-center gap-3 mb-3 fs-6">
-            <div class="rounded-circle d-flex align-items-center justify-content-center p-2 templates-index-clientes__div-8" 
+            <div class="rounded-circle d-flex align-items-center justify-content-center p-2 templates-index-clientes__div-8 servicios-servicios__div-1" 
                  style="width: 44px; height: 44px; background-color: rgba(43, 80, 170, 0.18); color: #2b50aa;">
               <i class="bi bi-telephone-fill fs-5"></i>
             </div>
@@ -58,7 +58,7 @@
           </div>
 
           <div class="d-flex align-items-center gap-3 mb-3 fs-6">
-            <div class="rounded-circle d-flex align-items-center justify-content-center p-2 templates-index-clientes__div-9" 
+            <div class="rounded-circle d-flex align-items-center justify-content-center p-2 templates-index-clientes__div-9 servicios-servicios__div-1" 
                  style="width: 44px; height: 44px; background-color: rgba(43, 80, 170, 0.18); color: #2b50aa;">
               <i class="bi bi-calendar-check-fill fs-5"></i> 
             </div>
@@ -69,7 +69,7 @@
           </div>
 
           <div class="d-flex align-items-center gap-3 mb-0 fs-6">
-            <div class="rounded-circle d-flex align-items-center justify-content-center p-2 templates-index-clientes__div-10" 
+            <div class="rounded-circle d-flex align-items-center justify-content-center p-2 templates-index-clientes__div-10 servicios-servicios__div-1" 
                  style="width: 44px; height: 44px; background-color: rgba(43, 80, 170, 0.18); color: #2b50aa;">
               <i class="bi bi-clock-fill fs-5"></i>
             </div>
@@ -187,32 +187,39 @@
       Lo que dicen nuestros clientes
     </h2>
 
+    <section class="py-5">
+  <div class="container">
     <div class="row row-cols-1 row-cols-md-3 g-4 text-center">
       {% for testimonio in testimonios %}
       <div class="col">
-        <div class="card h-100 shadow-sm border-0 bg-light w-100 rounded-4 overflow-hidden">
-          <div class="card-body">
-            <div class="bg-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm templates-index-clientes__div-22">
-              <i class="bi bi-chat-quote-fill fs-3 templates-index-clientes__i-23"></i>
+        <div class="card h-100 shadow-sm border-0 bg-light w-100 rounded-4 overflow-hidden tarjeta-animada servicios-servicios__div-1">
+          <div class="card-body p-4 d-flex flex-column align-items-center">
+            
+            <div class="bg-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm templates-index-clientes__div-22 p-3">
+              <i class="bi bi-chat-quote-fill fs-3 text-primary templates-index-clientes__i-23"></i>
             </div>
-            <h5 class="fw-bold mb-1 templates-index-clientes__h5-24">
+
+            <h5 class="fw-bold mb-1 text-dark templates-index-clientes__h5-24">
               {{ testimonio.servicio.nombre }}
             </h5>
+
             <div class="mb-3 templates-index-clientes__div-25">
               {% for i in "12345"|make_list %}
               <i class="bi bi-star-fill text-warning"></i>
               {% endfor %}
             </div>
-            <p class="fst-italic mb-4 templates-index-clientes__p-26">
+
+            <p class="fst-italic mb-4 text-dark opacity-75 templates-index-clientes__p-26">
               "{{ testimonio.comentario }}"
             </p>
+
           </div>
         </div>
       </div>
       {% empty %}
-      <div class="col-12 text-center">
-        <p class="opacity-100">Aún no hay reseñas disponibles. ¡Sé el primero en calificarnos!</p>
-        <p class="text-white text-light">
+      <div class="col-12 text-center py-4">
+        <p class="fw-bold text-dark fs-5 mb-1">Aún no hay reseñas disponibles. ¡Sé el primero en calificarnos!</p>
+        <p class="text-muted">
           Pronto verás aquí lo que opinan nuestros clientes.
         </p>
       </div>
