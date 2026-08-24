@@ -111,7 +111,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # DATABASE
 # ======================================================
 
-DATABASES = {
+DATABASES = {    
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'bdchichabarber',
