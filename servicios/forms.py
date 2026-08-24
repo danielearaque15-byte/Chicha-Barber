@@ -13,7 +13,7 @@ class ServiciosForm(ModelForm):
             'nombre': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Ej. Corte de cabello',
-                'pattern': r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+$',
+                'pattern': r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\]+$',
                 'title': 'El nombre solo puede contener letras, números y espacios.'
             }),
             

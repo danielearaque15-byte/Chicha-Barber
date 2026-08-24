@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 
 from .models import (
@@ -13,8 +15,75 @@ from .models import (
 
 
 # ==========================================================
+# VALIDACIÓN GENERAL DE TEXTOS
+# ==========================================================
+
+def validar_texto(valor, campo):
+    """
+    Permite:
+    - Letras
+    - Números
+    - Espacios
+    - Tildes
+    - Ñ
+
+    No permite caracteres especiales.
+    """
+
+    if not valor:
+        raise forms.ValidationError(
+            f'El campo {campo} es obligatorio.'
+        )
+
+    valor = valor.strip()
+
+    if not re.fullmatch(
+        r'[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+',
+        valor
+    ):
+        raise forms.ValidationError(
+            f'El campo {campo} solo puede contener '
+            'letras, números y espacios.'
+        )
+
+    return valor
+
+
+# ==========================================================
+# VALIDACIÓN DE DESCRIPCIONES
+# ==========================================================
+
+def validar_descripcion(valor, campo):
+    """
+    Valida descripciones permitiendo:
+    - Letras
+    - Números
+    - Espacios
+    - Tildes
+    - Ñ
+
+    No permite caracteres especiales.
+    """
+
+    if not valor:
+        return valor
+
+    valor = valor.strip()
+
+    if not re.fullmatch(
+        r'[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+',
+        valor
+    ):
+        raise forms.ValidationError(
+            f'El campo {campo} solo puede contener '
+            'letras, números y espacios.'
+        )
+
+    return valor
+
+
+# ==========================================================
 # FORMULARIO PRODUCTO
-# Solo información del catálogo
 # ==========================================================
 
 class ProductoForm(forms.ModelForm):
@@ -38,6 +107,13 @@ class ProductoForm(forms.ModelForm):
                 attrs={
                     'class': 'form-control',
                     'placeholder': 'Nombre del producto',
+                    'pattern': (
+                        r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+$'
+                    ),
+                    'title': (
+                        'El nombre solo puede contener '
+                        'letras, números y espacios.'
+                    ),
                 }
             ),
 
@@ -46,6 +122,13 @@ class ProductoForm(forms.ModelForm):
                     'class': 'form-control',
                     'rows': 3,
                     'placeholder': 'Descripción del producto',
+                    'pattern': (
+                        r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+$'
+                    ),
+                    'title': (
+                        'La descripción solo puede contener '
+                        'letras, números y espacios.'
+                    ),
                 }
             ),
 
@@ -93,16 +176,40 @@ class ProductoForm(forms.ModelForm):
             'estado': 'Activo',
         }
 
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
+
+        return validar_texto(
+            nombre,
+            'nombre del producto'
+        )
+
+    def clean_descripcion(self):
+        descripcion = self.cleaned_data.get('descripcion')
+
+        return validar_descripcion(
+            descripcion,
+            'descripción'
+        )
+
+    def clean_precio(self):
+        precio = self.cleaned_data.get('precio')
+
+        if precio is not None and precio < 0:
+            raise forms.ValidationError(
+                'El precio no puede ser negativo.'
+            )
+
+        return precio
+
 
 # ==========================================================
-# FORMULARIO existencias
-# Cantidad, stock mínimo, stock máximo y observaciones
+# FORMULARIO EXISTENCIAS
 # ==========================================================
 
 class existenciasForm(forms.ModelForm):
 
     class Meta:
-
         model = existencias
 
         fields = [
@@ -117,31 +224,106 @@ class existenciasForm(forms.ModelForm):
             'cantidad_actual': forms.NumberInput(
                 attrs={
                     'class': 'form-control',
-                    'min': '0'
+                    'min': '0',
+                    'step': '1',
                 }
             ),
 
             'stock_min': forms.NumberInput(
                 attrs={
                     'class': 'form-control',
-                    'min': '0'
+                    'min': '0',
+                    'step': '1',
                 }
             ),
 
             'stock_max': forms.NumberInput(
                 attrs={
                     'class': 'form-control',
-                    'min': '0'
+                    'min': '0',
+                    'step': '1',
                 }
             ),
 
             'observaciones': forms.Textarea(
                 attrs={
                     'class': 'form-control',
-                    'rows': 3
+                    'rows': 3,
+                    'placeholder': 'Observaciones',
+                    'pattern': (
+                        r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+$'
+                    ),
+                    'title': (
+                        'Solo se permiten letras, números '
+                        'y espacios.'
+                    ),
                 }
             ),
         }
+
+    def clean_cantidad_actual(self):
+        cantidad = self.cleaned_data.get(
+            'cantidad_actual'
+        )
+
+        if cantidad is not None and cantidad < 0:
+            raise forms.ValidationError(
+                'La cantidad actual no puede ser negativa.'
+            )
+
+        return cantidad
+
+    def clean_stock_min(self):
+        stock_min = self.cleaned_data.get(
+            'stock_min'
+        )
+
+        if stock_min is not None and stock_min < 0:
+            raise forms.ValidationError(
+                'El stock mínimo no puede ser negativo.'
+            )
+
+        return stock_min
+
+    def clean_stock_max(self):
+        stock_max = self.cleaned_data.get(
+            'stock_max'
+        )
+
+        if stock_max is not None and stock_max < 0:
+            raise forms.ValidationError(
+                'El stock máximo no puede ser negativo.'
+            )
+
+        return stock_max
+
+    def clean_observaciones(self):
+        observaciones = self.cleaned_data.get(
+            'observaciones'
+        )
+
+        return validar_descripcion(
+            observaciones,
+            'observaciones'
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        stock_min = cleaned_data.get('stock_min')
+        stock_max = cleaned_data.get('stock_max')
+
+        if (
+            stock_min is not None
+            and stock_max is not None
+            and stock_max < stock_min
+        ):
+            raise forms.ValidationError(
+                'El stock máximo no puede ser menor '
+                'que el stock mínimo.'
+            )
+
+        return cleaned_data
 
 
 # ==========================================================
@@ -165,25 +347,50 @@ class ventaForm(forms.ModelForm):
 
             'nombre_cliente': forms.TextInput(
                 attrs={
-                    'class': 'form-control'
+                    'class': 'form-control',
+                    'placeholder': 'Nombre del cliente',
+                    'pattern': (
+                        r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$'
+                    ),
+                    'title': (
+                        'El nombre solo puede contener '
+                        'letras y espacios.'
+                    ),
                 }
             ),
 
             'correo': forms.EmailInput(
                 attrs={
-                    'class': 'form-control'
+                    'class': 'form-control',
+                    'placeholder': 'correo@ejemplo.com',
                 }
             ),
 
             'telefono': forms.TextInput(
                 attrs={
-                    'class': 'form-control'
+                    'class': 'form-control',
+                    'placeholder': '3001234567',
+                    'pattern': r'^[0-9]+$',
+                    'inputmode': 'numeric',
+                    'title': (
+                        'El teléfono solo puede contener '
+                        'números.'
+                    ),
                 }
             ),
 
             'direccion': forms.TextInput(
                 attrs={
-                    'class': 'form-control'
+                    'class': 'form-control',
+                    'placeholder': 'Calle 10 # 20-30',
+                    'pattern': (
+                        r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s#./-]+$'
+                    ),
+                    'title': (
+                        'La dirección puede contener letras, '
+                        'números, espacios y los caracteres '
+                        '# . / -'
+                    ),
                 }
             ),
 
@@ -194,16 +401,82 @@ class ventaForm(forms.ModelForm):
             ),
         }
 
+    def clean_nombre_cliente(self):
+        nombre = self.cleaned_data.get(
+            'nombre_cliente'
+        )
+
+        if not nombre:
+            raise forms.ValidationError(
+                'El nombre del cliente es obligatorio.'
+            )
+
+        nombre = nombre.strip()
+
+        if not re.fullmatch(
+            r'[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+',
+            nombre
+        ):
+            raise forms.ValidationError(
+                'El nombre solo puede contener '
+                'letras y espacios.'
+            )
+
+        return nombre
+
+    def clean_telefono(self):
+        telefono = self.cleaned_data.get(
+            'telefono'
+        )
+
+        if not telefono:
+            raise forms.ValidationError(
+                'El teléfono es obligatorio.'
+            )
+
+        telefono = telefono.strip()
+
+        if not telefono.isdigit():
+            raise forms.ValidationError(
+                'El teléfono solo puede contener números.'
+            )
+
+        if len(telefono) < 7 or len(telefono) > 15:
+            raise forms.ValidationError(
+                'El teléfono debe tener entre 7 y 15 números.'
+            )
+
+        return telefono
+
+    def clean_direccion(self):
+        direccion = self.cleaned_data.get(
+            'direccion'
+        )
+
+        if not direccion:
+            return direccion
+
+        direccion = direccion.strip()
+
+        if not re.fullmatch(
+            r'[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s#./-]+',
+            direccion
+        ):
+            raise forms.ValidationError(
+                'La dirección contiene caracteres '
+                'no permitidos.'
+            )
+
+        return direccion
+
 
 # ==========================================================
 # FORMULARIO DETALLE VENTA
-# Validación de existencias
 # ==========================================================
 
 class detalleventaForm(forms.ModelForm):
 
     class Meta:
-
         model = detalleventa
 
         fields = [
@@ -222,17 +495,33 @@ class detalleventaForm(forms.ModelForm):
             'cantidad': forms.NumberInput(
                 attrs={
                     'class': 'form-control',
-                    'min': '1'
+                    'min': '1',
+                    'step': '1',
                 }
             ),
         }
 
         labels = {
-
             'codigo_producto': 'Producto',
-
             'cantidad': 'Cantidad'
         }
+
+    def clean_cantidad(self):
+        cantidad = self.cleaned_data.get(
+            'cantidad'
+        )
+
+        if cantidad is None:
+            raise forms.ValidationError(
+                'La cantidad es obligatoria.'
+            )
+
+        if cantidad < 1:
+            raise forms.ValidationError(
+                'La cantidad debe ser mínimo 1.'
+            )
+
+        return cantidad
 
 
 # ==========================================================
@@ -242,7 +531,6 @@ class detalleventaForm(forms.ModelForm):
 class CategoriaForm(forms.ModelForm):
 
     class Meta:
-
         model = Categoria
 
         fields = [
@@ -257,7 +545,14 @@ class CategoriaForm(forms.ModelForm):
                     'class': 'form-control border-secondary',
                     'placeholder': (
                         'Ingrese el nombre de la categoría'
-                    )
+                    ),
+                    'pattern': (
+                        r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+$'
+                    ),
+                    'title': (
+                        'Solo se permiten letras, números '
+                        'y espacios.'
+                    ),
                 }
             ),
 
@@ -267,17 +562,40 @@ class CategoriaForm(forms.ModelForm):
                     'placeholder': (
                         'Descripción de la categoría'
                     ),
-                    'rows': 4
+                    'rows': 4,
+                    'pattern': (
+                        r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+$'
+                    ),
+                    'title': (
+                        'Solo se permiten letras, números '
+                        'y espacios.'
+                    ),
                 }
             ),
         }
 
         labels = {
-
             'nombre': 'Nombre de Categoría',
-
             'descripcion': 'Descripción'
         }
+
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
+
+        return validar_texto(
+            nombre,
+            'nombre de la categoría'
+        )
+
+    def clean_descripcion(self):
+        descripcion = self.cleaned_data.get(
+            'descripcion'
+        )
+
+        return validar_descripcion(
+            descripcion,
+            'descripción'
+        )
 
 
 # ==========================================================
@@ -287,7 +605,6 @@ class CategoriaForm(forms.ModelForm):
 class ProveedorForm(forms.ModelForm):
 
     class Meta:
-
         model = Proveedor
 
         fields = [
@@ -301,28 +618,105 @@ class ProveedorForm(forms.ModelForm):
 
             'nombre': forms.TextInput(
                 attrs={
-                    'class': 'form-control'
+                    'class': 'form-control',
+                    'placeholder': 'Nombre del proveedor',
+                    'pattern': (
+                        r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+$'
+                    ),
+                    'title': (
+                        'Solo se permiten letras, números '
+                        'y espacios.'
+                    ),
                 }
             ),
 
             'telefono': forms.TextInput(
                 attrs={
-                    'class': 'form-control'
+                    'class': 'form-control',
+                    'placeholder': '3001234567',
+                    'pattern': r'^[0-9]+$',
+                    'inputmode': 'numeric',
+                    'title': (
+                        'El teléfono solo puede contener '
+                        'números.'
+                    ),
                 }
             ),
 
             'correo': forms.EmailInput(
                 attrs={
-                    'class': 'form-control'
+                    'class': 'form-control',
+                    'placeholder': 'correo@ejemplo.com',
                 }
             ),
 
             'direccion': forms.TextInput(
                 attrs={
-                    'class': 'form-control'
+                    'class': 'form-control',
+                    'placeholder': 'Calle 10 # 20-30',
+                    'pattern': (
+                        r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s#./-]+$'
+                    ),
+                    'title': (
+                        'La dirección puede contener letras, '
+                        'números, espacios y # . / -'
+                    ),
                 }
             ),
         }
+
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
+
+        return validar_texto(
+            nombre,
+            'nombre del proveedor'
+        )
+
+    def clean_telefono(self):
+        telefono = self.cleaned_data.get(
+            'telefono'
+        )
+
+        if not telefono:
+            raise forms.ValidationError(
+                'El teléfono es obligatorio.'
+            )
+
+        telefono = telefono.strip()
+
+        if not telefono.isdigit():
+            raise forms.ValidationError(
+                'El teléfono solo puede contener números.'
+            )
+
+        if len(telefono) < 7 or len(telefono) > 15:
+            raise forms.ValidationError(
+                'El teléfono debe tener entre 7 y 15 números.'
+            )
+
+        return telefono
+
+    def clean_direccion(self):
+        direccion = self.cleaned_data.get(
+            'direccion'
+        )
+
+        if not direccion:
+            return direccion
+
+        direccion = direccion.strip()
+
+        if not re.fullmatch(
+            r'[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s#./-]+',
+            direccion
+        ):
+            raise forms.ValidationError(
+                'La dirección contiene caracteres '
+                'no permitidos.'
+            )
+
+        return direccion
 
 
 # ==========================================================
@@ -332,7 +726,6 @@ class ProveedorForm(forms.ModelForm):
 class AdquisicionForm(forms.ModelForm):
 
     class Meta:
-
         model = Adquisicion
 
         fields = [
@@ -361,14 +754,16 @@ class AdquisicionForm(forms.ModelForm):
             'cantidad': forms.NumberInput(
                 attrs={
                     'class': 'form-control',
-                    'min': '1'
+                    'min': '1',
+                    'step': '1'
                 }
             ),
 
             'cantidad_venta': forms.NumberInput(
                 attrs={
                     'class': 'form-control',
-                    'min': '0'
+                    'min': '0',
+                    'step': '1'
                 }
             ),
 
@@ -388,15 +783,61 @@ class AdquisicionForm(forms.ModelForm):
                 }
             ),
         }
-        
+
+    def clean_cantidad(self):
+        cantidad = self.cleaned_data.get(
+            'cantidad'
+        )
+
+        if cantidad is None or cantidad < 1:
+            raise forms.ValidationError(
+                'La cantidad debe ser mínimo 1.'
+            )
+
+        return cantidad
+
+    def clean_cantidad_venta(self):
+        cantidad = self.cleaned_data.get(
+            'cantidad_venta'
+        )
+
+        if cantidad is not None and cantidad < 0:
+            raise forms.ValidationError(
+                'La cantidad de venta no puede ser negativa.'
+            )
+
+        return cantidad
+
+    def clean_precio_compra(self):
+        precio = self.cleaned_data.get(
+            'precio_compra'
+        )
+
+        if precio is not None and precio < 0:
+            raise forms.ValidationError(
+                'El precio de compra no puede ser negativo.'
+            )
+
+        return precio
+
+    def clean_total(self):
+        total = self.cleaned_data.get('total')
+
+        if total is not None and total < 0:
+            raise forms.ValidationError(
+                'El total no puede ser negativo.'
+            )
+
+        return total
+
+
 # ==========================================================
-# 🏷️ FORMULARIO MARCA
+# FORMULARIO MARCA
 # ==========================================================
 
 class MarcaForm(forms.ModelForm):
 
     class Meta:
-
         model = Marca
 
         fields = [
@@ -411,6 +852,13 @@ class MarcaForm(forms.ModelForm):
                 attrs={
                     'class': 'form-control',
                     'placeholder': 'Nombre de la marca',
+                    'pattern': (
+                        r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+$'
+                    ),
+                    'title': (
+                        'El nombre solo puede contener '
+                        'letras, números y espacios.'
+                    ),
                 }
             ),
 
@@ -419,6 +867,13 @@ class MarcaForm(forms.ModelForm):
                     'class': 'form-control',
                     'placeholder': 'Descripción de la marca',
                     'rows': 3,
+                    'pattern': (
+                        r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+$'
+                    ),
+                    'title': (
+                        'La descripción solo puede contener '
+                        'letras, números y espacios.'
+                    ),
                 }
             ),
 
@@ -429,11 +884,14 @@ class MarcaForm(forms.ModelForm):
             ),
         }
 
-    def clean_nombre(self):
+        labels = {
+            'nombre': 'Nombre de la Marca',
+            'descripcion': 'Descripción',
+            'estado': 'Activo',
+        }
 
-        nombre = self.cleaned_data.get(
-            'nombre'
-        )
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
 
         if not nombre:
             raise forms.ValidationError(
@@ -447,5 +905,23 @@ class MarcaForm(forms.ModelForm):
                 'El nombre debe tener al menos 2 caracteres.'
             )
 
+        if not re.fullmatch(
+            r'[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+',
+            nombre
+        ):
+            raise forms.ValidationError(
+                'El nombre solo puede contener '
+                'letras, números y espacios.'
+            )
+
         return nombre
 
+    def clean_descripcion(self):
+        descripcion = self.cleaned_data.get(
+            'descripcion'
+        )
+
+        return validar_descripcion(
+            descripcion,
+            'descripción'
+        )

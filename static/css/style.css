@@ -1,5 +1,5 @@
-/* ── COLORES ── */
-.color-champaña { background-color: #C9A25C !important; }
+/* ── PALETA DE COLORES ── */
+.color-azul de marca { background-color: #22AED1 !important; }
 .color-azul  { background-color: #22aed1 !important; }
 .color-azuloscuro   { background-color: #2b50aa !important; }
 .color-negro{ background-color: #170212!important; }
@@ -18,7 +18,7 @@
   border-radius: 10px;
   margin: 10px 15px;
   background: rgba(255, 255, 255, 0.05);
-  color: #C9A25C;
+  color: #22AED1;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -33,13 +33,13 @@
 }
 
 body.theme-light .theme-switch-item {
-  background: #C9A25C;
+  background: #22AED1;
   border-color: rgba(141, 129, 140, 0.3);
   color: #030301;
 }
 
 body.theme-light .theme-switch-item i {
-  color: #c47a2c;
+  color: #126782;
 }
 
 /* ── FONDO GENERAL ── */
@@ -103,7 +103,7 @@ header a { transition: .3s; }
 /* ── PRODUCTOS ── */
 .color-negro-bg { background: #111; }
 .logo { font-weight: bold; font-size: 24px; }
-.titulo-productos { color: #c59d5f; font-weight: bold; }
+.titulo-productos { color: #22AED1; font-weight: bold; }
 
 /* ── CARDS ── */
 .card-body {
@@ -123,14 +123,14 @@ header a { transition: .3s; }
 .registro-card .form-control:focus {
   background: #111 !important;
   color: white !important;
-  border-color: #c47a2c;
+  border-color: #126782;
   box-shadow: 0 0 0 .2rem rgba(196,122,44,.25);
 }
 .form-check-label { color: #ccc; }
 
 /* ── BOTONES ── */
-.btn-warning            { background: #c47a2c; border: none; }
-.btn-warning:hover      { background: #a8621f; }
+.btn-warning            { background: #126782; border: none; }
+.btn-warning:hover      { background: #0B526B; }
 
 .custom-btn {
   background-color: #22aed1 !important;
@@ -160,7 +160,7 @@ header a { transition: .3s; }
   --bg-card-dark: rgba(20, 20, 20, 0.75);       
   --bg-input-dark: rgba(255, 255, 255, 0.04);  
   --bg-input-hover: rgba(255, 255, 255, 0.08); 
-  --color-champaña: #C9A25C;                    
+  --color-azul de marca: #22AED1;                    
   --accent-azul: #22aed1;                       
   --accent-oscuro: #2b50aa;                     
   --text-muted: #b0a8b0;                        
@@ -169,10 +169,10 @@ header a { transition: .3s; }
 
 /* ── modo claro adaptativo para el flujo de reservas ── */
 body.theme-light .booking-wrap {
-  --bg-card-dark: #C9A25C;                       /* Fondo champaña de tu paleta */
+  --bg-card-dark: #22AED1;                       /* Fondo azul de marca de tu paleta */
   --bg-input-dark: #ffffff;                      /* Cajas internas blancas limpias */
   --bg-input-hover: rgba(34, 174, 209, 0.08); 
-  --color-champaña: #030301;                    /* Los títulos pasan a negro */
+  --color-azul de marca: #030301;                    /* Los títulos pasan a negro */
   --text-muted: #8d818c;                        /* Gris de tu paleta clara */
 }
 
@@ -206,14 +206,14 @@ body.theme-light .booking-wrap .choice-card-dark {
 .booking-wrap .choice-card-dark:hover {
   background: var(--bg-input-hover) !important;
   border-color: rgba(34, 174, 209, 0.4) !important;
-  color: var(--color-champaña) !important;
+  color: var(--color-azul de marca) !important;
 }
 
 /* ── estado seleccionado (radios ocultos) ── */
 .booking-wrap .btn-check:checked + .choice-card-dark {
   background: rgba(34, 174, 209, 0.15) !important;
   border-color: var(--accent-azul) !important;
-  color: var(--color-champaña) !important;
+  color: var(--color-azul de marca) !important;
   box-shadow: 0 4px 15px rgba(34, 174, 209, 0.15) !important;
 }
 body.theme-light .booking-wrap .btn-check:checked + .choice-card-dark {
@@ -223,7 +223,7 @@ body.theme-light .booking-wrap .btn-check:checked + .choice-card-dark {
 .booking-wrap .btn-check:checked + .choice-card-dark span,
 .booking-wrap .btn-check:checked + .choice-card-dark div,
 .booking-wrap .btn-check:checked + .choice-card-dark i {
-  color: var(--color-champaña) !important;
+  color: var(--color-azul de marca) !important;
 }
 
 /* ── campos de entrada de texto ── */
@@ -268,7 +268,7 @@ body.theme-light .booking-wrap .form-control-barber::placeholder {
 .booking-wrap .alert-barber {
   background: rgba(255, 255, 255, 0.03) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  color: var(--color-champaña) !important;
+  color: var(--color-azul de marca) !important;
 }
 body.theme-light .booking-wrap .alert-barber {
   background: rgba(0, 0, 0, 0.03) !important;
@@ -287,7 +287,7 @@ body.theme-light #turnos-container::-webkit-scrollbar-thumb { background: rgba(0
 
 /* Clases semánticas adaptativas para textos de reservas */
 .booking-wrap .text-accent { color: var(--accent-azul) !important; }
-.booking-wrap .text-brand-title { color: var(--color-champaña) !important; }
+.booking-wrap .text-brand-title { color: var(--color-azul de marca) !important; }
 .booking-wrap .text-custom-muted { color: var(--text-muted) !important; }
 .booking-wrap .text-time-date { color: #ffffff !important; }
 body.theme-light .booking-wrap .text-time-date { color: #030301 !important; }
@@ -367,7 +367,7 @@ html {
 }
 
 .brand-sub {
-    color: #f5a623;
+    color: #22AED1;
     letter-spacing: 0.2em;
 }
 
@@ -420,7 +420,7 @@ html {
 }
 
 .cb-input:focus {
-    border-color: #f5a623;
+    border-color: #22AED1;
     box-shadow: 0 0 8px rgba(245,166,35,.2);
 }
 
@@ -428,10 +428,6 @@ select.cb-input {
     appearance: none;
 }
 
-.cb-input option {
-    color: #212529;
-    background-color: #fff;
-}
 /* =========================
    OJO CONTRASEÑA
 ========================= */
@@ -441,14 +437,14 @@ select.cb-input {
 }
 
 .input-eye:hover {
-    color: #f5a623;
+    color: #22AED1;
 }
 
 /* =========================
    BOTÓN
 ========================= */
 .btn-auth {
-    background: #f5a623;
+    background: #22AED1;
     border: none;
     border-radius: 8px;
     font-family: 'Bebas Neue', sans-serif;
@@ -458,7 +454,7 @@ select.cb-input {
 }
 
 .btn-auth:hover {
-    background: #f7b640;
+    background: #39C5E6;
     transform: translateY(-2px);
 }
 
@@ -473,8 +469,8 @@ select.cb-input {
 .success-icon {
     width: 70px;
     height: 70px;
-    border: 2px solid #f5a623;
-    color: #f5a623;
+    border: 2px solid #22AED1;
+    color: #22AED1;
     font-size: 2rem;
     box-shadow: 0 0 20px rgba(245,166,35,.2);
 }
@@ -494,12 +490,12 @@ select.cb-input {
 ========================= */
 .aux-link,
 .forgot-link {
-    color: #f5a623;
+    color: #22AED1;
     text-decoration: none;
 }
 
 .forgot-link:hover {
-    color: #f7b640;
+    color: #39C5E6;
 }
 /* =========================
    Botones lista de usuarios
@@ -508,7 +504,7 @@ select.cb-input {
 .filtro-rol:hover { background: transparent; }
 
 /* ==========================================================================
-   TEMA CLARO (PALETA DE COLORES RESTRINGIDA)
+   TEMA CLARO (PALETA DE PALETA DE COLORES RESTRINGIDA)
    ========================================================================== */
 
 /* Fondo general de la página en claro (Fondo Blanco Estático) */
@@ -613,9 +609,9 @@ body.theme-dark .dt-paging .pagination .page-link:hover,
 body.theme-dark .dataTables_paginate .pagination .page-link:hover,
 .dt-paging .pagination .page-link:hover,
 .dataTables_paginate .pagination .page-link:hover {
-  background-color: #c47a2c !important; /* Naranja de la paleta */
+  background-color: #126782 !important; /* Azul profundo de la paleta */
   color: #ffffff !important;
-  border-color: #c47a2c !important;
+  border-color: #126782 !important;
 }
 
 body.theme-dark .dt-paging .pagination .page-item.active .page-link,
@@ -635,7 +631,7 @@ body.theme-dark .dt-paging .pagination .page-item.disabled .page-link,
 body.theme-dark .dataTables_paginate .pagination .page-item.disabled .page-link,
 .dt-paging .pagination .page-item.disabled .page-link,
 .dataTables_paginate .pagination .page-item.disabled .page-link {
-  background-color: #C9A25C !important;
+  background-color: #22AED1 !important;
   color: #22aed1 !important;
   border-color: rgba(255, 255, 255, 0.05) !important;
   opacity: 0.6;
@@ -777,13 +773,13 @@ body.theme-light .dataTables_length label {
   border: none;
 }
 .dt-btn-print {
-  background-color: #c47a2c !important;
+  background-color: #126782 !important;
   color: white !important;
   border: none;
 }
 .dt-btn-excel:hover { background-color: #146c43 !important; }
 .dt-btn-pdf:hover { background-color: #b02a37 !important; }
-.dt-btn-print:hover { background-color: #a8621f !important; }
+.dt-btn-print:hover { background-color: #0B526B !important; }
 
 /* Botones y Links en light mode */
 body.theme-light header,
@@ -820,7 +816,7 @@ body.theme-light .accordion-button {
 
 body.theme-light .accordion-button:not(.collapsed) {
   background-color: rgba(34, 174, 209, 0.1) !important; /* Azul paleta */
-  color: #c47a2c !important; /* Naranja paleta */
+  color: #126782 !important; /* Naranja paleta */
 }
 
 body.theme-light .list-group-item {
@@ -862,7 +858,7 @@ body.theme-light footer.color-negro-bg {
 body.theme-light footer h5.text-warning,
 body.theme-light footer i.text-warning,
 body.theme-light footer p i.text-warning {
-  color: #c47a2c !important;
+  color: #126782 !important;
 }
 
 /* Reducir grosor y color de líneas en el Aside (modo claro) */
@@ -907,11 +903,11 @@ body.theme-light .registro-card .form-control:focus {
 body.theme-light .form-check-label { color: #343a40 !important; } /* Darker label */
 
 body.theme-light .btn-warning {
-  background: #c47a2c !important;
+  background: #126782 !important;
   border: none !important;
   color: #ffffff !important; /* White text on orange */
 }
-body.theme-light .btn-warning:hover { background: #a8621f !important; }
+body.theme-light .btn-warning:hover { background: #0B526B !important; }
 
 body.theme-light .custom-btn {
   background-color: #22aed1 !important;
@@ -1107,24 +1103,24 @@ body.theme-light .flatpickr-time .numInputWrapper span.arrowDown:after {
 /* For now, the body.theme-light rules will take precedence */
 
 /* ── DATATABLES EN CONTENEDOR CHAMPAÑA ── */
-body.theme-dark .color-champaña .dt-info,
-body.theme-dark .color-champaña .dataTables_info,
-body.theme-dark .color-champaña .dt-search label,
-body.theme-dark .color-champaña .dataTables_filter label,
-body.theme-dark .color-champaña .dt-length label,
-body.theme-dark .color-champaña .dataTables_length label,
-body.theme-light .color-champaña .dt-info,
-body.theme-light .color-champaña .dataTables_info,
-body.theme-light .color-champaña .dt-search label,
-body.theme-light .color-champaña .dataTables_filter label,
-body.theme-light .color-champaña .dt-length label,
-body.theme-light .color-champaña .dataTables_length label,
-.color-champaña .dt-info,
-.color-champaña .dataTables_info,
-.color-champaña .dt-search label,
-.color-champaña .dataTables_filter label,
-.color-champaña .dt-length label,
-.color-champaña .dataTables_length label {
+body.theme-dark .color-azul de marca .dt-info,
+body.theme-dark .color-azul de marca .dataTables_info,
+body.theme-dark .color-azul de marca .dt-search label,
+body.theme-dark .color-azul de marca .dataTables_filter label,
+body.theme-dark .color-azul de marca .dt-length label,
+body.theme-dark .color-azul de marca .dataTables_length label,
+body.theme-light .color-azul de marca .dt-info,
+body.theme-light .color-azul de marca .dataTables_info,
+body.theme-light .color-azul de marca .dt-search label,
+body.theme-light .color-azul de marca .dataTables_filter label,
+body.theme-light .color-azul de marca .dt-length label,
+body.theme-light .color-azul de marca .dataTables_length label,
+.color-azul de marca .dt-info,
+.color-azul de marca .dataTables_info,
+.color-azul de marca .dt-search label,
+.color-azul de marca .dataTables_filter label,
+.color-azul de marca .dt-length label,
+.color-azul de marca .dataTables_length label {
   color: #030301 !important;
 }
 
@@ -1512,7 +1508,7 @@ body.theme-light .chat-input:focus {
 .usuarios-lista-usuarios__div-1 { width:56px;height:56px;background-color:#22aed1; }
 .usuarios-lista-usuarios__span-2 { color:#030301; }
 .usuarios-lista-usuarios__h3-3 { color:#030301; }
-.usuarios-lista-usuarios__div-4 { width:56px;height:56px;background-color:#c47a2c; }
+.usuarios-lista-usuarios__div-4 { width:56px;height:56px;background-color:#126782; }
 .usuarios-lista-usuarios__span-5 { color:#030301; }
 .usuarios-lista-usuarios__h3-6 { color:#030301; }
 .usuarios-lista-usuarios__div-7 { width:56px;height:56px;background-color:#28a745; }
@@ -1532,25 +1528,25 @@ body.theme-light .chat-input:focus {
 .usuarios-crear-usuario__div-1 { max-width: 650px; margin: 0 auto; }
 .usuarios-recuperar__div-1 { background-color: rgba(220, 53, 69, 0.2); border: 1px solid #dc3545; color: #f8d7da; border-radius: 6px; }
 .private-perfil__div-1 { background: #ffffff; }
-.private-perfil__div-2 { height: 12px; background: linear-gradient(90deg, #F1E9DB, #e1d5c1); }
+.private-perfil__div-2 { height: 12px; background: linear-gradient(90deg, #EAF7FA, #D5EEF3); }
 .private-perfil__i-5 { font-size: 2.5rem }
 .private-perfil__small-7 { font-size: 0.75rem; }
 .private-perfil__small-8 { font-size: 0.75rem; }
 .private-perfil__small-9 { font-size: 0.75rem; }
 .private-perfil__small-10 { font-size: 0.75rem; }
 .private-perfil__small-11 { font-size: 0.75rem; }
-.private-perfil__button-12 { background: #F1E9DB; color: #4a3f35; }
-.private-perfil__button-14 { background: #F1E9DB; color: #4a3f35; }
-.private-perfil__i-15 { color: #f0a500 }
-.private-perfil__button-16 { background: #F1E9DB; color: #4a3f35; }
+.private-perfil__button-12 { background: #EAF7FA; color: #4a3f35; }
+.private-perfil__button-14 { background: #EAF7FA; color: #4a3f35; }
+.private-perfil__i-15 { color: #22AED1 }
+.private-perfil__button-16 { background: #EAF7FA; color: #4a3f35; }
 .private-perfil__i-17 { color: #00b4d8 }
-.private-perfil__button-18 { background: #F1E9DB; color: #4a3f35; }
+.private-perfil__button-18 { background: #EAF7FA; color: #4a3f35; }
 .private-perfil__div-20 { width: 420px }
 .private-perfil__div-23 { width: 420px }
-.private-perfil__div-24 { background: #f0a500 }
-.private-perfil__button-25 { background: #f0a500 }
+.private-perfil__div-24 { background: #22AED1 }
+.private-perfil__button-25 { background: #22AED1 }
 .private-perfil__div-26 { width: 480px }
-.private-perfil__div-27 { background: #C9A25C }
+.private-perfil__div-27 { background: #22AED1 }
 .private-perfil__i-28 { font-size: 3rem }
 .private-perfil__div-29 { width: 800px }
 .private-perfil__i-32 { font-size: 3rem }
@@ -1570,7 +1566,7 @@ body.theme-light .chat-input:focus {
 .partials-header__span-1 { display:none; }
 .partials-header__li-2 { background: rgba(255,255,255,0.03); }
 .partials-header__span-3 { font-size:0.65rem; letter-spacing:0.5px; }
-.partials-header__a-4 { color:#c47a2c !important; }
+.partials-header__a-4 { color:#126782 !important; }
 .partials-header__a-5 { color:rgba(var(--bs-info-rgb),1)!important; }
 .partials-header__a-6 { cursor: pointer; }
 .partials-header-admin__li-1 { background: rgba(255, 255, 255, 0.03) }
@@ -1612,11 +1608,11 @@ body.theme-light .chat-input:focus {
 .templates-index-clientes__span-18 { transition: all 0.3s ease }
 .templates-index-clientes__button-19 { z-index: 3; width: 10% }
 .templates-index-clientes__span-20 { transition: all 0.3s ease }
-.templates-index-clientes__h2-21 { color: white; font-family: quot;Arialquot sans-serif }
-.templates-index-clientes__div-22 { width: 65px; height: 65px; border 2px solid #C9A25C }
-.templates-index-clientes__i-23 { color: #C9A25C }
-.templates-index-clientes__h5-24 { color: black; font-family: quot;Arialquot  ;sans-serif }
-.templates-index-clientes__div-25 { color: #C9A25C }
+.templates-index-clientes__h2-21 { color: white; font-family: quot;Arialquot;, sans-serif }
+.templates-index-clientes__div-22 { width: 65px; height: 65px; border: 2px solid #22AED1 }
+.templates-index-clientes__i-23 { color: #22AED1 }
+.templates-index-clientes__h5-24 { color: black; font-family: quot;Arialquot;, sans-serif }
+.templates-index-clientes__div-25 { color: #22AED1 }
 .templates-index-clientes__p-26 { color: black; font-family: quot;Arialquot; sans-serif }
 .templates-index-clientes__h2-27 { font-family: quot Arialquo  sans-serif }
 .templates-index-clientes__div-28 { max-height: 450px; min-height: 300px }
@@ -1636,7 +1632,7 @@ body.theme-light .chat-input:focus {
 .templates-index-admin__small-13 { font-size: 0.75rem; }
 .templates-index-admin__span-14 { font-size: 0.8rem; }
 .templates-index-admin__div-15 { background: rgba(20, 24, 32, 0.85); border: 1px solid rgba(255, 255, 255, 0.07) !important; }
-.templates-index-admin__div-16 { background: rgba(255, 193, 7, 0.07); border: 1px solid rgba(255, 193, 7, 0.15); }
+.templates-index-admin__div-16 { background: rgba(37, 99, 235, 0.07); border: 1px solid rgba(37, 99, 235, 0.15); }
 .templates-index-admin__div-17 { width: 40px; height: 40px; }
 .templates-index-admin__small-18 { font-size: 0.75rem; }
 .templates-index-admin__span-19 { font-size: 0.85rem; }
@@ -1651,7 +1647,7 @@ body.theme-light .chat-input:focus {
 .templates-base-clientes__div-2 { height: 300px; overflow-y: auto; }
 .templates-base-clientes__button-3 { bottom: 20px; right: 20px; z-index: 9998; border-radius: 50%; width: 60px; height: 60px; border: none; }
 .templates-base-clientes__div-4 { background-color:#2b50aa; color:white; max-width:80%; }
-.templates-base-clientes__div-5 { background-color:#C9A25C; color:black; max-width:80%; font-weight:bold; }
+.templates-base-clientes__div-5 { background-color:#22AED1; color:black; max-width:80%; font-weight:bold; }
 .soporte-ayuda-home__p-1 { max-width: 600px; }
 .soporte-ayuda-home__div-2 { top: 2rem; }
 .servicios-servicios__div-1 { width: 18rem; }
@@ -1678,15 +1674,15 @@ body.theme-light .chat-input:focus {
 .servicios-carrusel__div-2 { width: 50px; height: 50px; }
 .servicios-calificacion__div-1 { width: 18rem; }
 .servicios-calificacion__img-2 { height: 180px; object-fit: cover; }
-.reservas-ver-agenda__div-1 { background-color: #f4ebd0; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.reservas-ver-agenda__div-1 { background-color: #EAF7FA; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .reservas-ver-agenda__div-2 { width: 35px; height: 35px; flex-shrink: 0; }
 .reservas-ver-agenda__span-3 { letter-spacing: 0.5px; }
 .reservas-ver-agenda__h2-4 { font-size: 1.8rem; }
-.reservas-ver-agenda__div-5 { background-color: #f4ebd0; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.reservas-ver-agenda__div-5 { background-color: #EAF7FA; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .reservas-ver-agenda__div-6 { width: 35px; height: 35px; flex-shrink: 0; }
 .reservas-ver-agenda__span-7 { letter-spacing: 0.5px; }
 .reservas-ver-agenda__h2-8 { font-size: 1.8rem; }
-.reservas-ver-agenda__div-9 { background-color: #f4ebd0; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.reservas-ver-agenda__div-9 { background-color: #EAF7FA; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .reservas-ver-agenda__div-10 { width: 35px; height: 35px; flex-shrink: 0; }
 .reservas-ver-agenda__span-11 { letter-spacing: 0.5px; }
 .reservas-ver-agenda__h2-12 { font-size: 1.8rem; }
@@ -1708,7 +1704,7 @@ body.theme-light .chat-input:focus {
 .reservas-reservas__span-4 { font-family: 'Oswald', sans-serif; letter-spacing: 3px; font-size: .75rem; }
 .reservas-reservas__h2-5 { font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; letter-spacing: 2px; }
 .reservas-reservas__p-6 { font-size: .95rem; }
-.reservas-reservas__div-7 { background: rgba(34, 174, 209, 0.08); border: 1px solid rgba(34, 174, 209, 0.3); color: var(--color-champaña); }
+.reservas-reservas__div-7 { background: rgba(34, 174, 209, 0.08); border: 1px solid rgba(34, 174, 209, 0.3); color: var(--color-azul de marca); }
 .reservas-reservas__i-8 { color: var(--accent-azul); }
 .reservas-reservas__a-9 { font-size: 0.75rem }
 .reservas-reservas__label-10 { font-family: 'Oswald', sans-serif; letter-spacing: 1px; font-size: 1.05rem; }
@@ -1769,7 +1765,7 @@ body.theme-light .chat-input:focus {
 .productos-productos-admin__div-5 { width: 50px; height: 50px; }
 .productos-historial-ventas__div-1 { width: 56px; height: 56px; }
 .productos-editar-bitacora__div-1 { max-width: 600px }
-.productos-editar-bitacora__i-2 { color: #b48b64 }
+.productos-editar-bitacora__i-2 { color: #126782 }
 .productos-editar-producto__img-1 { max-width:180px; }
 .productos-confirmar-eliminar__div-1 { background-color: #1a1d20; min-height: 100vh; }
 .productos-confirmar-eliminar__div-2 { max-width: 500px; }
@@ -1887,12 +1883,732 @@ body.theme-light .chat-input:focus {
   border-color: rgba(34, 174, 209, 0.3) !important;
 }
 
-#servicios animacion al apasar el cursor 
+/* ==========================================================================
+   TARJETAS DE ESTADÍSTICAS - ESTILO DORADO ELEGANTE (referencia imagen)
+   ========================================================================== */
 
-.servicios-servicios__div-1 {
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+/* Fondo oscuro con borde sutil azul premium, en vez de fondo azul premium sólido */
+
+
+/* ==========================================================================
+   CHICHA BARBER STUDIO - PANEL ADMIN
+   DISEÑO FINAL AZUL PREMIUM
+   Inspirado en la referencia: azul profesional + azul profundo + negro
+   ========================================================================== */
+
+:root {
+  --chicha-blue: #2563EB;
+  --chicha-blue-light: #3B82F6;
+  --chicha-blue-deep: #1E40AF;
+  --chicha-blue-dark: #0B1F3A;
+  --chicha-surface: #0D1B2A;
+  --chicha-surface-2: #101F33;
+  --chicha-border: rgba(37, 99, 235, 0.55);
+  --chicha-text: #F8FAFC;
+  --chicha-muted: #94A3B8;
 }
 
-.servicios-servicios__div-1:hover {
-    transform: translateY(-10px);
+/* --------------------------------------------------------------------------
+   FONDO Y ESTRUCTURA GENERAL
+   -------------------------------------------------------------------------- */
+
+body {
+  background: #050D18 !important;
+  color: var(--chicha-text);
+}
+
+.back {
+  background-image:
+    linear-gradient(rgba(3, 10, 20, 0.78), rgba(3, 10, 20, 0.78)),
+    url('../img/image.png') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
+}
+
+/* --------------------------------------------------------------------------
+   HEADER SUPERIOR
+   Esto recupera el título "Administración de Chicha Barber Studio"
+   y evita que quede oscuro/invisible sobre el fondo.
+   -------------------------------------------------------------------------- */
+
+header,
+.navbar,
+.partials-header-admin,
+.admin-header,
+.top-header {
+  background: linear-gradient(
+    90deg,
+    #071525 0%,
+    #0B1F3A 55%,
+    #08182B 100%
+  ) !important;
+  color: var(--chicha-text) !important;
+  border-bottom: 1px solid rgba(37, 99, 235, 0.30) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28) !important;
+  position: relative;
+  z-index: 1030;
+}
+
+/* Título superior */
+header h1,
+header h2,
+header .navbar-brand,
+header .brand-title,
+.navbar h1,
+.navbar h2,
+.navbar .navbar-brand,
+.partials-header-admin h1,
+.partials-header-admin h2,
+.partials-header-admin .navbar-brand,
+.partials-header-admin__a-3 {
+  color: #8CB7FF !important;
+  font-weight: 700 !important;
+  text-shadow: 0 0 18px rgba(37, 99, 235, 0.18);
+}
+
+/* Si el título está dentro de un elemento de texto */
+header .text-dark,
+.navbar .text-dark,
+.partials-header-admin .text-dark {
+  color: #8CB7FF !important;
+}
+
+/* Textos y enlaces del header */
+header a,
+.navbar a,
+.partials-header-admin a {
+  color: #F8FAFC !important;
+}
+
+header a:hover,
+.navbar a:hover,
+.partials-header-admin a:hover {
+  color: #60A5FA !important;
+}
+
+/* Botón de usuario y campanita */
+header .btn,
+.navbar .btn,
+.partials-header-admin .btn {
+  transition: all 0.2s ease;
+}
+
+header .btn-primary,
+.navbar .btn-primary,
+.partials-header-admin .btn-primary {
+  background: var(--chicha-blue) !important;
+  border-color: var(--chicha-blue) !important;
+  color: #fff !important;
+}
+
+header .btn-primary:hover,
+.navbar .btn-primary:hover,
+.partials-header-admin .btn-primary:hover {
+  background: var(--chicha-blue-light) !important;
+  border-color: var(--chicha-blue-light) !important;
+}
+
+/* --------------------------------------------------------------------------
+   SIDEBAR
+   -------------------------------------------------------------------------- */
+
+.admin-aside,
+aside.admin-aside,
+.partials-aside {
+  background: linear-gradient(
+    180deg,
+    #071525 0%,
+    #091827 50%,
+    #050D18 100%
+  ) !important;
+  border-right: 1px solid rgba(37, 99, 235, 0.22) !important;
+  color: var(--chicha-text) !important;
+}
+
+.admin-aside a,
+aside.admin-aside a,
+.partials-aside a {
+  color: #E5E7EB !important;
+  transition: all 0.2s ease;
+}
+
+.admin-aside a:hover,
+aside.admin-aside a:hover,
+.partials-aside a:hover {
+  background: rgba(37, 99, 235, 0.13) !important;
+  color: #60A5FA !important;
+}
+
+/* Dashboard activo */
+.nav-item-active-dorado,
+.partials-aside__a-2.active,
+.partials-aside__a-2[aria-current="page"] {
+  background: linear-gradient(
+    135deg,
+    #2563EB 0%,
+    #1E40AF 100%
+  ) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(96, 165, 250, 0.35) !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 5px 16px rgba(37, 99, 235, 0.24) !important;
+}
+
+.partials-aside__a-2:hover {
+  background: rgba(37, 99, 235, 0.15) !important;
+  color: #60A5FA !important;
+  border-color: rgba(37, 99, 235, 0.30) !important;
+}
+
+/* --------------------------------------------------------------------------
+   CONTENEDOR PRINCIPAL DEL PANEL
+   -------------------------------------------------------------------------- */
+
+.admin-content,
+.panel-content,
+.dashboard-content,
+main {
+  color: var(--chicha-text);
+}
+
+/* --------------------------------------------------------------------------
+   BLOQUE "PANEL DE ADMINISTRACIÓN / BIENVENIDO"
+   -------------------------------------------------------------------------- */
+
+.templates-index-admin__div-1 {
+  background: linear-gradient(
+    135deg,
+    rgba(10, 24, 42, 0.96) 0%,
+    rgba(8, 22, 39, 0.94) 100%
+  ) !important;
+  border: 1px solid rgba(96, 165, 250, 0.30) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35) !important;
+  backdrop-filter: blur(12px);
+}
+
+/* "PANEL DE ADMINISTRACIÓN" */
+.templates-index-admin__span-2 {
+  color: #60A5FA !important;
+  letter-spacing: 1.7px !important;
+  font-weight: 700 !important;
+}
+
+/* Título Bienvenido */
+.templates-index-admin__div-1 h1,
+.templates-index-admin__div-1 h2,
+.templates-index-admin__div-1 h3,
+.templates-index-admin__div-1 .display-5 {
+  color: #F8FAFC !important;
+  font-weight: 800 !important;
+}
+
+/* Descripción */
+.templates-index-admin__div-1 p {
+  color: #CBD5E1 !important;
+}
+
+/* --------------------------------------------------------------------------
+   TARJETAS DE ESTADÍSTICAS
+   -------------------------------------------------------------------------- */
+
+/* Se conservan los nombres antiguos de las clases para no modificar HTML. */
+.stat-card-dorado {
+  background: linear-gradient(
+    145deg,
+    #0D1B2A 0%,
+    #0A1626 100%
+  ) !important;
+  border: 1px solid rgba(37, 99, 235, 0.62) !important;
+  border-radius: 8px !important;
+  color: #F8FAFC !important;
+  transition: all 0.25s ease !important;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.22) !important;
+}
+
+.stat-card-dorado:hover {
+  transform: translateY(-3px) !important;
+  border-color: #3B82F6 !important;
+  box-shadow: 0 10px 28px rgba(37, 99, 235, 0.20) !important;
+}
+
+.stat-icon-dorado {
+  background: linear-gradient(
+    145deg,
+    #2563EB 0%,
+    #1E40AF 100%
+  ) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(147, 197, 253, 0.30) !important;
+  box-shadow: 0 5px 15px rgba(37, 99, 235, 0.25) !important;
+}
+
+.stat-icon-dorado i {
+  color: #FFFFFF !important;
+}
+
+.stat-card-dorado .stat-label {
+  color: #F8FAFC !important;
+  font-weight: 600 !important;
+}
+
+.stat-card-dorado .stat-value {
+  color: #3B82F6 !important;
+  font-weight: 800 !important;
+}
+
+/* También cubre posibles nombres de clases usados durante el cambio */
+.stat-card-azul-premium {
+  background: linear-gradient(145deg, #0D1B2A, #0A1626) !important;
+  border: 1px solid rgba(37, 99, 235, 0.62) !important;
+  color: #F8FAFC !important;
+}
+
+.stat-icon-azul-premium {
+  background: linear-gradient(145deg, #2563EB, #1E40AF) !important;
+  color: #FFFFFF !important;
+}
+
+/* --------------------------------------------------------------------------
+   BOTONES PRINCIPALES
+   -------------------------------------------------------------------------- */
+
+.btn-dorado,
+.btn-azul-premium {
+  background: linear-gradient(
+    135deg,
+    #2563EB 0%,
+    #1E40AF 100%
+  ) !important;
+  border: 1px solid rgba(96, 165, 250, 0.35) !important;
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 5px 16px rgba(37, 99, 235, 0.22) !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-dorado:hover,
+.btn-azul-premium:hover {
+  background: linear-gradient(
+    135deg,
+    #3B82F6 0%,
+    #2563EB 100%
+  ) !important;
+  color: #FFFFFF !important;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.30) !important;
+}
+
+.btn-outline-dorado,
+.btn-outline-azul-premium {
+  background: transparent !important;
+  border: 1px solid #3B82F6 !important;
+  color: #60A5FA !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+}
+
+.btn-outline-dorado:hover,
+.btn-outline-azul-premium:hover {
+  background: rgba(37, 99, 235, 0.12) !important;
+  color: #93C5FD !important;
+  border-color: #60A5FA !important;
+}
+
+/* --------------------------------------------------------------------------
+   BOTÓN "VER AGENDA"
+   -------------------------------------------------------------------------- */
+
+.templates-index-admin__a-9,
+.templates-index-admin__a-23 {
+  border: 1px solid #60A5FA !important;
+  color: #60A5FA !important;
+  background: transparent !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+}
+
+.templates-index-admin__a-9:hover,
+.templates-index-admin__a-23:hover {
+  background: rgba(37, 99, 235, 0.12) !important;
+  color: #93C5FD !important;
+}
+
+/* --------------------------------------------------------------------------
+   RESERVAS RECIENTES
+   -------------------------------------------------------------------------- */
+
+.templates-index-admin__div-15 {
+  background: rgba(7, 18, 31, 0.96) !important;
+  border: 1px solid rgba(96, 165, 250, 0.24) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28) !important;
+}
+
+.templates-index-admin__div-15 .card-header,
+.templates-index-admin__div-15 .card-title,
+.templates-index-admin__div-15 h4,
+.templates-index-admin__div-15 h5 {
+  color: #F8FAFC !important;
+}
+
+.templates-index-admin__div-15 .table,
+.templates-index-admin__table-10,
+.templates-index-admin__table-24 {
+  background: transparent !important;
+  color: #E2E8F0 !important;
+}
+
+.templates-index-admin__tr-11,
+.templates-index-admin__tr-25 {
+  color: #94A3B8 !important;
+}
+
+.templates-index-admin__div-15 .btn-outline-primary,
+.templates-index-admin__div-15 .btn-outline-info {
+  border-color: #3B82F6 !important;
+  color: #60A5FA !important;
+}
+
+.templates-index-admin__div-15 .btn-outline-primary:hover,
+.templates-index-admin__div-15 .btn-outline-info:hover {
+  background: rgba(37, 99, 235, 0.12) !important;
+  color: #93C5FD !important;
+}
+
+/* --------------------------------------------------------------------------
+   ALERTAS DE INVENTARIO
+   -------------------------------------------------------------------------- */
+
+.templates-index-admin__div-16 {
+  background: linear-gradient(
+    145deg,
+    rgba(10, 27, 48, 0.97),
+    rgba(7, 20, 35, 0.96)
+  ) !important;
+  border: 1px solid rgba(37, 99, 235, 0.30) !important;
+  border-radius: 14px !important;
+  color: #F8FAFC !important;
+}
+
+.templates-index-admin__div-16 i,
+.templates-index-admin__div-16 .fa,
+.templates-index-admin__div-16 .fas,
+.templates-index-admin__div-16 .bi {
+  color: #60A5FA !important;
+}
+
+.templates-index-admin__div-16 .text-warning,
+.templates-index-admin__div-16 .text-danger {
+  color: #60A5FA !important;
+}
+
+.templates-index-admin__div-16 p,
+.templates-index-admin__div-16 small {
+  color: #94A3B8 !important;
+}
+
+/* --------------------------------------------------------------------------
+   ICONOS DEL DASHBOARD
+   -------------------------------------------------------------------------- */
+
+.templates-index-admin__div-3,
+.templates-index-admin__div-4,
+.templates-index-admin__div-6,
+.templates-index-admin__div-7 {
+  background: linear-gradient(
+    145deg,
+    #2563EB,
+    #1E40AF
+  ) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(147, 197, 253, 0.28) !important;
+}
+
+.templates-index-admin__div-3 i,
+.templates-index-admin__div-4 i,
+.templates-index-admin__div-6 i,
+.templates-index-admin__div-7 i {
+  color: #FFFFFF !important;
+}
+
+/* --------------------------------------------------------------------------
+   ELEMENTOS QUE TODAVÍA PODRÍAN HEREDAR AMARILLO DEL CSS ANTERIOR
+   -------------------------------------------------------------------------- */
+
+.templates-index-admin .text-warning,
+.templates-index-admin .text-gold,
+.templates-index-admin .text-champagne,
+.templates-index-admin .text-dorado {
+  color: #60A5FA !important;
+}
+
+/* Evita el amarillo de Bootstrap dentro del dashboard */
+.templates-index-admin .btn-warning {
+  background: #2563EB !important;
+  border-color: #2563EB !important;
+  color: #FFFFFF !important;
+}
+
+.templates-index-admin .btn-warning:hover {
+  background: #1E40AF !important;
+  border-color: #1E40AF !important;
+}
+
+/* --------------------------------------------------------------------------
+   TABLAS
+   -------------------------------------------------------------------------- */
+
+.templates-index-admin table thead,
+.templates-index-admin .thead-dark,
+.templates-index-admin .table-dark {
+  background: #071525 !important;
+  color: #CBD5E1 !important;
+}
+
+.templates-index-admin table th {
+  color: #94A3B8 !important;
+  border-color: rgba(96, 165, 250, 0.18) !important;
+}
+
+.templates-index-admin table td {
+  color: #E2E8F0 !important;
+  border-color: rgba(96, 165, 250, 0.12) !important;
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 991.98px) {
+  .admin-aside {
+    background: #071525 !important;
+  }
+
+  header,
+  .navbar,
+  .partials-header-admin {
+    min-height: 64px;
+  }
+
+  .templates-index-admin__div-1 {
+    margin-left: 10px !important;
+    margin-right: 10px !important;
+  }
+}
+/* ============================================================
+   CORRECCIÓN SOLO PARA MODO CLARO - DASHBOARD
+   NO AFECTA EL MODO OSCURO
+   ============================================================ */
+
+/* HEADER SUPERIOR */
+body.theme-light .partials-header-admin,
+body.theme-light header,
+body.theme-light .navbar {
+    background: linear-gradient(
+        90deg,
+        #071525 0%,
+        #0B1F3A 55%,
+        #08182B 100%
+    ) !important;
+
+    color: #F8FAFC !important;
+    border-bottom: 1px solid rgba(37, 99, 235, 0.35) !important;
+}
+
+/* Título: Administración de Chicha Barber Studio */
+body.theme-light .partials-header-admin h1,
+body.theme-light .partials-header-admin h2,
+body.theme-light .partials-header-admin h3,
+body.theme-light .partials-header-admin .navbar-brand,
+body.theme-light .partials-header-admin__a-3,
+body.theme-light header h1,
+body.theme-light header h2 {
+    color: #8CB7FF !important;
+    font-weight: 700 !important;
+}
+
+/* Botones del header */
+body.theme-light .partials-header-admin .btn,
+body.theme-light header .btn {
+    color: #FFFFFF !important;
+}
+
+body.theme-light .partials-header-admin .btn-primary,
+body.theme-light header .btn-primary {
+    background: #2563EB !important;
+    border-color: #2563EB !important;
+    color: #FFFFFF !important;
+}
+
+/* ============================================================
+   PANEL "BIENVENIDO"
+   ============================================================ */
+
+body.theme-light .templates-index-admin__div-1 {
+    background: linear-gradient(
+        135deg,
+        rgba(10, 24, 42, 0.96),
+        rgba(8, 22, 39, 0.94)
+    ) !important;
+
+    border: 1px solid rgba(96, 165, 250, 0.30) !important;
+    color: #F8FAFC !important;
+}
+
+/* PANEL DE ADMINISTRACIÓN */
+body.theme-light .templates-index-admin__div-1 .templates-index-admin__span-2 {
+    color: #60A5FA !important;
+}
+
+/* ¡Bienvenido, jenifer! */
+body.theme-light .templates-index-admin__div-1 h1,
+body.theme-light .templates-index-admin__div-1 h2,
+body.theme-light .templates-index-admin__div-1 h3,
+body.theme-light .templates-index-admin__div-1 .display-5 {
+    color: #F8FAFC !important;
+}
+
+/* Descripción */
+body.theme-light .templates-index-admin__div-1 p {
+    color: #CBD5E1 !important;
+}
+
+/* ============================================================
+   TARJETAS DE ESTADÍSTICAS
+   ============================================================ */
+
+body.theme-light .stat-card-dorado,
+body.theme-light .stat-card-azul-premium {
+    background: linear-gradient(
+        145deg,
+        #0D1B2A,
+        #0A1626
+    ) !important;
+
+    border: 1px solid rgba(37, 99, 235, 0.62) !important;
+    color: #F8FAFC !important;
+}
+
+/* Texto de las tarjetas */
+body.theme-light .stat-card-dorado .stat-label,
+body.theme-light .stat-card-dorado .stat-value,
+body.theme-light .stat-card-azul-premium .stat-label,
+body.theme-light .stat-card-azul-premium .stat-value {
+    color: #F8FAFC !important;
+}
+
+/* Valor numérico */
+body.theme-light .stat-card-dorado .stat-value,
+body.theme-light .stat-card-azul-premium .stat-value {
+    color: #3B82F6 !important;
+}
+
+/* Iconos */
+body.theme-light .stat-icon-dorado,
+body.theme-light .stat-icon-azul-premium {
+    background: linear-gradient(
+        145deg,
+        #2563EB,
+        #1E40AF
+    ) !important;
+
+    color: #FFFFFF !important;
+}
+
+body.theme-light .stat-icon-dorado i,
+body.theme-light .stat-icon-azul-premium i {
+    color: #FFFFFF !important;
+}
+
+/* ============================================================
+   RESERVAS RECIENTES
+   ============================================================ */
+
+body.theme-light .templates-index-admin__div-15 {
+    background: rgba(7, 18, 31, 0.96) !important;
+    border: 1px solid rgba(96, 165, 250, 0.24) !important;
+    color: #F8FAFC !important;
+}
+
+/* Título */
+body.theme-light .templates-index-admin__div-15 h4,
+body.theme-light .templates-index-admin__div-15 h5,
+body.theme-light .templates-index-admin__div-15 .card-title {
+    color: #F8FAFC !important;
+}
+
+/* Tabla */
+body.theme-light .templates-index-admin__div-15 table,
+body.theme-light .templates-index-admin__div-15 th,
+body.theme-light .templates-index-admin__div-15 td {
+    background: transparent !important;
+}
+
+body.theme-light .templates-index-admin__div-15 th {
+    color: #94A3B8 !important;
+}
+
+body.theme-light .templates-index-admin__div-15 td {
+    color: #E2E8F0 !important;
+}
+
+/* ============================================================
+   ALERTAS DE INVENTARIO
+   ============================================================ */
+
+body.theme-light .templates-index-admin__div-15,
+body.theme-light .templates-index-admin__div-15 h4,
+body.theme-light .templates-index-admin__div-15 h5,
+body.theme-light .templates-index-admin__div-15 p,
+body.theme-light .templates-index-admin__div-15 span {
+    color: #F8FAFC !important;
+}
+
+/* ============================================================
+   SIDEBAR - SOLO CORREGIR TEXTO EN MODO CLARO
+   ============================================================ */
+
+body.theme-light .admin-aside,
+body.theme-light aside.admin-aside {
+    background: linear-gradient(
+        180deg,
+        #071525 0%,
+        #091827 50%,
+        #050D18 100%
+    ) !important;
+
+    color: #F8FAFC !important;
+}
+
+body.theme-light .admin-aside a,
+body.theme-light aside.admin-aside a,
+body.theme-light .admin-aside span,
+body.theme-light .admin-aside i {
+    color: #F8FAFC !important;
+}
+
+/* Dashboard activo */
+body.theme-light .admin-aside .active,
+body.theme-light .admin-aside a[aria-current="page"] {
+    background: linear-gradient(
+        135deg,
+        #2563EB,
+        #1E40AF
+    ) !important;
+
+    color: #FFFFFF !important;
+}
+.welcome-card h1,
+.welcome-card h2,
+.welcome-card .welcome-title {
+    color: #ffffff !important;
+}
+
+.welcome-card p,
+.welcome-card .welcome-subtitle {
+    color: #cbd5e1 !important;
 }
