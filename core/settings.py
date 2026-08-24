@@ -1,7 +1,8 @@
 import os
 from pathlib import Path
+# pyrefly: ignore [missing-import]
 from decouple import config
-import certifi
+import certifi 
 
 # ======================================================
 # BASE DIR
@@ -115,11 +116,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'bdchichabarber',
         'USER': 'root',       
-<<<<<<< HEAD
-        'PASSWORD': 'S1002537269s',      
-=======
         'PASSWORD': '12345678',      
->>>>>>> main
         'HOST': '127.0.0.1',             
         'PORT': '3306',                  
         'OPTIONS': {
