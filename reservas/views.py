@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 
-from facturas.models import Factura, DetalleFactura
+
 from reservas.models import Reserva, Turno
 from reservas.forms import ReservaEditarForm
 from servicios.models import Promocion, Servicios

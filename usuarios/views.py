@@ -22,7 +22,6 @@ from core.utils import enviar_correo_recuperacion
 from core.validators import validar_password_fuerte
 from reservas.models import Reserva
 from productos.models import venta
-from facturas.models import Factura
 from datetime import datetime, timedelta
 import re
 

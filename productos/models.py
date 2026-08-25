@@ -818,15 +818,6 @@ class detalleventa(models.Model):
         verbose_name="Venta"
     )
 
-    codigo_factura = models.ForeignKey(
-        "facturas.Factura",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="detalles_venta",
-        verbose_name="Factura"
-    )
-
     codigo_producto = models.ForeignKey(
         Producto,
         on_delete=models.CASCADE,
@@ -1092,4 +1083,4 @@ def notificar_venta(
                 f"por ${instance.total_compra:.0f}."
             ),
             url="/admin-comprobantes/"
-        )
+        )

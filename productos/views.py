@@ -33,7 +33,7 @@ from .forms import (
     MarcaForm,
 )
 from core.utils import enviar_correo_venta
-from facturas.models import Factura, DetalleFactura
+
 from reservas.models import Reserva
 
 

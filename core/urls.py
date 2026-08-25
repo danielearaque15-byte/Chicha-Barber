@@ -17,7 +17,6 @@ urlpatterns = [
     path('servicios/', include('servicios.urls')),
     path('reservas/', include('reservas.urls')),
     path('usuarios/', include('usuarios.urls')),
-    path('productos/', include('productos.urls')),
     path('configuracion/', include('configuraciones.urls')),
 
     path('panel/', inicio_admin, name='inicio_admin'),
@@ -32,18 +31,14 @@ urlpatterns = [
     path('recuperar-password/enviado/', auth_views.PasswordResetDoneView.as_view(template_name='registration/recuperar_enviado.html'), name='password_reset_done'),
     path('recuperar/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='registration/recuperar_confirmar.html'), name='password_reset_confirm'),
     path('recuperar/completo/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/recuperar_completo.html'), name='password_reset_complete'),
-    
-    #----facturas----#
-    path('facturas/', include('facturas.urls')),
-    
-    #ia - chat
-   path('chat/', include('chat_ia.urls')),
-   
-   path('ayuda/', include('soporte.urls')),
-   
- 
-    # ... tus otras urls
-    
+
+    path('chat/', include('chat_ia.urls')),
+    path('ayuda/', include('soporte.urls')),
+    #nuevas apps
+    path('catalogo/', include('catalogo.urls')),
+    path('compras/', include('compras.urls')),
+    path('ventas/', include('ventas.urls')),
+    path('historial/', include('historial.urls')),
 ]
 
 
